@@ -1,0 +1,2268 @@
+{
+  "nodes": [
+    {
+      "id": "中心静脉穿刺置管",
+      "entity_type": "CATEGORY",
+      "description": "\"Central venous catheterization involves the insertion of a catheter into a large vein to administer medication or fluids and monitor central venous pressure.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "术前72H停用锂剂",
+      "entity_type": "EVENT",
+      "description": "\"术前需停用锂剂以减少术中风险，涉及部分药物调整策略。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "围术期血栓栓塞风险评估",
+      "entity_type": "EVENT",
+      "description": "\"Perioperative thromboembolism risk assessment is the evaluation process to determine a patient's risk of developing a blood clot during or after surgery.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "甲状腺功能亢进",
+      "entity_type": "CATEGORY",
+      "description": "\"甲状腺功能亢进患者术日前保持抗甲状腺药物和β受体阻滞剂至术当天早晨。\"<SEP>\"甲状腺功能亢进是一种内分泌疾病，需要在术前持续用药。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "慢性阻塞性肺疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"慢性阻塞性肺疾病患者需评估呼吸系统症状，并在术前采取措施改善肺功能。\"<SEP>\"慢性阻塞性肺疾病是一种呼吸系统疾病，需要术前评估呼吸困难等症状。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "CHILD-PUGH分级标准",
+      "entity_type": "CATEGORY",
+      "description": "\"Child-Pugh分级标准用于定量评估肝硬化患者的肝脏储备功能。\"<SEP>\"Child-Pugh分级标准用于评价肝硬化患者肝脏储备功能。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "老年患者",
+      "entity_type": "CATEGORY",
+      "description": "\"Elderly patients are categorized by their potential to have multiple diseases and polypharmacy issues, requiring specific preoperative assessments for comorbidities and functional status.\"<SEP>\"Elderly patients, often requiring special evaluations for functional status and comorbidities.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3<SEP>chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "恶性高热",
+      "entity_type": "CATEGORY",
+      "description": "\"恶性高热 is a severe reaction to certain anesthesia drugs, characterized by high fever, muscle rigidity, and metabolic acidosis.\"<SEP>\"恶性高热是一种与麻醉不良事件密切相关的家族病史，应在麻醉前进行重点关注。\"<SEP>\"恶性高热是一种与麻醉不良事件密切相关的家族病史，需要特别注意。\"<SEP>\"恶性高热是一种罕见但严重的麻醉并发症，表现为高热、肌肉僵硬等，需尽早识别并干预。\"<SEP>\"恶性高热 is malignant hyperthermia, a fast rise in body temperature and severe muscle contractions triggered by certain anesthetic agents.\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae<SEP>chunk-1e117a9274e23acb098538010446782d<SEP>chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "血液化学检查",
+      "entity_type": "CATEGORY",
+      "description": "\"对血液中的电解质、肝功能和肾功能进行检查。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "既往史",
+      "entity_type": "CATEGORY",
+      "description": "\"患者的过往医疗记录，如手术史、外伤史和输血史。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "胸部X光片",
+      "entity_type": "CATEGORY",
+      "description": "\"胸部X光片检查用于检查肺部情况，如结核病或其他异常。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "全身麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"General anesthesia is a medically induced coma with loss of protective reflexes, used during surgeries to ensure the patient is unconscious and pain-free.\"<SEP>\"全身麻醉是一种让患者失去意识和反射控制的状态，通常用于大型手术以确保无痛治疗。\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f<SEP>chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "查尔森合并症指数",
+      "entity_type": "CATEGORY",
+      "description": "\"Charlson Comorbidity Index, a medical scoring system used to predict mortality by classifying or weighting comorbidities.\"<SEP>\"The Charlson Comorbidity Index is a scoring system used to predict the ten-year mortality for a patient with multiple comorbid conditions.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3<SEP>chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "甲状腺功能减退",
+      "entity_type": "CATEGORY",
+      "description": "\"甲状腺功能减退影响新陈代谢，需在术前服用甲状腺素。\"<SEP>\"甲状腺功能减退患者应在术前服用甲状腺素至手术当天。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "哮喘",
+      "entity_type": "CATEGORY",
+      "description": "\"哮喘患者需在术前评估呼吸困难等症状，并在手术当天继续使用治疗药物。\"<SEP>\"哮喘是一种常见的呼吸系统疾病，术前需注意患者的呼吸状态。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "高血压病",
+      "entity_type": "CATEGORY",
+      "description": "\"高血压病患者需要在麻醉前评估平时血压控制情况及降压药使用情况。\"<SEP>\"高血压病是一种慢性疾病，需要术前了解降压药使用情况和血压控制情况。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "美国麻醉医师协会 (ASA)",
+      "entity_type": "ORGANIZATION",
+      "description": "\"The American Society of Anesthesiologists (ASA) provides classification methods for assessing the overall condition of surgical patients preoperatively.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "ACEI",
+      "entity_type": "TECHNOLOGY",
+      "description": "\"ACEI是一种降压药类，可能在围术期引起低血压，使用情况需在术前调整。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "血气分析",
+      "entity_type": "CATEGORY",
+      "description": "\"通过分析血气来评估患者的心肺功能和代谢状态。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "过敏史",
+      "entity_type": "CATEGORY",
+      "description": "\"患者对药物或食物过敏的记录及其表现形式。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "麻醉前宣教",
+      "entity_type": "EVENT",
+      "description": "\"术前通过宣教告知患者有关禁食禁饮、心理疏导和术后疼痛预防。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "产妇",
+      "entity_type": "CATEGORY",
+      "description": "\"Pregnant women undergoing surgery are at specific risk for complications and require careful consideration of anesthesia to manage obstetric and surgical needs.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "BADL和IADL评分",
+      "entity_type": "CATEGORY",
+      "description": "\"BADL and IADL are scoring tools used to assess a patient's ability to perform basic and instrumental activities of daily living.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "肝功能不全",
+      "entity_type": "CATEGORY",
+      "description": "\"肝功能不全患者需术前常规评估肝功能以指导治疗。\"<SEP>\"肝功能不全需评估肝硬化状态，以确定术前肝脏风险。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "神经系统疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"神经系统疾病包括如癫痫、脑血管疾病等，术前需详细评估其影响。\"<SEP>\"麻醉前需要详细了解神经系统疾病患者的疾病类型和严重程度。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "计算机或智能设备",
+      "entity_type": "TECHNOLOGY",
+      "description": "\"计算机或智能设备用于患者自我评估的工具，有助于进行麻醉前的初步评估。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "冠心病",
+      "entity_type": "CATEGORY",
+      "description": "\"冠心病是一种心脏疾病，术前需要评估心肌梗塞病史和临床心功能。\"<SEP>\"冠心病是一种重要的心脏疾病，需在术前详细了解其病史及相关症状，以评估手术风险。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "ARB",
+      "entity_type": "TECHNOLOGY",
+      "description": "\"ARB是一种降压药类，可能在围术期引起低血压，使用情况需在术前调整。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "超声",
+      "entity_type": "CATEGORY",
+      "description": "\"使用B超引导来进行穿刺，尤其适用有凝血功能障碍的患者。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "术前指导",
+      "entity_type": "EVENT",
+      "description": "\"在手术前对患者进行的指导，包括禁食和术后注意事项等。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "中心静脉穿刺",
+      "entity_type": "EVENT",
+      "description": "\"通过局部穿刺至中枢静脉的过程，尤其对于局部皮肤有红肿、感染或严重凝血功能障碍者。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "围术期风险评估",
+      "entity_type": "EVENT",
+      "description": "\"Perioperative risk assessment is the comprehensive evaluation of potential risks during and after surgery, including factors like bleeding and organ function impact.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "外科手术类型",
+      "entity_type": "CATEGORY",
+      "description": "\"The type of surgical procedure refers to the categorization of surgeries based on their nature, such as abdominal, thoracic, or major vascular surgeries.\"<SEP>\"Types of surgical procedures, classified by their complexity and associated risk of perioperative complications.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3<SEP>chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "肾脏疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"肾脏疾病术前需进行肾功能评估，了解患者的GFR及肾损伤风险。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "癫痫",
+      "entity_type": "CATEGORY",
+      "description": "\"癫痫患者术前保持抗癫痫药物的使用，并注意长期服药可能造成的肝功能损伤。\"<SEP>\"癫痫是一种慢性神经系统疾病，术前需维持抗癫痫药物使用。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "心脏瓣膜疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"心脏瓣膜疾病涉及心脏瓣膜异常，需要术前评估和共同会诊。\"<SEP>\"心脏瓣膜疾病需要在术前评估心功能和运动耐量，并进行必要的心脏检查。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "肾小球滤过率 (GFR)",
+      "entity_type": "CATEGORY",
+      "description": "\"Glomerular Filtration Rate (GFR) is a test used to assess kidney function by estimating how much blood passes through the glomeruli each minute.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "利血平",
+      "entity_type": "CATEGORY",
+      "description": "\"利血平是一种降压药，长期服用可能导致术中顽固性低血压，建议在术前七天停用。\"<SEP>\"利血平是一种降压药，长期服用者建议术前7天停药以避免术中顽固性低血压。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "小儿患者",
+      "entity_type": "CATEGORY",
+      "description": "\"Pediatric patients require detailed preoperative evaluation regarding growth, nutritional conditions, and previous medical history, especially if they have genetic metabolic or congenital syndromes.\"<SEP>\"Pediatric patients, necessitating detailed preoperative assessments considering developmental and nutritional factors.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3<SEP>chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "麻醉医师",
+      "entity_type": "PERSON",
+      "description": "\"麻醉医师是负责麻醉前访视和评估的专业人员，他们亲自向病房询问患者病史或通过麻醉专科门诊进行术前评估。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "生理指标检查",
+      "entity_type": "CATEGORY",
+      "description": "\"对患者的身体指标进行检查，如身高、体重、BMI、血压、脉搏和呼吸频率。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "姓名",
+      "entity_type": "CATEGORY",
+      "description": "\"患者的基本信息，包括姓名、性别、年龄、联系方式等。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "心电图",
+      "entity_type": "CATEGORY",
+      "description": "\"心电图检查用于评估心脏功能，发现心律不齐或其他问题。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "椎管内麻醉",
+      "entity_type": "PROCEDURE",
+      "description": "\"Spinal anesthesia refers to a type of regional anesthesia involving the injection of drugs into the subarachnoid space to produce regional nerve blocks.\"<SEP>\"Spinal or epidural anesthesia, used to block pain in a specific region, often chosen when general anesthesia is contraindicated.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3<SEP>chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "围术期低血压",
+      "entity_type": "EVENT",
+      "description": "\"围术期低血压是术中可能出现的急症，与降压药使用有关。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "围术期抗凝药物管理方案",
+      "entity_type": "CATEGORY",
+      "description": "\"The perioperative anticoagulant management plan involves the appropriate use of medications to prevent blood clots during and after surgery based on risk assessments.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "脑血管疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"脑血管疾病特别需关注，老年患者术前建议使用卒中风险评估量表进行评估。\"<SEP>\"脑血管疾病需要特别关注，老年患者术前应进行卒中风险评估。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "心律失常",
+      "entity_type": "EVENT",
+      "description": "\"心律失常是一种影响心脏正常节律的疾病，术前需要详细的病史和评估。\"<SEP>\"心律失常是常见的心脏疾病之一，需要在麻醉前进行评估。\"<SEP>\"心律失常是一种快速大量输液可能引发的心脏并发症，表现为不正常的心脏跳动速率。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89<SEP>chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "BODE评分系统",
+      "entity_type": "CATEGORY",
+      "description": "\"BODE评分系统是一种用于慢性阻塞性肺疾病患者术前综合评估的系统。\"<SEP>\"BODE评分系统用于综合评估慢性阻塞性肺疾病患者的状况。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "慢性肾脏病流行病学合作 (CKNEPI)",
+      "entity_type": "ORGANIZATION",
+      "description": "\"慢性肾脏病流行病学合作 (CKnEPI) is an organization that focuses on estimating glomerular filtration rate (GFR) to assess renal function and postoperative risk of acute kidney injury.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "患者",
+      "entity_type": "PERSON",
+      "description": "\"患者是接受麻醉和手术的个体，需要进行多方面的病史采集和评估，包括心血管、呼吸系统、神经系统、内分泌、肝脏及肾脏疾病等的病史。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "头颈部检查",
+      "entity_type": "CATEGORY",
+      "description": "\"针对患者的颈椎、口腔和喉咙的评估与检查。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "职业",
+      "entity_type": "CATEGORY",
+      "description": "\"患者的社会人口学资料，包括其职业、教育程度和婚姻状况等。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "家族史",
+      "entity_type": "CATEGORY",
+      "description": "\"家族中是否有与麻醉相关的遗传性疾病或过敏反应的记录。\"<SEP>\"家族史在麻醉前的评估中非常重要，特别是与麻醉不良事件相关的家族病史。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "多模式评估方法",
+      "entity_type": "CATEGORY",
+      "description": "\"Multi-modal assessment methods involve using various techniques, such as imaging and physical tests, to evaluate difficult airway intubation risk.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "术中顽固性低血压",
+      "entity_type": "EVENT",
+      "description": "\"术中顽固性低血压是利血平引起的潜在风险，因此在术前调整药物使用。\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "急性肾损伤",
+      "entity_type": "EVENT",
+      "description": "\"Acute kidney injury is a sudden episode of kidney failure or damage that happens within a few hours or days.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "糖尿病",
+      "entity_type": "CATEGORY",
+      "description": "\"糖尿病患者术前需停止口服降糖药和非胰岛素注射剂，并使用胰岛素控制血糖。\"<SEP>\"糖尿病是一种代谢性疾病，术前需控制血糖水平并调整用药。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "ESSEN卒中风险评分量表",
+      "entity_type": "CATEGORY",
+      "description": "\"Essen卒中风险评分量表是一种用于评估老年患者术前卒中风险的工具。\"<SEP>\"Essen卒中风险评分量表用于评估老年患者的卒中风险。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47<SEP>chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "id": "产科手术",
+      "entity_type": "CATEGORY",
+      "description": "\"Obstetric surgery involves high-risk factors for bleeding such as placenta previa and requires specific anesthesia considerations to prevent asphyxia and pneumonia.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "心肺听诊",
+      "entity_type": "CATEGORY",
+      "description": "\"通过听诊来评估心肺功能，识别心脏杂音和呼吸困难等问题。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "现病史",
+      "entity_type": "CATEGORY",
+      "description": "\"患者当前疾病的情况，包括疾病名称、起病时间和治疗状况。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "麻醉计划",
+      "entity_type": "CATEGORY",
+      "description": "\"麻醉计划涉及选择合适的麻醉方法和药物，以及个性化的术后镇痛计划。\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "id": "大出血",
+      "entity_type": "UNKNOWN",
+      "description": "\"Obstetric surgery presents high risks of major bleeding, necessitating preventive measures and appropriate anesthesia techniques.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "术后并发症风险",
+      "entity_type": "UNKNOWN",
+      "description": "\"Pediatric patients, especially those with certain conditions, have increased risks for postoperative complications like bronchospasm and hypoxia.\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "id": "创伤程度",
+      "entity_type": "CATEGORY",
+      "description": "\"Degree of trauma, which influences the risk level of surgery and the perioperative care required.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "胎盘早剥",
+      "entity_type": "EVENT",
+      "description": "\"Placental abruption, a pregnancy complication where the placenta detaches from the uterus, posing risks.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "干啰音",
+      "entity_type": "CATEGORY",
+      "description": "\"干啰音是肺部听诊时可能发现的异常呼吸音。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "药物过敏史",
+      "entity_type": "CATEGORY",
+      "description": "\"药物过敏史是麻醉前需要重点关注的因素，以避免过敏反应。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "IADL",
+      "entity_type": "CATEGORY",
+      "description": "\"Instrumental Activities of Daily Living, tasks related to independent living beyond basic self-care.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "三环类抗抑郁药",
+      "entity_type": "CATEGORY",
+      "description": "\"三环类抗抑郁药物影响心功能，需在手术当天早晨停用，并进行心功能检查。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "肺炎",
+      "entity_type": "CATEGORY",
+      "description": "\"Pneumonia, an infection that inflames the air sacs, risk-reducing measures are critical during surgery.\"<SEP>\"肺炎是一种肺部感染，可能在手术后由于免疫力下降或其他因素而发生。\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3<SEP>chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "手术史",
+      "entity_type": "CATEGORY",
+      "description": "\"Surgical history, the patient's past surgical experiences, significant for planning future medical procedures.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "神经阻滞",
+      "entity_type": "EVENT",
+      "description": "\"Nerve block, a local anesthesia technique aiming to interrupt nerve signals and manage pain.\"<SEP>\"神经阻滞是一种麻醉技术，旨在阻断特定区域的神经信号传递，以达到局部麻醉的效果。\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3<SEP>chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "抗癫痫药物",
+      "entity_type": "CATEGORY",
+      "description": "\"抗癫痫药物需在术前继续服用至手术当天，以防止发作。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "产科大出血",
+      "entity_type": "EVENT",
+      "description": "\"Obstetric hemorrhage, a significant loss of blood during or after childbirth requiring preventive measures.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "湿啰音",
+      "entity_type": "CATEGORY",
+      "description": "\"湿啰音是呼吸系统疾病患者术前需要关注的肺部异常听诊音。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "IADL评分",
+      "entity_type": "CATEGORY",
+      "description": "\"IADL评分用于评估老年患者的工具性日常生活能力。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "肝硬化",
+      "entity_type": "CATEGORY",
+      "description": "\"肝硬化患者需通过Child-Pugh分级标准评估肝脏储备功能。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "BADL",
+      "entity_type": "CATEGORY",
+      "description": "\"Basic Activities of Daily Living, a set of daily self-care activities used to assess functional status.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "5-羟色胺再摄取抑制剂",
+      "entity_type": "CATEGORY",
+      "description": "\"5-羟色胺再摄取抑制剂可能引起严重撤药反应，但出血风险高者可在术前2周停药。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "妊娠期高血压疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"Hypertensive disorders in pregnancy, a condition that demands specific anesthetic considerations during surgery.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "抢救史",
+      "entity_type": "CATEGORY",
+      "description": "\"Rescue history, detailing previous emergency interventions in a patient's medical background.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "肾小球滤过率(GFR)",
+      "entity_type": "CATEGORY",
+      "description": "\"GFR是评估肾功能状态和术后急性肾损伤风险的重要指标。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "血管内穿刺置管",
+      "entity_type": "PROCEDURE",
+      "description": "\"Vascular catheterization, a medical procedure involving the insertion of a catheter into a central vein to administer treatments.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "肝功能损伤",
+      "entity_type": "CATEGORY",
+      "description": "\"长期服用某些药物的患者需要监测肝功能以避免损伤。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "步行试验",
+      "entity_type": "CATEGORY",
+      "description": "\"步行试验用于评估呼吸系统疾病患者的活动耐量。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "慢性肾脏病流行病学合作(CKNEPI)公式",
+      "entity_type": "CATEGORY",
+      "description": "\"CKnEPI公式用于估算慢性肾脏病患者的肾小球滤过率，以评估手术风险。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "单胺氧化酶抑制剂",
+      "entity_type": "CATEGORY",
+      "description": "\"不可逆性的单胺氧化酶抑制剂需在术前2周停用，并转用可逆性同类药物。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "弥散性血管内凝血",
+      "entity_type": "CATEGORY",
+      "description": "\"Disseminated intravascular coagulation, a serious disorder that affects the blood's ability to clot, requiring careful monitoring.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "插管史",
+      "entity_type": "CATEGORY",
+      "description": "\"Intubation history, records of previous intubation experiences, important in assessing operational risks.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "围术期出血风险",
+      "entity_type": "CATEGORY",
+      "description": "\"围术期出血风险评估有助于手术准备和抗凝治疗方案制定。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "孕龄",
+      "entity_type": "CATEGORY",
+      "description": "\"Gestational age, the period of time a fetus has been developing in the womb, important for assessing pediatric surgery risks.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "心功能检查",
+      "entity_type": "CATEGORY",
+      "description": "\"术前心功能检查对于服用特定药物的患者是必要的，以评估心脏健康状态。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "美国麻醉医师协会（ASA)分级方法",
+      "entity_type": "CATEGORY",
+      "description": "\"ASA Physical Status Classification System, used to assess the fitness level of a patient prior to anesthesia.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "心肺运动试验",
+      "entity_type": "CATEGORY",
+      "description": "\"心肺运动试验评估患者的心肺耐力，特别适用于术前评估。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "呼吸困难",
+      "entity_type": "CATEGORY",
+      "description": "\"呼吸困难是慢性阻塞性肺疾病和哮喘患者需评估的症状之一。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "血栓栓塞风险",
+      "entity_type": "CATEGORY",
+      "description": "\"围术期应评估血栓栓塞风险，并制定合理的抗凝药物管理方案。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "围术期",
+      "entity_type": "EVENT",
+      "description": "\"Perioperative period, referring to the duration encompassing preoperative, intraoperative, and postoperative phases.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "锂剂",
+      "entity_type": "CATEGORY",
+      "description": "\"锂剂需在术前72小时停止，以减少围术期风险。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "正的评分量表",
+      "entity_type": "CATEGORY",
+      "description": "\"A type of scale used for evaluating comorbidities in patients, often utilizing the Charlson Comorbidity Index for perioperative adjustments.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "气管插管",
+      "entity_type": "PROCEDURE",
+      "description": "\"Tracheal intubation, a procedure to maintain open airway, often assessed for difficulty using various indices.\"<SEP>\"气管插管是在手术中用于维持气道通畅的技术，但可能损伤声带或导致相关关节脱位。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89<SEP>chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "虚弱评估",
+      "entity_type": "CATEGORY",
+      "description": "\"虚弱评估是老年患者麻醉前须进行的评估，用以判断身体状态。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "生长发育",
+      "entity_type": "CATEGORY",
+      "description": "\"Growth and development, critical factors in pediatric assessments prior to surgery.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "非胰岛素注射剂",
+      "entity_type": "CATEGORY",
+      "description": "\"糖尿病患者在手术当天需停用非胰岛素注射剂。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "麻醉风险评估",
+      "entity_type": "EVENT",
+      "description": "\"Anesthesia risk assessment, evaluating the potential risks associated with anesthesia in surgical patients.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "慢性咳嗽",
+      "entity_type": "CATEGORY",
+      "description": "\"慢性咳嗽是慢性阻塞性肺疾病和哮喘患者可能表现出的症状。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "ACEI和ARB类降压药",
+      "entity_type": "CATEGORY",
+      "description": "\"ACEI和ARB类降压药可能在围术期引起低血压，因此对高血压病患者应谨慎管理。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "先天性疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"Congenital diseases, health conditions present from birth, considered in comprehensive pediatric evaluations.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "BADL评分",
+      "entity_type": "CATEGORY",
+      "description": "\"BADL评分用于评估老年患者的基本生活活动能力。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "营养状况",
+      "entity_type": "CATEGORY",
+      "description": "\"Nutritional status, an essential aspect evaluated before pediatric surgery to ensure appropriate care.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "甲状腺素",
+      "entity_type": "CATEGORY",
+      "description": "\"甲状腺功能减退患者需在手术当天继续服用甲状腺素以维持正常代谢。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "前置胎盘",
+      "entity_type": "EVENT",
+      "description": "\"Placenta previa, a condition in pregnancy where the placenta covers the cervix, increasing the risk of bleeding.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "哮鸣音",
+      "entity_type": "CATEGORY",
+      "description": "\"哮鸣音是呼吸系统疾病患者术前评估时需要注意的异常呼吸音。\"",
+      "source_id": "chunk-9f7280b9ab6684e944c166a47ee35b47"
+    },
+    {
+      "id": "异物性窒息",
+      "entity_type": "EVENT",
+      "description": "\"Aspiration-related asphyxia, a risk during anesthesia, especially in obstetric surgery.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "气道",
+      "entity_type": "CATEGORY",
+      "description": "\"Airway, a crucial focus in pediatric assessments to anticipate potential anesthesia complications.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "产科手术麻醉",
+      "entity_type": "UNKNOWN",
+      "description": "\"Spinal and epidural anesthesia are preferred in certain obstetric surgeries to minimize the risk associated with general anesthesia.\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "id": "神经阻滞麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"一种麻醉方法，使用穿刺针可能导致神经损伤，需经过严格的技术操作和监控。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "呛咳",
+      "entity_type": "CATEGORY",
+      "description": "\"呛咳是由于气道异物或分泌物刺激引发的反射性咳嗽现象。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "DOCTOR",
+      "entity_type": "PERSON",
+      "description": "\"The medical professional responsible for administering anesthesia and informing patients of potential complications.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "急诊手术",
+      "entity_type": "EVENT",
+      "description": "\"急诊手术指的是紧急情况下进行的手术，可能需要特定麻醉策略以降低风险。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "阿波罗医院",
+      "entity_type": "ORGANIZATION",
+      "description": "\"阿波罗医院是一家提供手术和麻醉服务的医院, 并提供术后护理和健康咨询。\"<SEP>\"阿波罗医院是一所提供手术和麻醉服务的医疗机构，患者可以通过预约来获得医疗服务。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b<SEP>chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "LOW INTRACRANIAL PRESSURE EPIDURAL HEMATOMA",
+      "entity_type": "EVENT",
+      "description": "\"A complication that can occur during a puncture, leading to significant symptoms like severe headache and back pain.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "脊柱疼痛",
+      "entity_type": "CATEGORY",
+      "description": "\"脊柱疼痛是脊柱疾病或损伤的一种表现，常伴有神经根痛、发热、白细胞增多等症状。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "麻醉师",
+      "entity_type": "PERSON",
+      "description": "\"麻醉师是专门负责决定和管理手术中麻醉类型的医生。\"<SEP>\"麻醉师是负责调查病人健康状况并选择合适麻醉方式的专业人员。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b<SEP>chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "TOTAL SPINAL ANESTHESIA",
+      "entity_type": "EVENT",
+      "description": "\"A severe anesthetic complication wherein spinal and cranial nerves are extensively blocked, causing symptoms like blood pressure drop and respiratory issues.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "神经根痛",
+      "entity_type": "CATEGORY",
+      "description": "\"神经根痛是由脊髓神经根受到压力或损伤引起的疼痛，常与脊柱疼痛相关。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "外科医生",
+      "entity_type": "PERSON",
+      "description": "\"外科医生是在手术过程中与麻醉师合作，进行手术并监督术后患者康复的医务工作者。\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "NERVE ROOT INJURY",
+      "entity_type": "EVENT",
+      "description": "\"Occurs when a puncture needle directly damages nerve roots, leading to symptoms like electric shock-like pain and numbness.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "白细胞增多",
+      "entity_type": "CATEGORY",
+      "description": "\"白细胞增多是一种血液学表现，可能表示感染或炎症条件的存在。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "术后恢复",
+      "entity_type": "EVENT",
+      "description": "\"术后恢复指的是病人在手术麻醉结束后，从麻醉中苏醒并逐步恢复正常状态的过程。\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "EPIDURAL HEMATOMA",
+      "entity_type": "EVENT",
+      "description": "\"A complication resulting from damage to the epidural veins during a puncture, leading to pain and weakness.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "导管折断",
+      "entity_type": "CATEGORY",
+      "description": "\"A situation where a catheter breaks due to prolonged indwelling or improper handling, possibly causing pain and infection.\"<SEP>\"导管折断是椎管内麻醉可能的并发症，可能由于操作不当导致，需谨慎使用导管。\"<SEP>\"导管折断是由于导管在体内留置时间过长或操作不当引起的事件，可能导致局部疼痛和感染。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cdc19353c06f46a84c7749110ee448ab<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "目标",
+      "entity_type": "CATEGORY",
+      "description": "\"目标在此背景下指的是医疗团队确保手术安全顺利进行的最终目的。\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "id": "局麻药中毒",
+      "entity_type": "CATEGORY",
+      "description": "\"局麻药中毒是一种由于局部麻醉药物误入血管或过量注入导致的中枢神经系统和心血管系统中毒表现的状态。\"<SEP>\"局麻药中毒是神经阻滞麻醉可能出现的并发症之一，可能由于药物注入血管内或使用过量导致，对中枢神经系统和心血管系统有影响，表现为头晕、耳鸣、抽搐等，预防措施包括控制剂量和注射时反复回抽。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "栓塞",
+      "entity_type": "CATEGORY",
+      "description": "\"栓塞是指血管被栓子阻塞，可能导致动脉阻塞和相关症状。\"<SEP>\"栓塞是椎管内麻醉可能的严重并发症，可能导致截瘫，需严格操作技术避免。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "CRANIAL NERVE SYMPTOMS",
+      "entity_type": "EVENT",
+      "description": "\"Symptoms arise if local anesthetics spread to areas controlled by cranial nerves, causing issues like facial numbness and swallowing difficulty.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "沟通",
+      "entity_type": "CATEGORY",
+      "description": "\"沟通是指患者与医疗团队之间的信息交流，以确保理解和解决任何疑问或担忧。\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "id": "术后伤口感染",
+      "entity_type": "CATEGORY",
+      "description": "\"术后伤口感染是指手术后伤口受到病原体侵袭，引发感染反应的健康问题。\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "HEADACHE",
+      "entity_type": "EVENT",
+      "description": "\"A common complication from CSF leakage due to puncture, resulting in pain after anesthesia effects fade.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "截瘫",
+      "entity_type": "CATEGORY",
+      "description": "\"截瘫是一种严重的神经系统损伤表现，由栓塞等原因导致，需要及时医学干预。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "苏醒延迟",
+      "entity_type": "EVENT",
+      "description": "\"苏醒延迟 refers to delay in regaining consciousness after surgery, often due to slow metabolism or excretion of anesthesia drugs.\"<SEP>\"苏醒延迟 refers to delayed awakening from anesthesia, potentially due to slow metabolism of anesthetic drugs or postoperative complications.\"<SEP>\"苏醒延迟是指术后患者意识恢复缓慢，不能及时唤醒的一种现象，可能与麻醉药物的代谢和排泄延迟有关。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-9601829aafe0ac1903899c9a52695e89<SEP>chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "INFECTION",
+      "entity_type": "EVENT",
+      "description": "\"Infection can occur during anesthesia procedures, including puncture site infections and catheter-related infections.\"<SEP>\"Risk of infection at the puncture site or within the spinal canal, leading to serious conditions like meningitis.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804<SEP>chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "全身麻醉并发症",
+      "entity_type": "CATEGORY",
+      "description": "\"A category involving potential complications occurring during general anesthesia, covering a range of respiratory, cardiovascular, and post-operative issues.\"<SEP>\"全身麻醉并发症包括多种可能由于麻醉过程中的因素引起的医疗问题，如呼吸抑制、循环衰竭等。\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "呼吸问题",
+      "entity_type": "CATEGORY",
+      "description": "\"呼吸问题指的是手术后患者可能遇到的呼吸困难或相关症状。\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "ABSCESS",
+      "entity_type": "EVENT",
+      "description": "\"A more severe infection complication if untreated, leading to symptoms like spinal pain and fever.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "气管插管困难",
+      "entity_type": "EVENT",
+      "description": "\"气管插管困难是在全身麻醉过程中可能出现的问题，尤其对于解剖结构异常或肥胖患者。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "术后声嘶，环杓关节脱位",
+      "entity_type": "EVENT",
+      "description": "\"This event involves post-surgery hoarseness and dislocation of the cricoarytenoid joint, potentially due to intubation-related vocal cord injury.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "心脏问题",
+      "entity_type": "CATEGORY",
+      "description": "\"心脏问题指的是因手术引发的心率不齐或其他心脏相关的健康状况。\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "SPINAL CANAL",
+      "entity_type": "GEO",
+      "description": "\"A part of the body where puncture procedures are conducted, potentially leading to various complications.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "呼吸道损伤",
+      "entity_type": "CATEGORY",
+      "description": "\"呼吸道损伤 refers to damage to the respiratory tract, which can occur during intubation due to anatomical abnormalities, obesity, neck diseases, and repeated procedures.\"<SEP>\"呼吸道损伤是在气管插管过程中可能出现的损伤，包括唇、咽喉、气管等部位。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "脑血管意外",
+      "entity_type": "EVENT",
+      "description": "\"Cerebral vascular accident, including effects like spasms, thrombosis, and ruptures, occurring as potential complications under anesthesia.\"<SEP>\"脑血管意外 involves cerebrovascular accidents due to anaesthesia-related blood pressure fluctuations or intracranial pressure changes.\"<SEP>\"脑血管意外 refers to events involving sudden problems in the cerebral blood vessels, such as spasms, thrombosis, or ruptures, possibly occurring during anesthesia.\"<SEP>\"脑血管意外是在麻醉过程中可能发生的突发事件，可能由于血压剧烈波动等引起血栓或出血。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-1e117a9274e23acb098538010446782d<SEP>chunk-cdc19353c06f46a84c7749110ee448ab<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "局部麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"局部麻醉是一种麻醉方式，通过注射麻醉药物暂时阻断身体某一区域的神经反应。\"<SEP>\"局部麻醉通常用于小手术或医疗程序，麻醉特定的身体部位，患者在过程中保持清醒。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b<SEP>chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "CEREBROSPINAL FLUID",
+      "entity_type": "CATEGORY",
+      "description": "\"The fluid that can leak during procedures, causing low intracranial pressure and related complications.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "误吸入性肺炎",
+      "entity_type": "CATEGORY",
+      "description": "\"误吸入性肺炎 is aspiration pneumonia occurring when gastric contents are inhaled into the airway during or after anesthesia.\"<SEP>\"误吸入性肺炎是由于麻醉诱导期或术后意识未完全恢复时，胃内容物反流误吸入气道引起的肺炎。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "呼吸衰竭",
+      "entity_type": "CATEGORY",
+      "description": "\"呼吸衰竭 describes respiratory failure that may occur due to anesthesia drugs, pulmonary complications, or thoracic surgery.\"<SEP>\"呼吸衰竭 refers to respiratory failure that occurs due to factors such as anesthesia, lung complications, or chest surgery.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "SUBARACHNOID SPACE",
+      "entity_type": "GEO",
+      "description": "\"The space where an accidental insertion of a needle can lead to total spinal anesthesia.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"A medical procedure involving the administration of drugs to prevent pain during surgery or other procedures.\"<SEP>\"麻醉是一项用于手术的医疗程序，通过药物施行以减轻患者的痛苦并保障手术进行。\"<SEP>\"麻醉是指通过药物或其他方法使患者暂时失去知觉，免受手术疼痛。\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3<SEP>chunk-d6bd0776b82517243ccab62ef4eb11ae<SEP>chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "呼吸抑制",
+      "entity_type": "CATEGORY",
+      "description": "\"呼吸抑制 refers to respiratory suppression caused by anesthetic, analgesic, or muscle relaxant drugs, affecting the respiratory center.\"<SEP>\"呼吸抑制是麻醉药物抑制呼吸中枢作用的表现，可能出现呼吸频率减慢等症状。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "颅内压",
+      "entity_type": "CATEGORY",
+      "description": "\"Intracranial pressure refers to the pressure within the skull, which needs to be maintained during surgery to prevent cerebrovascular incidents.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "EPIDURAL SPACE",
+      "entity_type": "GEO",
+      "description": "\"The space where hematomas can form due to vein damage during procedures.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "肺不张",
+      "entity_type": "CATEGORY",
+      "description": "\"A condition of collapsed lung that can arise as a complication during general anesthesia.\"<SEP>\"肺不张 is atelectasis, a lung collapse due to factors like prolonged bed rest, surgical maneuvers, or thrombus formation.\"<SEP>\"肺不张是由于肺部分塌陷引起的状态，常见于长时间卧床或手术后。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cdc19353c06f46a84c7749110ee448ab<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "血压",
+      "entity_type": "CATEGORY",
+      "description": "\"Blood pressure is a crucial physiological parameter to monitor during surgery, as its significant fluctuation can lead to various complications.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "区域麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"区域麻醉通过注射来麻醉身体的一个大区域，如硬膜外麻醉和螺旋麻醉，适用于下肢、腹部的手术。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "PATIENT",
+      "entity_type": "PERSON",
+      "description": "\"Refers to individuals undergoing surgical procedures and potentially experiencing complications from anesthesia.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "麻醉意外",
+      "entity_type": "EVENT",
+      "description": "\"麻醉意外指的是在麻醉过程中可能出现的意外事件或事故，需要采取预防措施和应急准备。\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "id": "DURA MATER",
+      "entity_type": "CATEGORY",
+      "description": "\"The membrane that should be avoided during puncture to prevent complications like low intracranial pressure.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "肺栓塞",
+      "entity_type": "CATEGORY",
+      "description": "\"Pulmonary embolism, a serious blockage in a lung artery that can arise due to complications in anesthesia.\"<SEP>\"肺栓塞 is a pulmonary embolism caused by a blood clot obstructing the pulmonary artery, leading to chest pain and breathing difficulties.\"<SEP>\"肺栓塞是由于血栓阻塞肺动脉所引发的严重病理状态。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cdc19353c06f46a84c7749110ee448ab<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "麻醉药物",
+      "entity_type": "CATEGORY",
+      "description": "\"Anesthetic drugs are substances used to induce anesthesia, which can adversely affect the cardiovascular and respiratory systems in susceptible individuals.\"<SEP>\"麻醉药物是在手术中用于降低意识和疼痛感觉的药物，可能导致喉痉挛等并发症。\"<SEP>\"麻醉药物是术中用于维持患者无意识状态的药剂，其代谢和排泄延迟可导致苏醒延迟。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89<SEP>chunk-1e117a9274e23acb098538010446782d<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "镇静",
+      "entity_type": "CATEGORY",
+      "description": "\"镇静或监控麻醉护理通过静脉注射药物使患者感到昏昏欲睡和放松，通常用于手术中。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "手术",
+      "entity_type": "EVENT",
+      "description": "\"手术是指在医疗环境中进行的外科操作，目标是确保其安全顺利进行。\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "id": "STERILE TECHNIQUE",
+      "entity_type": "CATEGORY",
+      "description": "\"A procedural method used to prevent infections during medical procedures.\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "id": "张力性气胸",
+      "entity_type": "CATEGORY",
+      "description": "\"张力性气胸 is tension pneumothorax, caused by factors like tracheal intubation or chest surgery, resulting in lung collapse.\"<SEP>\"张力性气胸是由于空气进入胸腔造成压力，导致肺塌陷的一种急诊病理状态。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "高危患者",
+      "entity_type": "CATEGORY",
+      "description": "\"High-risk patients are individuals more susceptible to complications during medical procedures, requiring additional preventative measures like anticoagulation therapy.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "全身麻醉与硬膜外麻醉联合",
+      "entity_type": "CATEGORY",
+      "description": "\"这种技术结合全身和硬膜外麻醉以便在手术过程中以及术后管理疼痛，常用于复杂的腹部和胸部手术。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "动脉穿刺",
+      "entity_type": "PROCEDURE",
+      "description": "\"动脉穿刺是用于监测内环境和满足手术需要的技术，可能引发出血、栓塞等并发症。\"<SEP>\"动脉穿刺涉及通过穿刺进入动脉，可能导致肢体缺血坏死，如果动脉损伤严重或血栓形成，则可能引发远端肢体供血不足的情况。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae<SEP>chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "发热",
+      "entity_type": "CATEGORY",
+      "description": "\"发热是一种常见的身体反应，通常伴随感染或炎症，表现为体温升高。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "动脉穿刺并发症",
+      "entity_type": "CATEGORY",
+      "description": "\"Potential complications from arterial puncture, such as bleeding, hematoma, embolism, and limb ischemia.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "心脏病发作",
+      "entity_type": "EVENT",
+      "description": "\"心脏病发作是全身麻醉可能触发的严重副作用之一，尤其在老年患者中。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "应急准备",
+      "entity_type": "CATEGORY",
+      "description": "\"应急准备是指在发生意外时采取的预防和处理措施，以减少风险和损害。在医疗环境中，特别强调针对麻醉意外的准备。\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "id": "静脉穿刺",
+      "entity_type": "PROCEDURE",
+      "description": "\"静脉穿刺中可能会出现出血、感染和循环衰竭等并发症，需密切观察患者情况并采取防护措施。\"<SEP>\"静脉穿刺用于监测或输液，可能导致出血、感染等并发症。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae<SEP>chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "感染",
+      "entity_type": "CATEGORY",
+      "description": "\"An infection at the puncture site or within the spinal canal, potentially leading to serious conditions like meningitis.\"<SEP>\"感染可能在神经阻滞麻醉中发生，可能由于无菌操作不严导致，严格的无菌操作是重要的预防措施。\"<SEP>\"感染是指在术后或穿刺操作后可能发生的细菌或病原体侵袭，表现为局部红肿等症状。\"<SEP>\"感染是由病原体入侵引起的身体反应，可能导致多种症状，包括发热和白细胞增多。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89<SEP>chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cdc19353c06f46a84c7749110ee448ab<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "动静脉穿刺并发症",
+      "entity_type": "CATEGORY",
+      "description": "\"Complications associated with venous or arterial puncture, including bleeding, thrombosis, ischemia, and infections.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "意识恢复",
+      "entity_type": "EVENT",
+      "description": "\"在少数情况下，患者在全身麻醉下可能会在手术中恢复意识，称为术中知晓，这是一种非常罕见的并发症。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "麻醉药物过敏",
+      "entity_type": "EVENT",
+      "description": "\"麻醉药物过敏可导致从轻微到严重的异常反应，包括皮肤症状、呼吸困难、心动过速，甚至呼吸心跳骤停。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "影像学检查",
+      "entity_type": "CATEGORY",
+      "description": "\"影像学检查是用于检测身体内部结构和病变的诊断方法，例如用于评估脊柱问题。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "硬膜外麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"硬膜外麻醉是一种区域麻醉形式，用于下肢手术和分娩时的镇痛。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "循环衰竭",
+      "entity_type": "CATEGORY",
+      "description": "\"循环衰竭 is circulatory failure caused by anesthesia's effects on the cardiovascular system, bleeding, or allergic reactions.\"<SEP>\"循环衰竭 represents failure in the body's circulatory system, which can be induced by anesthesia, blood loss, or allergic reactions.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "呼吸心跳骤停",
+      "entity_type": "EVENT",
+      "description": "\"呼吸心跳骤停可由多种因素引发，包括麻醉药物过量、过敏反应、严重创伤等，需高度关注和预防。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "手术治疗",
+      "entity_type": "CATEGORY",
+      "description": "\"手术治疗是通过手术方式解决病理问题的医学过程，可能用于处理严重的脊柱或感染情况。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "螺旋麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"螺旋麻醉是一种区域麻醉，适用于下腹部和四肢的手术，使区域失去感觉。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "术后认知功能障碍",
+      "entity_type": "CATEGORY",
+      "description": "\"术后认知功能障碍涉及记忆力和注意力减退等情况，可能严重影响日常生活和工作。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "喉痉挛",
+      "entity_type": "CATEGORY",
+      "description": "\"喉痉挛 refers to a laryngeal spasm that can be triggered by anesthesia drugs, tracheal intubation stimulation, and airway secretions, leading to breathing difficulties.\"<SEP>\"喉痉挛是喉部肌肉突然收缩引起的急性状态，可能导致呼吸困难和喘鸣音。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "琥珀酰胆碱",
+      "entity_type": "CATEGORY",
+      "description": "\"Succinylcholine is a type of anesthetic drug that some patients may be genetically sensitive to, potentially triggering malignant hyperthermia.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "心脏和肺部问题",
+      "entity_type": "CATEGORY",
+      "description": "\"心脏和肺部问题是影响麻醉和手术结果的关键健康问题，可能增加并发症风险。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "术前评估",
+      "entity_type": "CATEGORY",
+      "description": "\"术前评估是对患者进行身体和认知功能的检查，以优化其术前状态和减少术中并发症风险。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "支气管痉挛",
+      "entity_type": "CATEGORY",
+      "description": "\"支气管痉挛 refers to bronchial spasm that causes breathing difficulty and is triggered by factors like anesthesia drugs or airway secretions.\"<SEP>\"支气管痉挛是支气管平滑肌收缩引起的状态，常见于麻醉期间或过敏体质者。\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "氟烷",
+      "entity_type": "CATEGORY",
+      "description": "\"Halothane is an inhalational anesthetic associated with risks of malignant hyperthermia in susceptible individuals.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "抑郁症",
+      "entity_type": "CATEGORY",
+      "description": "\"抑郁症是可能影响手术麻醉意识状态的因素之一。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "无菌操作",
+      "entity_type": "CATEGORY",
+      "description": "\"无菌操作涉及严格的消毒措施，预防穿刺或麻醉操作中感染发生的重要步骤。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "纤维支气管镜",
+      "entity_type": "TECHNOLOGY",
+      "description": "\"纤维支气管镜是一种用于检查和治疗呼吸道的柔性内窥镜设备。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "医生",
+      "entity_type": "PERSON",
+      "description": "\"The doctor is the medical professional responsible for managing anesthesia and monitoring the patient’s condition during and post-surgery.\"<SEP>\"医生是指麻醉师或外科医生，他们根据患者的整体健康状况和手术需求推荐合适的麻醉类型。\"<SEP>\"负责患者手术麻醉的医生，详细沟通潜在风险和应采取的预防措施，确保患者的安全。\"<SEP>\"负责患者手术麻醉的医生，解释术中可能的风险和并发症。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae<SEP>chunk-9601829aafe0ac1903899c9a52695e89<SEP>chunk-1e117a9274e23acb098538010446782d<SEP>chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "剖宫产",
+      "entity_type": "EVENT",
+      "description": "\"剖宫产手术期间使用某些麻醉类型可能与意识恢复相关。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "麻醉机",
+      "entity_type": "ORGANIZATION",
+      "description": "\"麻醉过程中使用的仪器设备，用于监测患者情况并投放麻醉药剂，但存在设备故障的可能。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "喉罩通气",
+      "entity_type": "TECHNOLOGY",
+      "description": "\"喉罩通气是一种替代气管插管的通气技术，减少呼吸道损伤风险。\"",
+      "source_id": "chunk-cc3caa48a5497d1bf7082a8ad38f7da4"
+    },
+    {
+      "id": "肺部康复训练",
+      "entity_type": "CATEGORY",
+      "description": "\"Pulmonary rehabilitation exercises are therapeutic exercises aimed at improving lung function and helping in recovery post-surgery.\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "id": "酗酒",
+      "entity_type": "CATEGORY",
+      "description": "\"酗酒是一种健康风险因素，可能影响全身麻醉的效果和安全性。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "阻塞性睡眠窒息症",
+      "entity_type": "CATEGORY",
+      "description": "\"阻塞性睡眠窒息症是一种健康状况，可能增加接受麻醉时的不良后果的风险。\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "id": "出血、感染和循环衰竭",
+      "entity_type": "UNKNOWN",
+      "description": "\"静脉穿刺过程中可能发生出血、感染和循环衰竭，通过严格消毒和监测来降低并发症的风险。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "头痛,感染,出血",
+      "entity_type": "UNKNOWN",
+      "description": "\"局部麻醉可能导致多种健康问题如头痛、感染和出血，特别是当剂量和注射位置未能精确控制时。\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "id": "肢体缺血坏死",
+      "entity_type": "UNKNOWN",
+      "description": "\"动脉穿刺如果不慎可能导致肢体缺血坏死，通过严格规范操作能有效降低风险。\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "id": "穿刺",
+      "entity_type": "EVENT",
+      "description": "\"The medical procedure of puncturing a body part to access internal structures, often for administration of drugs or anesthesia.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "COGNITIVE FUNCTION EVALUATION",
+      "entity_type": "CATEGORY",
+      "description": "\"Cognitive function evaluation is the assessment of a patient's cognitive abilities before surgery to anticipate changes post-anesthesia.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "饱胃患者",
+      "entity_type": "CATEGORY",
+      "description": "\"饱胃患者 refers to patients with a full stomach, posing a risk of aspiration pneumonia during anesthesia induction or recovery.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "id": "血压骤降",
+      "entity_type": "EVENT",
+      "description": "\"A rapid decrease in blood pressure, which can occur due to complications of anesthesia.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "LIFE SUPPORT SYSTEMS",
+      "entity_type": "CATEGORY",
+      "description": "\"Life support systems are used during anesthesia to ensure proper breathing and circulation in case of adverse reactions or complications.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "BLOOD PRESSURE STABILIZATION",
+      "entity_type": "CATEGORY",
+      "description": "\"Blood pressure stabilization involves maintaining a consistent blood pressure throughout the surgical procedure to minimize risks of cognitive dysfunction.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "肢体偏瘫",
+      "entity_type": "CATEGORY",
+      "description": "\"肢体偏瘫 is a condition related to neurological impairment that can occur as a result of cerebrovascular accidents during anesthesia.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "id": "呼吸无力或停止",
+      "entity_type": "EVENT",
+      "description": "\"Respiratory weakness or cessation, a potential consequence of extended nerve block during anesthesia.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "EMERGENCY PREPAREDNESS",
+      "entity_type": "CATEGORY",
+      "description": "\"Emergency preparedness entails having protocols and procedures ready to address potential anesthesia-related emergencies.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "意识障碍",
+      "entity_type": "EVENT",
+      "description": "\"Altered state or loss of consciousness, which can occur as a side effect of extensive nerve block during anesthesia.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "术后并发症",
+      "entity_type": "EVENT",
+      "description": "\"术后并发症是指在手术后可能发生的健康异常情况，包括苏醒延迟、声嘶、动静脉穿刺并发症等。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "昏迷",
+      "entity_type": "EVENT",
+      "description": "\"A prolonged state of unconsciousness that can result from severe anesthesia complications.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "出血",
+      "entity_type": "CATEGORY",
+      "description": "\"出血是神经阻滞麻醉可能的并发症，可能由于穿刺针损伤血管引起，表现包括穿刺部位的肿胀和疼痛，预防措施包括评估凝血功能和谨慎穿刺。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160"
+    },
+    {
+      "id": "心搏骤停",
+      "entity_type": "EVENT",
+      "description": "\"Sudden cardiac arrest, a critical emergency that can occur during severe anesthetic reactions.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "误入血管",
+      "entity_type": "CATEGORY",
+      "description": "\"误入血管是神经阻滞麻醉可能的并发症之一，表现为局部疼痛和肿胀，严重时可导致局麻药中毒，预防措施包括超声引导及定位以避免误刺。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160"
+    },
+    {
+      "id": "SUDDEN CARDIAC ARREST",
+      "entity_type": "EVENT",
+      "description": "\"Sudden cardiac arrest under anesthesia may result from overdose, allergic reactions, trauma, shock, acid-base imbalance, or electrolyte disorders.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "局麻药",
+      "entity_type": "CATEGORY",
+      "description": "\"Local anesthetics used to numb specific areas of the body during medical procedures.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "血胸、气胸",
+      "entity_type": "CATEGORY",
+      "description": "\"血胸、气胸是可能出现的并发症之一，可能因穿刺针位置不当导致胸膜和肺损伤，表现为胸痛和呼吸困难，使用超声引导以确保穿刺针不进入胸腔是常用的预防措施。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160"
+    },
+    {
+      "id": "TRACHEAL INTUBATION INJURIES",
+      "entity_type": "EVENT",
+      "description": "\"Tracheal intubation can cause injuries such as tooth loss, nasal or lip bleeding, laryngospasm, laryngeal edema, glottis damage, or bronchospasm.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "神经损伤",
+      "entity_type": "CATEGORY",
+      "description": "\"神经损伤可能在神经阻滞麻醉中发生，表现为阻滞区域感觉异常和肌力减弱，预防包括使用细针和缓慢分次注射。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160"
+    },
+    {
+      "id": "ALLERGIC REACTION",
+      "entity_type": "EVENT",
+      "description": "\"An allergic reaction during anesthesia can cause symptoms like hives, flushing, and severe cases of tachycardia, hypotension, and respiratory distress, possibly leading to cardiac arrest.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "误入椎管内",
+      "entity_type": "CATEGORY",
+      "description": "\"误入椎管内是神经阻滞麻醉可能的并发症，表现为广泛神经阻滞效果，预防措施包括掌握解剖层次避免误刺。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160"
+    },
+    {
+      "id": "声带",
+      "entity_type": "CATEGORY",
+      "description": "\"声带是气管插管过程中可能会被损伤的结构，损伤可能导致声音嘶哑或环杓关节脱位。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "EQUIPMENT FAILURE",
+      "entity_type": "EVENT",
+      "description": "\"Equipment failure during anesthesia includes issues like anesthetic machine leaks, monitor display errors, or faulty alarms.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "环杓关节脱位",
+      "entity_type": "EVENT",
+      "description": "\"环杓关节脱位是一种由于气管插管可能引起的术后并发症，表现为声音嘶哑.\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "采供",
+      "entity_type": "EVENT",
+      "description": "\"A method of providing supportive care and monitoring during and after anesthesia to ensure safe patient outcomes.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "低颅压致硬膜外血肿",
+      "entity_type": "CATEGORY",
+      "description": "\"低颅压致硬膜外血肿是椎管内麻醉并发症的可能性，可能由脑脊液外漏引起，表现为剧烈头痛和背痛，预防包括避免损伤硬膜和术后卧床。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160"
+    },
+    {
+      "id": "血栓",
+      "entity_type": "CATEGORY",
+      "description": "\"血栓是在动静脉穿刺过程中可能形成的塞子，可能导致栓塞和缺血后果。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "NERVE DAMAGE",
+      "entity_type": "EVENT",
+      "description": "\"Nerve damage from nerve block anesthesia may result in abnormal sensations or muscle weakness due to puncture needle injury.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "全脊髓麻醉",
+      "entity_type": "CATEGORY",
+      "description": "\"An occurrence where a large amount of local anesthetic enters the cerebrospinal fluid, causing widespread nerve block, including cranial nerves.\"<SEP>\"全脊髓麻醉是椎管内麻醉可能的并发症，表现为广泛脊神经麻醉，可能由于导管误入蛛网膜下腔。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "生命体征",
+      "entity_type": "CATEGORY",
+      "description": "\"生命体征包括心率、血压等指标，在术中和术后需密切监测以维护患者安全。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "MALIGNANT HYPERTHERMIA",
+      "entity_type": "EVENT",
+      "description": "\"Malignant hyperthermia is a rare but severe anesthesia complication characterized by high fever, muscle rigidity, increased heart rate, hypertension, and metabolic acidosis.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "PHYSICIAN",
+      "entity_type": "PERSON",
+      "description": "\"The physician is responsible for administering anesthesia during surgery and communicating the potential risks to the patient.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "硬膜外血肿",
+      "entity_type": "CATEGORY",
+      "description": "\"A condition where blood collects in the epidural space due to damage to an epidural vein during puncture, causing pain and weakness at the puncture site.\"<SEP>\"硬膜外血肿是椎管内麻醉可能的并发症，可能由出血引起，预防包括避免损伤硬膜和术后观察。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "神经根损伤",
+      "entity_type": "CATEGORY",
+      "description": "\"An event where the nerve root is directly damaged by a puncture needle, leading to electric-like pain transmitted to the limb on one side.\"<SEP>\"神经根损伤可能在椎管内麻醉中发生，表现为神经功能障碍，需谨慎操作以预防。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "术后苏醒",
+      "entity_type": "EVENT",
+      "description": "\"术后苏醒是指患者在手术后重新获得意识的过程，可能会因多种因素而延迟。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "POSTOPERATIVE COGNITIVE DYSFUNCTION",
+      "entity_type": "EVENT",
+      "description": "\"Postoperative cognitive dysfunction encompasses memory decline, attention deficits, slow thinking, and mood swings, potentially impacting daily life and work.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "脓肿",
+      "entity_type": "CATEGORY",
+      "description": "\"A condition resulting from uncontrolled infection, forming an abscess with symptoms including spinal pain and neuralgia.\"<SEP>\"脓肿是椎管内麻醉可能的并发症，可能由感染导致，需严格无菌操作。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "预防措施",
+      "entity_type": "CATEGORY",
+      "description": "\"预防措施是指为了减少术后并发症及操作风险所采取的行动或策略，包括正确压迫止血、无菌操作等。\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "id": "ALLERGY HISTORY",
+      "entity_type": "CATEGORY",
+      "description": "\"Allergy history refers to the detailed account of past allergic reactions that is important for selecting appropriate anesthesia drugs.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "ANESTHESIA",
+      "entity_type": "CATEGORY",
+      "description": "\"Anesthesia is a medically induced state to facilitate surgery, involving various drugs and techniques, with associated risks such as allergic reactions and respiratory complications.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "周围组织损伤",
+      "entity_type": "CATEGORY",
+      "description": "\"周围组织损伤可能发生在神经阻滞麻醉过程中，可能会损伤肌肉、肌腱等组织。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160"
+    },
+    {
+      "id": "PREVENTIVE MEASURES",
+      "entity_type": "CATEGORY",
+      "description": "\"Preventive measures are steps taken before and during anesthesia to minimize potential risks and complications.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "RESPIRATORY DISTRESS",
+      "entity_type": "EVENT",
+      "description": "\"Respiratory distress is a severe allergic reaction symptom that can arise during anesthesia, possibly leading to respiratory failure.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "HYPOTENSION",
+      "entity_type": "EVENT",
+      "description": "\"Hypotension during anesthesia can be a result of an allergic reaction, causing dangerously low blood pressure levels.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "头痛",
+      "entity_type": "CATEGORY",
+      "description": "\"A common complication occurring after anesthesia due to cerebrospinal fluid leakage, leading to low intracranial pressure.\"<SEP>\"头痛是椎管内麻醉的常见并发症，可能由于脑脊液外漏等原因导致。\"",
+      "source_id": "chunk-6573ba01a3a34215792a4972886d5160<SEP>chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "TACHYCARDIA",
+      "entity_type": "EVENT",
+      "description": "\"Tachycardia is a condition where the heart rate increases significantly, which can occur as a severe allergic reaction during anesthesia.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "颅神经症状",
+      "entity_type": "EVENT",
+      "description": "\"Symptoms arising from the diffusion of local anesthetic to areas governed by cranial nerves, including blurred vision and facial numbness.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "ANESTHETIC DRUGS",
+      "entity_type": "CATEGORY",
+      "description": "\"Anesthetic drugs are medications administered to induce anesthesia, requiring careful monitoring and dosage control to prevent adverse effects.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "栓塞甚至截瘫",
+      "entity_type": "EVENT",
+      "description": "\"A severe complication where embolism and paraplegia occur due to substances entering a blood vessel, leading to spinal cord ischemia and hypoxia.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "id": "VITAL SIGNS MONITORING",
+      "entity_type": "CATEGORY",
+      "description": "\"Vital signs monitoring is the continuous observation of bodily functions such as heart rate and blood pressure during anesthesia.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "肥胖",
+      "entity_type": "CATEGORY",
+      "description": "\"肥胖 is described as a condition that can contribute to difficulties during tracheal intubation, increasing the risk of respiratory tract injury.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "id": "ELECTROLYTE IMBALANCE",
+      "entity_type": "EVENT",
+      "description": "\"Electrolyte imbalance refers to the disruption of minerals in the body that can occur during anesthesia, potentially leading to complications.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "颈部疾病",
+      "entity_type": "CATEGORY",
+      "description": "\"颈部疾病 refers to neck diseases that may lead to challenges in tracheal intubation, resulting in potential airway complications.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "id": "ACID-BASE IMBALANCE",
+      "entity_type": "EVENT",
+      "description": "\"Acid-base imbalance involves changes in the body’s pH level and may contribute to complications like cardiac arrest under anesthesia.\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "id": "哮喘病史",
+      "entity_type": "CATEGORY",
+      "description": "\"哮喘病史 refers to a history of asthma, which can provoke bronchospasm during surgery, requiring preventive measures.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "id": "过敏体质",
+      "entity_type": "CATEGORY",
+      "description": "\"过敏体质 indicates a predisposition to allergies, increasing the risk of bronchospasm and other allergic reactions during anesthesia.\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "id": "困难气管插管导致的呼吸道损伤",
+      "entity_type": "UNKNOWN",
+      "description": "\"Respiratory tract damage is one of the specific complications under general anesthesia complications.\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    }
+  ],
+  "edges": [
+    {
+      "source": "老年患者",
+      "target": "查尔森合并症指数",
+      "weight": 7.0,
+      "description": "\"The Charlson Comorbidity Index is recommended for evaluating comorbidities in elderly patients.\"",
+      "keywords": "\"health evaluation, scoring system\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "source": "老年患者",
+      "target": "围术期",
+      "weight": 8.0,
+      "description": "\"Elderly patients often require perioperative adjustments based on their functional status and comorbidity assessments.\"",
+      "keywords": "\"elderly care, perioperative adjustments\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "恶性高热",
+      "target": "麻醉意外",
+      "weight": 7.0,
+      "description": "\"恶性高热属于麻醉意外中的一种严重并发症，需及早识别和应对。\"",
+      "keywords": "\"anesthesia complication, emergency management\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "source": "胸部X光片",
+      "target": "心电图",
+      "weight": 7.0,
+      "description": "\"心电图和胸部X光片均被用于手术前的检查，以评估心肺功能和发现问题。\"",
+      "keywords": "\"diagnostic testing, preoperative assessment\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "source": "全身麻醉",
+      "target": "医生",
+      "weight": 8.0,
+      "description": "\"医生根据患者的健康和手术需求决定是否使用全身麻醉来确保无痛手术。\"",
+      "keywords": "\"decision-making, procedure planning\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "source": "全身麻醉",
+      "target": "酗酒",
+      "weight": 7.0,
+      "description": "\"酗酒者在接受全身麻醉手术中可能面临更大的风险。\"",
+      "keywords": "\"health condition, anesthesia risk\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "source": "全身麻醉",
+      "target": "麻醉师",
+      "weight": 9.0,
+      "description": "\"麻醉师负责决定和管理手术中使用全身麻醉的过程。\"",
+      "keywords": "\"medical authority, anesthetic management\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "source": "全身麻醉",
+      "target": "阻塞性睡眠窒息症",
+      "weight": 6.0,
+      "description": "\"阻塞性睡眠窒息症患者可能在接受全身麻醉时面临更高风险的并发症。\"",
+      "keywords": "\"health risk, anesthesia complications\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "source": "查尔森合并症指数",
+      "target": "围术期",
+      "weight": 8.0,
+      "description": "\"The Charlson Comorbidity Index is used to adjust medications during the perioperative period for better patient outcomes.\"",
+      "keywords": "\"comorbidity assessment, perioperative management\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "高血压病",
+      "target": "患者",
+      "weight": 8.0,
+      "description": "\"患者可能患有高血压病，需在术前讨论用药和病史。\"",
+      "keywords": "\"慢性病管理, 术前评估\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "source": "麻醉前宣教",
+      "target": "麻醉计划",
+      "weight": 8.0,
+      "description": "\"麻醉计划与麻醉前宣教密切相关，前者依靠后者来告知患者风险和术后安排。\"",
+      "keywords": "\"patient education, anesthetic management\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "source": "计算机或智能设备",
+      "target": "患者",
+      "weight": 7.0,
+      "description": "\"患者使用计算机或智能设备进行自我评估，提供初步信息供麻醉医师审核。\"",
+      "keywords": "\"自我评估, 数据采集\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "source": "冠心病",
+      "target": "患者",
+      "weight": 8.0,
+      "description": "\"患者可能患有冠心病，并需在术前评估心脏状况。\"",
+      "keywords": "\"心脏健康, 术前评估\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "source": "中心静脉穿刺",
+      "target": "家族史",
+      "weight": 6.0,
+      "description": "\"家族史中的遗传性问题可能会影响中心静脉穿刺的风险与决定。\"",
+      "keywords": "\"genetic predispositions, procedure risk\"",
+      "source_id": "chunk-eb98b47ffd1268d0f6bef829e772ff12"
+    },
+    {
+      "source": "外科手术类型",
+      "target": "创伤程度",
+      "weight": 8.0,
+      "description": "\"The type of surgery and degree of trauma influence the overall surgical risk and necessary perioperative management.\"",
+      "keywords": "\"surgical complexity, risk management\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "肾脏疾病",
+      "target": "患者",
+      "weight": 9.0,
+      "description": "\"患者可能患有肾脏疾病，需进行肾功能的评估以确定术后风险。\"",
+      "keywords": "\"肾功能评估, 术前风险\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "source": "肾小球滤过率 (GFR)",
+      "target": "慢性肾脏病流行病学合作 (CKNEPI)",
+      "weight": 8.0,
+      "description": "\"The CKnEPI formula is used to estimate the GFR in patients to assess renal function and risks of acute kidney injury postoperatively.\"",
+      "keywords": "\"medical assessment, risk evaluation\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "source": "小儿患者",
+      "target": "术后并发症风险",
+      "weight": 9.0,
+      "description": "\"Pediatric patients, especially those with certain conditions, have increased risks for postoperative complications like bronchospasm and hypoxia.\"",
+      "keywords": "\"risk assessment, pediatrics\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "source": "小儿患者",
+      "target": "围术期",
+      "weight": 8.0,
+      "description": "\"Pediatric patients require thorough evaluation during the perioperative period due to growth and development considerations.\"",
+      "keywords": "\"pediatric care, perioperative risk\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "麻醉医师",
+      "target": "患者",
+      "weight": 9.0,
+      "description": "\"麻醉医师负责对患者进行多方面的病史采集和评估，以评估麻醉风险和制定麻醉方案。\"",
+      "keywords": "\"病史采集, 术前评估\"",
+      "source_id": "chunk-2df729b67d611f9f2c75eb154b4b42bd"
+    },
+    {
+      "source": "椎管内麻醉",
+      "target": "产科手术麻醉",
+      "weight": 7.0,
+      "description": "\"Spinal and epidural anesthesia are preferred in certain obstetric surgeries to minimize the risk associated with general anesthesia.\"",
+      "keywords": "\"anesthetic choice, obstetric considerations\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "椎管内麻醉",
+      "target": "妊娠期高血压疾病",
+      "weight": 8.0,
+      "description": "\"Hypertensive disorders during pregnancy influence the preference for or avoidance of spinal anesthesia methods.\"",
+      "keywords": "\"pregnancy complications, anesthetic choice\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "产科手术",
+      "target": "大出血",
+      "weight": 8.0,
+      "description": "\"Obstetric surgery presents high risks of major bleeding, necessitating preventive measures and appropriate anesthesia techniques.\"",
+      "keywords": "\"risk management, obstetrics\"",
+      "source_id": "chunk-94364b5ebb67bf795f812a342f36086f"
+    },
+    {
+      "source": "肺炎",
+      "target": "术后恢复",
+      "weight": 7.0,
+      "description": "\"在术后恢复期，患者可能因长期卧床或免疫力下降而患上肺炎。\"",
+      "keywords": "\"术后并发症, 感染预防\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "神经阻滞",
+      "target": "局麻药中毒",
+      "weight": 8.0,
+      "description": "\"局麻药中毒是神经阻滞过程中由于麻药误入血流而可能发生的严重并发症。\"",
+      "keywords": "\"麻醉风险, 健康并发\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "产科大出血",
+      "target": "前置胎盘",
+      "weight": 9.0,
+      "description": "\"Placenta previa is a high-risk factor for obstetric hemorrhage, necessitating preventive measures.\"",
+      "keywords": "\"pregnancy complications, bleeding risks\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "孕龄",
+      "target": "先天性疾病",
+      "weight": 7.0,
+      "description": "\"Gestational age is linked to congenital diseases, impacting surgical assessment and planning in pediatric cases.\"",
+      "keywords": "\"developmental assessment, congenital risks\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "美国麻醉医师协会（ASA)分级方法",
+      "target": "麻醉风险评估",
+      "weight": 9.0,
+      "description": "\"The ASA grading system is used as a reference in anesthesia risk assessments to evaluate patient fitness.\"",
+      "keywords": "\"anesthesia safety, patient assessment\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "气管插管",
+      "target": "气道",
+      "weight": 9.0,
+      "description": "\"The condition of the airway is directly related to the procedure of tracheal intubation, determining ease or difficulty.\"",
+      "keywords": "\"airway management, procedural complexity\"",
+      "source_id": "chunk-a2dd5b2f1ae0e044afbe792a2d9719e3"
+    },
+    {
+      "source": "气管插管",
+      "target": "术后并发症",
+      "weight": 9.0,
+      "description": "\"气管插管可能导致声带损伤和环杓关节脱位，进而引发声音嘶哑等术后并发症。\"",
+      "keywords": "\"medical procedure, risk management\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "source": "DOCTOR",
+      "target": "LOW INTRACRANIAL PRESSURE EPIDURAL HEMATOMA",
+      "weight": 7.0,
+      "description": "\"Doctors explain this potential complication, its symptoms, and preventive measures to patients.\"",
+      "keywords": "\"medical communication, complication management\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "source": "DOCTOR",
+      "target": "TOTAL SPINAL ANESTHESIA",
+      "weight": 8.0,
+      "description": "\"Doctors are tasked with preventing this severe complication through careful procedure management.\"",
+      "keywords": "\"complication prevention, anesthesia management\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "source": "DOCTOR",
+      "target": "INFECTION",
+      "weight": 9.0,
+      "description": "\"Doctors employ sterile techniques to prevent infections during procedures.\"",
+      "keywords": "\"infection control, sterile procedure\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "source": "DOCTOR",
+      "target": "PATIENT",
+      "weight": 8.0,
+      "description": "\"Doctors are responsible for informing the patients about potential anesthesia complications and ensuring their safety during procedures.\"",
+      "keywords": "\"patient care, medical responsibility\"",
+      "source_id": "chunk-f39e4ff15197eec55bd5d215ad501804"
+    },
+    {
+      "source": "急诊手术",
+      "target": "意识恢复",
+      "weight": 5.0,
+      "description": "\"在急诊手术中可能更易出现术中知晓或意识恢复的情况。\"",
+      "keywords": "\"emergency procedure, awareness risk\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "source": "阿波罗医院",
+      "target": "全身麻醉与硬膜外麻醉联合",
+      "weight": 7.0,
+      "description": "\"阿波罗医院提供复杂手术的服务，这种联合麻醉技术用于确保有效的术后疼痛管理。\"",
+      "keywords": "\"healthcare service, comprehensive care\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "source": "阿波罗医院",
+      "target": "麻醉师",
+      "weight": 9.0,
+      "description": "\"麻醉师在阿波罗医院中负责与病人沟通并选择合适的麻醉方案。\"",
+      "keywords": "\"医疗服务, 专业合作\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "阿波罗医院",
+      "target": "外科医生",
+      "weight": 9.0,
+      "description": "\"外科医生在阿波罗医院中执行手术程序，并监督病人在术后恢复阶段的健康。\"",
+      "keywords": "\"医疗服务, 专业合作\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "麻醉师",
+      "target": "局麻药中毒",
+      "weight": 8.0,
+      "description": "\"麻醉师负责预防局麻药中毒通过控制药物剂量和使用超声引导来避免药物误入血管。\"",
+      "keywords": "\"预防, 健康风险\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "目标",
+      "target": "手术",
+      "weight": 9.0,
+      "description": "\"所有措施和计划的目标是确保手术的安全和顺利实施。\"",
+      "keywords": "\"目标达成, 安全保障\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "source": "沟通",
+      "target": "手术",
+      "weight": 7.0,
+      "description": "\"有效的沟通有助于确保手术的安全和成功，通过解决患者的疑问和担忧。\"",
+      "keywords": "\"透明度, 患者支持\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "source": "术后伤口感染",
+      "target": "手术",
+      "weight": 7.0,
+      "description": "\"由于手术过程中伤口的开放，术后伤口感染成为一个潜在的健康风险。\"",
+      "keywords": "\"手术副作用, 感染控制\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "INFECTION",
+      "target": "ANESTHESIA",
+      "weight": 7.0,
+      "description": "\"There is a risk of infection during anesthesia-related procedures.\"",
+      "keywords": "\"infection risk, procedural safety\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "全身麻醉并发症",
+      "target": "困难气管插管导致的呼吸道损伤",
+      "weight": 7.0,
+      "description": "\"Respiratory tract damage is one of the specific complications under general anesthesia complications.\"",
+      "keywords": "\"medical procedure, anesthesia complications\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "source": "呼吸问题",
+      "target": "麻醉",
+      "weight": 8.0,
+      "description": "\"麻醉可能导致术后呼吸问题，由于药物抑制了正常的呼吸反射。\"",
+      "keywords": "\"麻醉风险, 呼吸支持\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "呼吸道损伤",
+      "target": "肥胖",
+      "weight": 7.0,
+      "description": "\"肥胖 increases the complexity of tracheal intubation, thereby raising the likelihood of 呼吸道损伤.\"",
+      "keywords": "\"intubation difficulty, airway injury\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "呼吸道损伤",
+      "target": "颈部疾病",
+      "weight": 7.0,
+      "description": "\"颈部疾病 can complicate intubation procedures and heighten the risk of 呼吸道损伤.\"",
+      "keywords": "\"intubation challenges, airway complications\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "呼吸道损伤",
+      "target": "误吸入性肺炎",
+      "weight": 8.0,
+      "description": "\"呼吸道损伤 can increase the risk of 误吸入性肺炎 as it affects airway integrity during anesthesia.\"",
+      "keywords": "\"airway complications, anesthesia risk\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "脑血管意外",
+      "target": "循环衰竭",
+      "weight": 16.0,
+      "description": "\"Cerebrovascular accidents can be related to circulatory failure when anesthesia leads to severe blood pressure fluctuations.\"<SEP>\"血压波动 can cause 脑血管意外, linking to 循环衰竭 caused by anesthesia’s cardiovascular effects.\"",
+      "keywords": "\"cardiovascular instability, anesthesia complications\"<SEP>\"medical complication, anesthesia risk\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a<SEP>chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "source": "脑血管意外",
+      "target": "肢体偏瘫",
+      "weight": 7.0,
+      "description": "\"肢体偏瘫 can result from 脑血管意外 during anesthesia, highlighting cerebrovascular vulnerability.\"",
+      "keywords": "\"neurological impairment, cerebral risk\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "局部麻醉",
+      "target": "头痛,感染,出血",
+      "weight": 6.0,
+      "description": "\"局部麻醉可能导致多种健康问题如头痛、感染和出血，特别是当剂量和注射位置未能精确控制时。\"",
+      "keywords": "\"麻醉副作用, 风险管理\"",
+      "source_id": "chunk-f0d2538003c1584ef2b59acc2661696d"
+    },
+    {
+      "source": "误吸入性肺炎",
+      "target": "饱胃患者",
+      "weight": 9.0,
+      "description": "\"Being a 饱胃患者 raises the risk of developing 误吸入性肺炎 during anesthesia.\"",
+      "keywords": "\"aspiration risk, anesthesia complication\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "呼吸衰竭",
+      "target": "呼吸抑制",
+      "weight": 9.0,
+      "description": "\"呼吸抑制 can lead to 呼吸衰竭 due to its impact on the respiratory center and breathing efficiency.\"",
+      "keywords": "\"respiratory complications, anesthesia effects\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "麻醉",
+      "target": "麻醉意外",
+      "weight": 8.0,
+      "description": "\"麻醉过程中的潜在风险可能导致麻醉意外的发生，需要特别预防。\"",
+      "keywords": "\"风险管理, 事故预防\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "source": "区域麻醉",
+      "target": "硬膜外麻醉",
+      "weight": 9.0,
+      "description": "\"硬膜外麻醉是区域麻醉的一种形式，应用于特定手术部位进行麻醉。\"",
+      "keywords": "\"anesthetic technique, surgical application\"",
+      "source_id": "chunk-715ccf0cbb395450c38da5d4fa97c75b"
+    },
+    {
+      "source": "麻醉意外",
+      "target": "手术",
+      "weight": 9.0,
+      "description": "\"麻醉意外的预防和应急准备是确保手术安全顺利进行的重要环节。\"",
+      "keywords": "\"安全保障, 预防措施\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "source": "麻醉意外",
+      "target": "应急准备",
+      "weight": 9.0,
+      "description": "\"应急准备可有效解决麻醉意外，使风险最小化。\"",
+      "keywords": "\"风险管理, 应急响应\"",
+      "source_id": "chunk-9767d87366b8fe2f64222da3d0b65cf3"
+    },
+    {
+      "source": "麻醉药物",
+      "target": "术后认知功能障碍",
+      "weight": 6.0,
+      "description": "\"术后认知功能障碍可能与麻醉药物的使用有关，通过术前评估和术中监测可降低发生概率。\"",
+      "keywords": "\"postoperative care, cognitive health\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "source": "麻醉药物",
+      "target": "医生",
+      "weight": 7.0,
+      "description": "\"医生负责管理麻醉药物使用以保证患者安全。\"",
+      "keywords": "\"medical responsibility, patient care\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "source": "麻醉药物",
+      "target": "术后并发症",
+      "weight": 8.0,
+      "description": "\"麻醉药物的代谢和排泄延迟是术后苏醒延迟等并发症的原因之一。\"",
+      "keywords": "\"cause-effect, patient safety\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "source": "动脉穿刺",
+      "target": "肢体缺血坏死",
+      "weight": 8.0,
+      "description": "\"动脉穿刺如果不慎可能导致肢体缺血坏死，通过严格规范操作能有效降低风险。\"",
+      "keywords": "\"medical procedure, risk prevention\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "source": "动脉穿刺",
+      "target": "医生",
+      "weight": 8.0,
+      "description": "\"医生执行动脉穿刺以满足手术监测需要，在此过程中需小心避免并发症。\"",
+      "keywords": "\"medical responsibility, procedural care\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "source": "动脉穿刺",
+      "target": "术后并发症",
+      "weight": 9.0,
+      "description": "\"动脉穿刺可能导致出血、血栓栓塞等术后并发症。\"",
+      "keywords": "\"medical procedure, risk management\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "source": "动脉穿刺并发症",
+      "target": "动静脉穿刺并发症",
+      "weight": 7.0,
+      "description": "\"Complications from venous or arterial punctures encompass those specified for arterial punctures, extending to severe ischemic outcomes.\"",
+      "keywords": "\"medical procedure complications, specifics\"",
+      "source_id": "chunk-1e117a9274e23acb098538010446782d"
+    },
+    {
+      "source": "静脉穿刺",
+      "target": "出血、感染和循环衰竭",
+      "weight": 7.0,
+      "description": "\"静脉穿刺过程中可能发生出血、感染和循环衰竭，通过严格消毒和监测来降低并发症的风险。\"",
+      "keywords": "\"medical safety, risk management\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "source": "静脉穿刺",
+      "target": "医生",
+      "weight": 8.0,
+      "description": "\"医生执行静脉穿刺以满足手术监测或治疗需要，并预防并发症。\"",
+      "keywords": "\"medical responsibility, procedural care\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "source": "静脉穿刺",
+      "target": "术后并发症",
+      "weight": 9.0,
+      "description": "\"静脉穿刺可能引发出血、感染等术后并发症。\"",
+      "keywords": "\"medical procedure, risk management\"",
+      "source_id": "chunk-9601829aafe0ac1903899c9a52695e89"
+    },
+    {
+      "source": "感染",
+      "target": "脓肿",
+      "weight": 9.0,
+      "description": "\"Uncontrolled infection can lead to the formation of an abscess, indicating a progression from one condition to another.\"",
+      "keywords": "\"infection progression, medical complications\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "source": "麻醉药物过敏",
+      "target": "呼吸心跳骤停",
+      "weight": 9.0,
+      "description": "\"麻醉药物过敏可能在极端情况下引发呼吸心跳骤停，应提前采取预防措施。\"",
+      "keywords": "\"allergic reaction, emergency response\"",
+      "source_id": "chunk-d6bd0776b82517243ccab62ef4eb11ae"
+    },
+    {
+      "source": "喉痉挛",
+      "target": "过敏体质",
+      "weight": 8.0,
+      "description": "\"过敏体质 can increase the chances of 喉痉挛 occurring during surgical procedures.\"",
+      "keywords": "\"allergy risk, airway spasm\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "支气管痉挛",
+      "target": "哮喘病史",
+      "weight": 8.0,
+      "description": "\"Patients with 哮喘病史 are more susceptible to 支气管痉挛 during surgery.\"",
+      "keywords": "\"respiratory risk, asthma complications\"",
+      "source_id": "chunk-bb6536d0e53afa3727db48df6856cb3a"
+    },
+    {
+      "source": "SUDDEN CARDIAC ARREST",
+      "target": "ANESTHESIA",
+      "weight": 8.0,
+      "description": "\"Anesthesia procedures can contribute to sudden cardiac arrest due to overdose or other factors.\"",
+      "keywords": "\"complication, risk management\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "TRACHEAL INTUBATION INJURIES",
+      "target": "ANESTHESIA",
+      "weight": 8.0,
+      "description": "\"Intubation during anesthesia can result in various injuries.\"",
+      "keywords": "\"procedural risks, physical injuries\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "ALLERGIC REACTION",
+      "target": "ANESTHESIA",
+      "weight": 9.0,
+      "description": "\"Administration of anesthesia can potentially trigger allergic reactions in patients.\"",
+      "keywords": "\"risk, potential complications\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "EQUIPMENT FAILURE",
+      "target": "ANESTHESIA",
+      "weight": 7.0,
+      "description": "\"Equipment failure can disrupt anesthesia delivery and monitoring during procedures.\"",
+      "keywords": "\"technology risk, operational safety\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "NERVE DAMAGE",
+      "target": "ANESTHESIA",
+      "weight": 7.0,
+      "description": "\"The use of nerve block anesthesia carries the risk of nerve damage.\"",
+      "keywords": "\"nerve injury, anesthesia procedure\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "全脊髓麻醉",
+      "target": "颅神经症状",
+      "weight": 8.0,
+      "description": "\"Both involve complications due to the spread of anesthetic within the nervous system.\"",
+      "keywords": "\"anesthetic complications, nerve impact\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "source": "MALIGNANT HYPERTHERMIA",
+      "target": "ANESTHESIA",
+      "weight": 7.0,
+      "description": "\"Malignant hyperthermia is a rare complication that can occur during anesthesia.\"",
+      "keywords": "\"severe complication, rare event\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "PHYSICIAN",
+      "target": "ANESTHESIA",
+      "weight": 8.0,
+      "description": "\"The physician administers anesthesia and is responsible for discussing its risks and benefits with the patient.\"",
+      "keywords": "\"medical procedure, risk communication\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    },
+    {
+      "source": "硬膜外血肿",
+      "target": "神经根损伤",
+      "weight": 7.0,
+      "description": "\"Both involve physical complications related to the process of puncture during medical procedures.\"",
+      "keywords": "\"procedure complication, nerve damage\"",
+      "source_id": "chunk-cdc19353c06f46a84c7749110ee448ab"
+    },
+    {
+      "source": "POSTOPERATIVE COGNITIVE DYSFUNCTION",
+      "target": "ANESTHESIA",
+      "weight": 7.0,
+      "description": "\"Anesthesia might lead to postoperative cognitive dysfunction affecting memory and attention.\"",
+      "keywords": "\"cognitive impact, postoperative risk\"",
+      "source_id": "chunk-eca26b5e0f0c4687178f394df56f9e2f"
+    }
+  ]
+}

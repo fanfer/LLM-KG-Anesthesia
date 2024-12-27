@@ -46,6 +46,10 @@ risk_system = '''
 {medicine_taking}
 </Information>
 
+<Risk_Analysis>
+{graph_qa_result}
+</Risk_Analysis>
+
 当前时间: {time}
 
 <注意事项>

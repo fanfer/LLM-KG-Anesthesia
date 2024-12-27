@@ -53,8 +53,8 @@ def _print_event(event: dict, _printed: Set[str], max_length=1500):
 
 def main():
     # 首先绘制图
-    #print("正在生成系统架构图...")
-    #draw_graph()
+    # print("正在生成系统架构图...")
+    # draw_graph()
     # 初始化打印集合和配置
     _printed = set()
     config = {
@@ -63,7 +63,7 @@ def main():
         }
     }
 
-    print("您好,我是麻醉科主任医生。请问有什么可以帮您?")
+    print("您好,我是您的麻醉医生。请问您怎么称呼?")
     
     while True:
         try:

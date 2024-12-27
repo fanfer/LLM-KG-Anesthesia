@@ -62,7 +62,7 @@ prompt = ChatPromptTemplate.from_messages([
 def get_extract_info_chain():
     """创建信息提取链。"""
     llm = ChatOpenAI(
-        model="gpt-4",
+        model="gpt-4o",
         temperature=0
     )
     

@@ -39,6 +39,7 @@ class MedicalState(TypedDict):
     user_information: str
     medical_history: Annotated[set[str], add_string_history]
     medicine_taking: Annotated[set[str], add_string_history]
+    graph_qa_result: str
     prompt: object
     prompt_with_context: object
     dialog_state: Annotated[

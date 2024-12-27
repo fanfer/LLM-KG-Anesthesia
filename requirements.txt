@@ -1,0 +1,6 @@
+langchain-core>=0.1.0
+langchain-openai>=0.0.5
+langgraph>=0.0.20
+lightrag
+python-dotenv>=1.0.0
+graphviz>=0.20.1 

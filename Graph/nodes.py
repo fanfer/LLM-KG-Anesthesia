@@ -1,4 +1,5 @@
 from typing import Callable
+from Chains.graph_qa_chain import get_graph_qa_chain
 from Graph.state import MedicalState, InputState
 from Chains.assistant2agent_chain import get_primary_assistant_chain
 from Chains.information_chain import get_information_chain
@@ -6,6 +7,7 @@ from langchain_core.messages import ToolMessage,HumanMessage,AIMessage
 from Chains.extract_info_chain import get_extract_info_chain
 from Chains.history_chain import get_history_chain
 from Chains.risk_chain import get_risk_chain
+from typing import List, Dict, Any
 
 def Primary_Assistant(state: MedicalState):
     try:
@@ -185,12 +187,14 @@ def Risk_Agent(state: MedicalState):
         user_information = state.get('user_information', '')
         medical_history = state.get('medical_history', [])
         medicine_taking = state.get('medicine_taking', [])
+        graph_qa_result = state.get('graph_qa_result', '')
         
         result = risk_chain.invoke({
             "messages": messages,
             "user_information": user_information,
             "medical_history": medical_history,
             "medicine_taking": medicine_taking,
+            "graph_qa_result": graph_qa_result,
         })
         
         return {
@@ -206,6 +210,61 @@ def Risk_Agent(state: MedicalState):
             "user_information": user_information,
             "medical_history": medical_history,
             "medicine_taking": medicine_taking,
+        }
+    
+def Graph_QA_Agent(state: MedicalState):
+    """
+    使用知识图谱分析患者风险的Agent。
+    返回风险分析结果和更新后的状态。
+    """
+    try:
+        # 获取chain
+        graph_qa_chain = get_graph_qa_chain()
+        
+        # 准备输入
+        messages = state.get('messages', [])
+        user_information = state.get('user_information', '')
+        medical_history = state.get('medical_history', [])
+        medicine_taking = state.get('medicine_taking', [])
+        
+        # 调用chain
+        result = graph_qa_chain.invoke({
+            "messages": messages,
+            "user_information": user_information,
+            "medical_history": medical_history,
+            "medicine_taking": medicine_taking,
+        })
+        
+        # 处理返回结果
+        risk_analysis = result.get('risk_analysis', '')
+        
+        # 创建AI消息
+        ai_message = AIMessage(
+            content=f"""根据知识图谱分析，患者的风险评估如下：
+
+        {risk_analysis}
+
+        请根据这些信息为基础，与患者进行沟通交流，告知麻醉手术风向。
+        """
+        )
+        
+        # 返回更新后的状态
+        return {
+            "messages": messages + [ai_message],
+            "user_information": result.get('user_information', user_information),
+            "medical_history": result.get('medical_history', medical_history),
+            "medicine_taking": result.get('medicine_taking', medicine_taking),
+            "graph_qa_result": risk_analysis
+        }
+        
+    except Exception as e:
+        print(f"图谱QA助手处理时出错: {str(e)}")
+        # 发生错误时返回原始状态
+        return {
+            "messages": messages,
+            "user_information": user_information,
+            "medical_history": medical_history,
+            "medicine_taking": medicine_taking
         }
 
 

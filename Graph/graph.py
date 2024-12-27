@@ -9,7 +9,8 @@ from Graph.nodes import (
     History_Agent,
     Entry_Risk_Agent,
     Risk_Agent,
-    Extract_Info_Agent
+    Extract_Info_Agent,
+    Graph_QA_Agent
 )
 from langchain_core.messages import ToolMessage
 from Graph.router import CompleteOrEscalate
@@ -120,6 +121,7 @@ builder.add_node("history_taking", History_Agent)
 
 # 风险评估相关节点
 builder.add_node("enter_risk_assessment", Entry_Risk_Agent)
+builder.add_node("graph_qa", Graph_QA_Agent)
 builder.add_node("risk_assessment", Risk_Agent)
 
 # 添加边
@@ -170,7 +172,8 @@ builder.add_conditional_edges(
 )
 
 # 5. 风险评估流程
-builder.add_edge("enter_risk_assessment", "risk_assessment")
+builder.add_edge("enter_risk_assessment", "graph_qa")
+builder.add_edge("graph_qa", "risk_assessment")
 builder.add_conditional_edges(
     "risk_assessment",
     route_agent,

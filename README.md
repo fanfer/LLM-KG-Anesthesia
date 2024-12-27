@@ -57,10 +57,19 @@ LANGCHAIN_PROJECT=your-project-name       # 项目名称
 
 ## 运行项目
 
-1. 启动系统
+1. 启动命令行版本
 ```bash
 python main.py
 ```
+
+2. 启动网页版本
+```bash
+python web/app.py
+```
+然后在浏览器中访问 http://localhost:8080
+
+默认用户名：admin
+默认密码：imds1234
 
 2. 交互示例
 ```
@@ -115,3 +124,34 @@ MIT License
 ## 联系方式
 
 如有问题或建议，请提交Issue或Pull Request。
+
+## 网络访问配置
+
+1. 本地访问
+```bash
+python web/app.py
+```
+然后在浏览器访问 http://localhost:5000
+
+2. 局域网访问
+- 查看本机IP地址：
+  ```bash
+  # Windows
+  ipconfig
+  
+  # Linux/Mac
+  ifconfig 或 ip addr
+  ```
+- 启动应用后，其他设备可通过 http://你的IP地址:5000 访问
+
+3. 公网访问
+- 配置防火墙开放5000端口
+- 配置路由器端口转发（将外部端口映射到内部5000端口）
+- 使用公网IP或域名访问
+
+4. 安全建议
+- 在生产环境中使用HTTPS
+- 使用反向代理（如Nginx）
+- 配置适当的访问控制
+- 更改默认端口
+- 设置强密码

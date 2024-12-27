@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录 - 麻醉医生助手系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>麻醉医生助手系统</h2>
+            <form method="POST" action="{{ url_for('login') }}">
+                {% if error %}
+                <div class="error">{{ error }}</div>
+                {% endif %}
+                <div class="input-group">
+                    <input type="text" name="username" placeholder="用户名" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" placeholder="密码" required>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html> 

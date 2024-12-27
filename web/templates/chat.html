@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>麻醉医生助手系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button onclick="newChat()" class="new-chat-btn">
+                    <i class="fas fa-plus"></i> 新对话
+                </button>
+            </div>
+            <div class="chat-history" id="chat-history">
+                <!-- 聊天记录列表 -->
+            </div>
+        </div>
+
+        <!-- 主聊天区域 -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>麻醉医生助手系统</h2>
+                <div class="user-info">
+                    欢迎, {{ username }}
+                    <a href="{{ url_for('logout') }}" class="logout-btn">退出</a>
+                </div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message system">
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        您好，我是您的麻醉医生。请问您怎么称呼？
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <textarea id="message-input" placeholder="请输入消息...&#13;&#10;按Enter发送，Shift+Enter换行" rows="3"></textarea>
+                <button onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html> 

@@ -10,25 +10,108 @@
 - ⚠️ **风险评估**：全面的麻醉风险评估
 - 🤝 **患者沟通**：通俗易懂的风险解释
 
-## 项目结构
+## 环境要求
 
+- Python 3.11
+- OpenAI API密钥
+- Tavily API密钥（用于搜索功能）
+- LangSmith账号（可选，用于追踪和调试）
+
+## 安装步骤
+
+1. 克隆项目
+```bash
+git clone https://github.com/fanfer/LLM-KG-Anesthesia.git
+cd LLM-KG-Anesthesia
 ```
-project/
-├── main.py              # 主程序入口
-├── Graph/               # 对话流程控制
-│   ├── graph.py        # 对话图定义
-│   ├── nodes.py        # 节点实现
-│   ├── router.py       # 路由逻辑
-│   └── state.py        # 状态管理
-├── Chains/             # 对话链实现
-│   ├── assistant2agent_chain.py    # 主助手链
-│   ├── extract_info_chain.py       # 信息提取链
-│   ├── history_chain.py           # 病史采集链
-│   ├── information_chain.py       # 信息确认链
-│   └── risk_chain.py             # 风险评估链
-└── tests/              # 测试用例
+
+2. 创建虚拟环境
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# 或
+.\venv\Scripts\activate  # Windows
 ```
+
+3. 安装依赖
+```bash
+pip install -r requirements.txt
+```
+
+4. 配置环境变量
+```bash
+# 复制环境变量模板
+cp .env.example .env
+
+# 编辑.env文件，填入以下配置：
+OPENAI_API_BASE=https://api.openai.com/v1  # OpenAI API地址
+OPENAI_API_KEY=your-api-key                # OpenAI API密钥
+TAVILY_API_KEY=your-tavily-key            # Tavily API密钥
+
+# 可选的LangSmith配置
+LANGCHAIN_TRACING_V2=true                 # 启用追踪
+LANGCHAIN_ENDPOINT=https://api.smith.langchain.com  # LangSmith API地址
+LANGCHAIN_API_KEY=your-langsmith-key      # LangSmith API密钥
+LANGCHAIN_PROJECT=your-project-name       # 项目名称
+```
+
+## 运行项目
+
+1. 启动系统
+```bash
+python main.py
+```
+
+2. 交互示例
+```
+AI: 您好,我是您的麻醉医生。请问您怎么称呼?
+
+用户: 我叫张三
+AI: 张三先生您好，请问您要进行什么手术呢？
+
+用户: 我要做心脏搭桥手术
+AI: 好的，我需要了解一下您的具体情况...
+```
+
+## 开发指南
+
+### 运行测试
+```bash
+# 安装测试依赖
+pip install pytest
+
+# 运行测试
+pytest tests/
+```
+
+### 查看系统架构
+```bash
+# 生成系统架构图
+python main.py --draw-graph
+```
+
+## 注意事项
+
+1. API密钥安全
+   - 不要将.env文件提交到版本控制
+   - 保护好您的API密钥
+   - 定期更新API密钥
+
+2. 使用限制
+   - 注意API调用频率限制
+   - 合理使用搜索功能
+   - 遵守API使用条款
+
+3. 开发建议
+   - 遵循代码规范
+   - 添加适当的注释
+   - 编写单元测试
+   - 保持代码整洁
 
 ## 许可证
 
 MIT License
+
+## 联系方式
+
+如有问题或建议，请提交Issue或Pull Request。

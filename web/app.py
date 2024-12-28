@@ -4,6 +4,8 @@ from flask_cors import CORS
 import os
 import sys
 from dotenv import load_dotenv
+import json
+from datetime import datetime
 
 # 获取项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,6 +42,19 @@ Session(app)
 USERS = {
     'admin': 'imds1234'
 }
+
+# 在文件开头添加对话记录目录配置
+CHAT_LOGS_DIR = os.path.join(ROOT_DIR, 'chat_logs')
+os.makedirs(CHAT_LOGS_DIR, exist_ok=True)
+
+def save_chat_message(chat_id, message, is_user=True):
+    """保存对话消息到文件"""
+    chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    role = 'User' if is_user else 'Assistant'
+    
+    with open(chat_file, 'a', encoding='utf-8') as f:
+        f.write(f'[{timestamp}] {role}: {message}\n')
 
 def check_environment():
     required_vars = ['OPENAI_API_KEY', 'OPENAI_API_BASE']
@@ -102,31 +117,22 @@ def send_message():
     data = request.json
     message = data.get('message')
     chat_id = data.get('chatId')
-    chat_messages = data.get('messages', [])
     
     if not message or not chat_id:
         return jsonify({'error': 'Invalid request'}), 400
 
     try:
-        # 构建完整的消息历史
-        messages = []
-        for msg in chat_messages:
-            if msg['isUser']:
-                messages.append(("user", msg['content']))
-            else:
-                messages.append(("assistant", msg['content']))
-        
-        # 添加当前消息
-        # messages.append(("user", message))
+        # 保存用户消息
+        save_chat_message(chat_id, message, is_user=True)
         
         # 使用graph处理消息
         events = graph.stream(
-            {"messages": messages},  # 传递完整的消息历史
+            {"messages": ("human", message)},
             {"configurable": {"thread_id": chat_id}},
             stream_mode="values"
         )
         
-        # 只获取最后一条AI消息
+        # 获取最后一条需要显示的AI消息
         last_message = None
         for event in events:
             if 'messages' in event and event['messages']:
@@ -135,11 +141,35 @@ def send_message():
                     message = message[-1]
                 last_message = message.content
         
-        # 如果没有获取到消息，返回错误
         if last_message is None:
             return jsonify({'error': 'No response generated'}), 500
+        
+        # 保存AI响应
+        save_chat_message(chat_id, last_message, is_user=False)
             
         return jsonify({'response': last_message})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/load_chat_history/<chat_id>')
+def load_chat_history(chat_id):
+    """加载完整的对话历史"""
+    try:
+        chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
+        if not os.path.exists(chat_file):
+            return jsonify({'messages': []})
+            
+        messages = []
+        with open(chat_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                if '] User: ' in line:
+                    content = line.split('] User: ', 1)[1].strip()
+                    messages.append({'content': content, 'isUser': True})
+                elif '] Assistant: ' in line:
+                    content = line.split('] Assistant: ', 1)[1].strip()
+                    messages.append({'content': content, 'isUser': False})
+                    
+        return jsonify({'messages': messages})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -155,6 +185,17 @@ def test_session():
         'session': dict(session),
         'cookie': request.cookies
     })
+
+@app.route('/delete_chat/<chat_id>', methods=['DELETE'])
+def delete_chat(chat_id):
+    """删除对话记录"""
+    try:
+        chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
+        if os.path.exists(chat_file):
+            os.remove(chat_file)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     if not check_environment():

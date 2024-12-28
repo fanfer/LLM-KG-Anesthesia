@@ -146,40 +146,62 @@ function updateChatList() {
 }
 
 // 加载聊天记录
-function loadChat(chatId) {
+async function loadChat(chatId) {
     const chat = chatHistory.find(c => c.id === chatId);
     if (!chat) return;
     
     currentChatId = chatId;
     
-    // 显示消息历史
-    const messagesDiv = document.getElementById('chat-messages');
-    messagesDiv.innerHTML = '';
-    
-    chat.messages.forEach(msg => {
-        addMessage(msg.content, msg.isUser, false);
-    });
+    try {
+        // 从服务器加载完整对话历史
+        const response = await fetch(`/load_chat_history/${chatId}`);
+        const data = await response.json();
+        
+        if (response.ok && data.messages) {
+            // 显示消息历史
+            const messagesDiv = document.getElementById('chat-messages');
+            messagesDiv.innerHTML = '';
+            
+            data.messages.forEach(msg => {
+                addMessage(msg.content, msg.isUser, false);
+            });
+            
+            // 更新本地存储的消息
+            chat.messages = data.messages;
+            saveChatHistory();
+        }
+    } catch (error) {
+        console.error('Error loading chat history:', error);
+    }
     
     // 更新侧边栏选中状态
     updateChatList();
 }
 
 // 删除聊天记录
-function deleteChat(chatId) {
+async function deleteChat(chatId) {
     event.stopPropagation();
-    if (!confirm('确定要删除这个���话吗？')) return;
+    if (!confirm('确定要删除这个对话吗？')) return;
     
-    chatHistory = chatHistory.filter(c => c.id !== chatId);
-    if (currentChatId === chatId) {
-        if (chatHistory.length > 0) {
-            loadChat(chatHistory[0].id);
-        } else {
-            newChat();
+    try {
+        // 删除服务器上的对话记录
+        await fetch(`/delete_chat/${chatId}`, { method: 'DELETE' });
+        
+        // 更新本地状态
+        chatHistory = chatHistory.filter(c => c.id !== chatId);
+        if (currentChatId === chatId) {
+            if (chatHistory.length > 0) {
+                loadChat(chatHistory[0].id);
+            } else {
+                newChat();
+            }
         }
+        
+        saveChatHistory();
+        updateChatList();
+    } catch (error) {
+        console.error('Error deleting chat:', error);
     }
-    
-    saveChatHistory();
-    updateChatList();
 }
 
 // 保存聊天记录

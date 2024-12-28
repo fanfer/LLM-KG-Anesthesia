@@ -1,21 +1,38 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from flask_session import Session
-from flask_cors import CORS  # 添加CORS支持
+from flask_cors import CORS
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from dotenv import load_dotenv
+
+# 获取项目根目录
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 加载环境变量
+load_dotenv(os.path.join(ROOT_DIR, '.env'))
+
+sys.path.append(ROOT_DIR)
 from Graph.graph import graph
+
+# 验证环境变量是否加载
+print("OpenAI API Key:", os.getenv('OPENAI_API_KEY', 'Not found'))
+print("OpenAI API Base:", os.getenv('OPENAI_API_BASE', 'Not found'))
 
 app = Flask(__name__)
 CORS(app)  # 启用CORS
 
-# 更安全的密钥设置
+# Session配置
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_COOKIE_SECURE'] = True  # 启用安全cookie
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30分钟session过期
+app.config.update(
+    SESSION_TYPE='filesystem',
+    SESSION_COOKIE_SECURE=False,  # 开发环境设为False
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=1800,  # 30分钟
+    SESSION_FILE_DIR=os.path.join(ROOT_DIR, 'flask_session')  # 指定session文件存储位置
+)
+
+# 确保session目录存在
+os.makedirs(os.path.join(ROOT_DIR, 'flask_session'), exist_ok=True)
 
 Session(app)
 
@@ -23,6 +40,21 @@ Session(app)
 USERS = {
     'admin': 'imds1234'
 }
+
+def check_environment():
+    required_vars = ['OPENAI_API_KEY', 'OPENAI_API_BASE']
+    missing_vars = []
+    
+    for var in required_vars:
+        if not os.getenv(var):
+            missing_vars.append(var)
+    
+    if missing_vars:
+        print("错误: 以下环境变量未设置:")
+        for var in missing_vars:
+            print(f"- {var}")
+        return False
+    return True
 
 @app.route('/')
 def index():
@@ -32,12 +64,18 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # 添加调试信息
+    print("Login request:", request.method)
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        print(f"Login attempt - username: {username}")
+        
         if username in USERS and USERS[username] == password:
             session['username'] = username
+            print("Login successful, redirecting to chat")
             return redirect(url_for('chat'))
+        print("Invalid credentials")
         return render_template('login.html', error='Invalid credentials')
     return render_template('login.html')
 
@@ -48,7 +86,11 @@ def logout():
 
 @app.route('/chat')
 def chat():
+    # 添加调试信息
+    print("Chat route accessed")
+    print("Session:", session)
     if 'username' not in session:
+        print("No username in session, redirecting to login")
         return redirect(url_for('login'))
     return render_template('chat.html', username=session['username'])
 
@@ -101,9 +143,26 @@ def send_message():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.errorhandler(Exception)
+def handle_error(error):
+    print(f"Error occurred: {error}")
+    return str(error), 500
+
+# 添加测试路由
+@app.route('/test_session')
+def test_session():
+    return jsonify({
+        'session': dict(session),
+        'cookie': request.cookies
+    })
+
 if __name__ == '__main__':
+    if not check_environment():
+        print("请检查.env文件配置")
+        sys.exit(1)
+        
     app.run(
-        host='0.0.0.0', 
-        port=8080,  # 改用8080端口
+        host='0.0.0.0',
+        port=8080,
         debug=True
     ) 

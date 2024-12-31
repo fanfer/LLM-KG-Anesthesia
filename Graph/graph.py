@@ -10,7 +10,9 @@ from Graph.nodes import (
     Entry_Risk_Agent,
     Risk_Agent,
     Extract_Info_Agent,
-    Graph_QA_Agent
+    Graph_QA_Agent,
+    Analgesia_Agent,
+    Entry_Analgesia_Agent
 )
 from langchain_core.messages import ToolMessage
 from Graph.router import CompleteOrEscalate
@@ -70,6 +72,8 @@ def route_primary_assistant(state: MedicalState):
             return "enter_history_taking"
         elif tool_name == 'ToRiskAgent':
             return "enter_risk_assessment"
+        elif tool_name == 'ToAnalgesiaAgent':
+            return "enter_analgesia"
     return END
 
 # 定义leave_skill节点
@@ -94,7 +98,8 @@ def route_to_workflow(
             "primary_assistant", 
             "risk_assessment",
             "verify_information",
-            "history_taking"
+            "history_taking",
+            "analgesia"
 ]:
     """If we are in a delegated state, route directly to the appropriate assistant."""
     dialog_state = state.get("dialog_state")
@@ -124,6 +129,11 @@ builder.add_node("enter_risk_assessment", Entry_Risk_Agent)
 builder.add_node("graph_qa", Graph_QA_Agent)
 builder.add_node("risk_assessment", Risk_Agent)
 
+# 添加镇痛分支
+builder.add_node("analgesia", Analgesia_Agent)
+builder.add_node("enter_analgesia", Entry_Analgesia_Agent)
+
+
 # 添加边
 # 1. 初始流程
 builder.add_edge(START, "initialize")
@@ -133,6 +143,7 @@ builder.add_conditional_edges("extract_info", route_to_workflow, {
     "verify_information": "verify_information",
     "history_taking": "history_taking",
     "risk_assessment": "risk_assessment",
+    "analgesia": "analgesia"
 })
 
 # 2. 主助手的条件边
@@ -143,6 +154,7 @@ builder.add_conditional_edges(
         "enter_verify_information",
         "enter_history_taking",
         "enter_risk_assessment",
+        "enter_analgesia",
         END,
     ],
 )
@@ -163,6 +175,18 @@ builder.add_conditional_edges(
 builder.add_edge("enter_history_taking", "history_taking")
 builder.add_conditional_edges(
     "history_taking",
+    route_agent,
+    {
+        "extract_info": "extract_info",
+        "leave_skill": "leave_skill",
+        END: END
+    }
+)
+
+# 添加镇痛相关的边
+builder.add_edge("enter_analgesia", "analgesia")
+builder.add_conditional_edges(
+    "analgesia",
     route_agent,
     {
         "extract_info": "extract_info",

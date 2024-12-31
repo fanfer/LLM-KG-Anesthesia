@@ -8,6 +8,7 @@ from Chains.extract_info_chain import get_extract_info_chain
 from Chains.history_chain import get_history_chain
 from Chains.risk_chain import get_risk_chain
 from typing import List, Dict, Any
+from Chains.analgesia_chain import get_analgesia_chain
 
 def Primary_Assistant(state: MedicalState):
     try:
@@ -212,6 +213,29 @@ def Risk_Agent(state: MedicalState):
             "medicine_taking": medicine_taking,
         }
     
+def Analgesia_Agent(state: MedicalState):
+    """处理镇痛相关的对话"""
+    # 获取chain
+    analgesia_chain = get_analgesia_chain()
+    
+    # 获取当前消息
+    messages = state["messages"]
+    
+    # 准备上下文信息
+    context = {
+        "messages": messages[-1].content if messages else "",  # 只获取最新消息
+        "user_information": state.get("user_information", ""),
+        "medical_history": state.get("medical_history", ""),
+        "medicine_taking": state.get("medicine_taking", "")
+    }
+    
+    # 调用chain处理消息
+    response = analgesia_chain.invoke(context)
+
+    return {
+        "messages":response
+    }
+
 def Graph_QA_Agent(state: MedicalState):
     """
     使用知识图谱分析患者风险的Agent。
@@ -266,6 +290,12 @@ def Graph_QA_Agent(state: MedicalState):
             "medical_history": medical_history,
             "medicine_taking": medicine_taking
         }
+
+# 创建Entry_Analgesia_Agent
+Entry_Analgesia_Agent = create_entry_node(
+    assistant_name="介绍镇痛方案的麻醉医生",
+    new_dialog_state="analgesia"
+)
 
 
     

@@ -48,7 +48,8 @@ class MedicalState(TypedDict):
                 "primary_assistant", 
                 "risk_assessment",
                 "history_taking",
-                "verify_information"
+                "verify_information",
+                "analgesia"
             ]
         ],
         update_dialog_stack,

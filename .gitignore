@@ -45,3 +45,4 @@ htmlcov/
 # 输出文件
 output/
 *.log 
+chat_logs/

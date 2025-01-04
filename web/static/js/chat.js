@@ -223,4 +223,69 @@ window.addEventListener('load', () => {
     } else {
         newChat();
     }
+});
+
+// 语音输入
+let mediaRecorder;
+let audioChunks = [];
+
+document.getElementById('voice-input-btn').addEventListener('click', function() {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        // 开始录音
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = async () => {
+                        try {
+                            const response = await fetch('/speech-to-text', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ audio: reader.result })
+                            });
+                            const data = await response.json();
+                            if (data.text) {
+                                document.getElementById('message-input').value = data.text;
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+                    };
+                    audioChunks = [];
+                };
+                mediaRecorder.start();
+                this.classList.add('recording');
+            });
+    } else {
+        // 停止录音
+        mediaRecorder.stop();
+        this.classList.remove('recording');
+    }
+});
+
+// 语音输出
+document.getElementById('voice-output-btn').addEventListener('click', async function() {
+    const lastMessage = document.querySelector('.message.system:last-child .message-content');
+    if (lastMessage) {
+        try {
+            const response = await fetch('/text-to-speech', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: lastMessage.textContent })
+            });
+            const data = await response.json();
+            if (data.audio) {
+                const audio = new Audio(data.audio);
+                audio.play();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
 }); 

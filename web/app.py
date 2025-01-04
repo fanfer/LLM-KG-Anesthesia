@@ -6,6 +6,9 @@ import sys
 from dotenv import load_dotenv
 import json
 from datetime import datetime
+from openai import OpenAI
+import tempfile
+import base64
 
 # 获取项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -194,6 +197,48 @@ def delete_chat(chat_id):
         if os.path.exists(chat_file):
             os.remove(chat_file)
         return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+client = OpenAI()
+
+@app.route('/speech-to-text', methods=['POST'])
+def speech_to_text():
+    try:
+        audio_data = request.json.get('audio')
+        
+        # 将base64音频数据转换为临时文件
+        with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as temp_file:
+            temp_file.write(base64.b64decode(audio_data.split(',')[1]))
+            temp_file_path = temp_file.name
+        
+        # 使用OpenAI API转换语音为文本
+        with open(temp_file_path, 'rb') as audio_file:
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            )
+        
+        os.unlink(temp_file_path)  # 删除临时文件
+        return jsonify({'text': transcript.text})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/text-to-speech', methods=['POST'])
+def text_to_speech():
+    try:
+        text = request.json.get('text')
+        
+        # 使用OpenAI API转换文本为语音
+        response = client.audio.speech.create(
+            model="tts-1",
+            voice="alloy",  # 使用男性的声音
+            input=text
+        )
+        
+        # 将音频数据转换为base64
+        audio_base64 = base64.b64encode(response.content).decode('utf-8')
+        return jsonify({'audio': f'data:audio/mp3;base64,{audio_base64}'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

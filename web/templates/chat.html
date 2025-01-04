@@ -39,8 +39,14 @@
                 </div>
             </div>
             <div class="chat-input">
+                <button id="voice-input-btn" class="voice-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
                 <textarea id="message-input" placeholder="请输入消息...&#13;&#10;按Enter发送，Shift+Enter换行" rows="3"></textarea>
                 <button onclick="sendMessage()">发送</button>
+                <button id="voice-output-btn" class="voice-btn">
+                    <i class="fas fa-volume-up"></i>
+                </button>
             </div>
         </div>
     </div>

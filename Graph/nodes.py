@@ -219,11 +219,11 @@ def Analgesia_Agent(state: MedicalState):
     analgesia_chain = get_analgesia_chain()
     
     # 获取当前消息
-    messages = state["messages"]
+    messages = state.get('messages', [])
     
     # 准备上下文信息
     context = {
-        "messages": messages[-1].content if messages else "",  # 只获取最新消息
+        "messages": messages,  # 只获取最新消息
         "user_information": state.get("user_information", ""),
         "medical_history": state.get("medical_history", ""),
         "medicine_taking": state.get("medicine_taking", "")

@@ -113,7 +113,7 @@ function newChat() {
                 <i class="fas fa-robot"></i>
             </div>
             <div class="message-content">
-                您好，我是您的麻醉医生。请问您怎么称呼？
+                请医生输入患者信息(姓名，年龄，性别，手术，麻醉方式等)
             </div>
         </div>
     `;

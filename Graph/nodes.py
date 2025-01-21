@@ -44,26 +44,39 @@ def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
     def entry_node(state: MedicalState) -> dict:
         # 获取最后一条消息
         last_message = state["messages"][-1]
-        tool_call_id = None
+        tool_messages = []
         
-        # 从AIMessage中获取tool_call_id
+        # 检查是否有工具调用
         if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
-            tool_call_id = last_message.tool_calls[0]["id"]
+            for tool_call in last_message.tool_calls:
+                # 处理parallel工具调用
+                if tool_call.get("name") == "multi_tool_use.parallel":
+                    tool_uses = tool_call.get("args", {}).get("tool_uses", [])
+                    for tool_use in tool_uses:
+                        tool_messages.append(
+                            ToolMessage(
+                                content=f'''记住，你现在是{assistant_name}，你的任务尚未完成。反思上述主任医生和患者之间的对话。\n如果患者改变主意或需要帮助处理其他任务，请调用CompleteOrEscalate函数让主要主任医师接管。不提及你是谁——只需作为助理行事。''',
+                                tool_call_id=tool_call["id"]
+                            )
+                        )
+                # 处理普通工具调用
+                else:
+                    tool_messages.append(
+                        ToolMessage(
+                            content=f'''记住，你现在是{assistant_name}，你的任务尚未完成。反思上述主任医生和患者之间的对话。\n如果患者改变主意或需要帮助处理其他任务，请调用CompleteOrEscalate函数让主要主任医师接管。不提及你是谁——只需作为助理行事。''',
+                            tool_call_id=tool_call["id"]
+                        )
+                    )
         
-        if not tool_call_id:
-            print("警告：未找到工具调用ID")
+        if not tool_messages:
+            print("警告：未找到工具调用")
             return {
                 "messages": state["messages"],
                 "dialog_state": new_dialog_state,
             }
             
         return {
-            "messages": [
-                ToolMessage(
-                    content=f'''记住，你现在是{assistant_name}，你的任务尚未完成。反思上述主任医生和患者之间的对话。\n如果患者改变主意或需要帮助处理其他任务，请调用CompleteOrEscalate函数让主要主任医师接管。不提及你是谁——只需作为助理行事。''',
-                    tool_call_id=tool_call_id,
-                )
-            ],
+            "messages": tool_messages,
             "dialog_state": new_dialog_state,
         }
     return entry_node

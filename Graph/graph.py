@@ -49,7 +49,21 @@ def route_agent(state: MedicalState):
     if not tool_calls:
         return END  # 如果没有工具调用，直接结束
     
-    did_cancel = any(tc["name"] == CompleteOrEscalate.__name__ for tc in tool_calls)
+    def check_complete_or_escalate(tool_call):
+        # 处理parallel工具调用
+        if tool_call.get("name") == "multi_tool_use.parallel":
+            tool_uses = tool_call.get("args", {}).get("tool_uses", [])
+            # 检查tool_uses中的每个工具调用
+            return any(
+                use.get("recipient_name") == CompleteOrEscalate.__name__ 
+                for use in tool_uses
+            )
+        # 处理普通工具调用
+        return tool_call.get("name") == CompleteOrEscalate.__name__
+    
+    # 检查所有工具调用
+    did_cancel = any(check_complete_or_escalate(tc) for tc in tool_calls)
+    
     if did_cancel:
         return "leave_skill"  # 通过leave_skill返回主助手
     

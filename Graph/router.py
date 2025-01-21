@@ -16,6 +16,6 @@ class CompleteOrEscalate(BaseModel):
             },
             "example 2": {
                 "cancel": True,
-                "reason": "我已经完成了所有提问，请交由其他助手继续对话。",
+                "reason": "已经确认完所有信息。",
             },
         }

@@ -4,6 +4,7 @@ from langchain_core.messages import ToolMessage, HumanMessage
 from Graph.graph import graph
 from IPython.display import Image, display
 import os
+from dotenv import load_dotenv, find_dotenv
 
 def draw_graph():
     """绘制并保存图结构。"""
@@ -53,17 +54,22 @@ def _print_event(event: dict, _printed: Set[str], max_length=1500):
 
 def main():
     # 首先绘制图
-    print("正在生成系统架构图...")
+    # print("正在生成系统架构图...")
     draw_graph()
     # 初始化打印集合和配置
     _printed = set()
+    # config = {
+    #     "configurable": {
+    #         "thread_id": str(uuid.uuid4())
+    #     }
+    # }
     config = {
         "configurable": {
-            "thread_id": str(uuid.uuid4())
+            "thread_id": "20250304"
         }
     }
 
-    print("您好,我是您的麻醉医生。请问您怎么称呼?")
+    print("请医生输入患者的姓名、年龄、性别、手术方式和麻醉类型。")
     
     while True:
         try:
@@ -97,4 +103,8 @@ def main():
         
 
 if __name__ == "__main__":
+
+    os.environ["OPENAI_API_BASE"] = "https://aihubmix.com/v1"
+    os.environ["OPENAI_API_KEY"] = "sk-dsDP2qW6CMnV4WFI11A15e972dC14d928eB985407cDb8cE1"
+    os.environ["OPENAI_BASE_URL"] = "https://aihubmix.com/v1"
     main()

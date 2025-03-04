@@ -229,39 +229,53 @@ window.addEventListener('load', () => {
 let mediaRecorder;
 let audioChunks = [];
 
-document.getElementById('voice-input-btn').addEventListener('click', function() {
+document.getElementById('voice-input-btn').addEventListener('click', async function() {
     if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-        // 开始录音
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
-                mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const reader = new FileReader();
-                    reader.readAsDataURL(audioBlob);
-                    reader.onloadend = async () => {
-                        try {
-                            const response = await fetch('/speech-to-text', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ audio: reader.result })
-                            });
-                            const data = await response.json();
-                            if (data.text) {
-                                document.getElementById('message-input').value = data.text;
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
+        // 检查浏览器兼容性
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('您的浏览器不支持录音功能。请使用现代浏览器如Chrome、Firefox或Safari的最新版本。');
+            return;
+        }
+
+        try {
+            // 开始录音
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = async () => {
+                    try {
+                        const response = await fetch('/speech-to-text', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ audio: reader.result })
+                        });
+                        const data = await response.json();
+                        if (data.text) {
+                            document.getElementById('message-input').value = data.text;
                         }
-                    };
-                    audioChunks = [];
+                    } catch (error) {
+                        console.error('语音转文字失败:', error);
+                        alert('语音转文字失败，请重试');
+                    }
                 };
-                mediaRecorder.start();
-                this.classList.add('recording');
-            });
+                audioChunks = [];
+            };
+            mediaRecorder.start();
+            this.classList.add('recording');
+        } catch (error) {
+            console.error('获取麦克风权限失败:', error);
+            if (error.name === 'NotAllowedError') {
+                alert('请允许浏览器访问麦克风以使用录音功能');
+            } else {
+                alert('录音功能初始化失败，请确保麦克风可用并重试');
+            }
+        }
     } else {
         // 停止录音
         mediaRecorder.stop();

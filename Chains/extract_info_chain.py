@@ -63,7 +63,7 @@ def get_extract_info_chain():
     """创建信息提取链。"""
     llm = ChatOpenAI(
         model="gpt-4o",
-        temperature=0
+        temperature=0.6
     )
     
     # 将格式说明注入到提示中

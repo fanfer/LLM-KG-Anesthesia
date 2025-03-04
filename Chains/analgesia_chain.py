@@ -7,7 +7,7 @@ import os
 
 llm = ChatOpenAI(
     model="gpt-4o", 
-    temperature=0,
+    temperature=0.6,
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
@@ -54,7 +54,7 @@ analgesia_system = '''
 
 请记住:一次仅提一个问题,待患者回答后再进行下一个提问。如患者提出问题,应优先回答并确保患者理解。
 
-完成全部评估后,使用"CompleteOrEscalate"向主任医生提交评估结果。注意直接调用CompleteOrEscalate，不要附加其他消息。
+完成全部评估后,使用"CompleteOrEscalate"向主任医生提交评估结果。注意只能单独调用CompleteOrEscalate，不能在回答的同时调用。
 '''
 
 

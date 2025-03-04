@@ -61,10 +61,12 @@ def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
                         )
                 # 处理普通工具调用
                 else:
+                    agent_id = tool_call.get("args", {}).get("agent_id", []) 
                     tool_messages.append(
                         ToolMessage(
                             content=f'''记住，你现在是{assistant_name}，你的任务尚未完成。反思上述主任医生和患者之间的对话。\n如果患者改变主意或需要帮助处理其他任务，请调用CompleteOrEscalate函数让主要主任医师接管。不提及你是谁——只需作为助理行事。''',
-                            tool_call_id=tool_call["id"]
+                            tool_call_id=tool_call["id"],
+                            args={"agent_id": agent_id}
                         )
                     )
         
@@ -74,11 +76,17 @@ def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
                 "messages": state["messages"],
                 "dialog_state": new_dialog_state,
             }
-            
-        return {
-            "messages": tool_messages,
-            "dialog_state": new_dialog_state,
-        }
+        if not agent_id:
+            return {
+                "messages": tool_messages,
+                "dialog_state": new_dialog_state,
+            }
+        else:
+            return {
+                "messages": tool_messages,
+                "dialog_state": new_dialog_state,
+                "agent_id": agent_id
+            }
     return entry_node
 
 Entry_Information_Agent = create_entry_node(assistant_name="确认患者身份信息的医疗助手", 
@@ -114,7 +122,7 @@ def Information_Agent(state: MedicalState):
 def Extract_Info_Agent(state: MedicalState):
     try:
         extract_info_chain = get_extract_info_chain()
-        human_messages = [msg for msg in state['messages'] if isinstance(msg, (HumanMessage, AIMessage))][-4:]
+        human_messages = [msg for msg in state['messages'] if isinstance(msg, (HumanMessage))][-4:]
         
         # 获取当前状态，如果不存在则使用默认值
         user_information = state.get('user_information', '')
@@ -160,12 +168,12 @@ Entry_History_Agent = create_entry_node(
 
 def History_Agent(state: MedicalState):
     try:
-        history_chain = get_history_chain()
+        agent_id = state.get('agent_id', '')
+        history_chain = get_history_chain(agent_id)
         messages = state.get('messages', [])
         user_information = state.get('user_information', '')
         medical_history = state.get('medical_history', [])
         medicine_taking = state.get('medicine_taking', [])
-        
         result = history_chain.invoke({
             "messages": messages,
             "user_information": user_information,

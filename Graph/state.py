@@ -54,6 +54,7 @@ class MedicalState(TypedDict):
         ],
         update_dialog_stack,
     ]
+    agent_id: int
 
 class InputState(TypedDict):
     messages: Annotated[list[AnyMessage],add_messages]

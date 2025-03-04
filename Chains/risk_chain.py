@@ -7,8 +7,7 @@ import os
 
 llm = ChatOpenAI(
     model="gpt-4o", 
-    temperature=0,
-    max_tokens=150,  # 限制输出约100字
+    temperature=0.6,
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
@@ -44,9 +43,9 @@ risk_system = '''
 {medicine_taking}
 </Information>
 
-<Risk_Analysis>
+<重点参考信息>
 {graph_qa_result}
-</Risk_Analysis>
+<重点参考信息>
 
 当前时间: {time}
 

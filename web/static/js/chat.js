@@ -38,18 +38,15 @@ function addMessage(content, isUser = false, save = true) {
 }
 
 async function sendMessage() {
-    const input = document.getElementById('message-input');
-    const message = input.value.trim();
+    const messageInput = document.getElementById('message-input');
+    const message = messageInput.value.trim();
     
     if (!message) return;
-    if (!currentChatId) {
-        alert('请先创建或选择一个对话');
-        return;
-    }
     
-    // 显示用户消息并保存到历史记录
+    // 添加用户消息到界面
     addMessage(message, true);
-    input.value = '';
+    messageInput.value = '';
+    messageInput.style.height = 'auto';
     
     try {
         const response = await fetch('/send_message', {
@@ -57,31 +54,36 @@ async function sendMessage() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 message: message,
-                chatId: currentChatId,
-                messages: chatHistory.find(c => c.id === currentChatId)?.messages || []
+                chatId: currentChatId
             })
         });
         
         const data = await response.json();
         
         if (response.ok) {
-            // 显示系统回复，但不再次保存到历史记录（因为已经在addMessage中保存了）
-            addMessage(data.response, false, false);
+            // 添加AI回复到界面
+            addMessage(data.response, false);
+            
+            // 播放语音回复
+            if (data.audio_url) {
+                playTTS(data.audio_url);
+            }
         } else {
-            addMessage('Error: ' + data.error, false, false);
+            console.error('Error:', data.error);
+            addMessage('抱歉，发生了错误，请重试。', false);
         }
     } catch (error) {
-        addMessage('Error: ' + error.message, false, false);
+        console.error('Error:', error);
+        addMessage('抱歉，发生了错误，请重试。', false);
     }
 }
 
 // 监听键盘事件
 document.getElementById('message-input').addEventListener('keydown', function(e) {
-    // 如果按下Enter键且没有按住Shift键（Shift+Enter用于换行）
     if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault(); // 阻止默认的换行行为
+        e.preventDefault();
         sendMessage();
     }
 });
@@ -91,22 +93,18 @@ document.getElementById('message-input').setAttribute('placeholder', '请输入�
 
 // 存储聊天历史
 let chatHistory = [];
-let currentChatId = null;
+
+// 生成唯一的聊天ID
+function generateChatId() {
+    return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// 当前聊天ID
+let currentChatId = generateChatId();
 
 // 创建新聊天
 function newChat() {
-    // 生成唯一ID
-    const chatId = Date.now().toString();
-    const chatData = {
-        id: chatId,
-        title: '新对话',
-        messages: []
-    };
-    
-    chatHistory.push(chatData);
-    currentChatId = chatId;
-    
-    // 清空聊天区域
+    currentChatId = generateChatId();
     document.getElementById('chat-messages').innerHTML = `
         <div class="message system">
             <div class="avatar">
@@ -302,4 +300,13 @@ document.getElementById('voice-output-btn').addEventListener('click', async func
             console.error('Error:', error);
         }
     }
-}); 
+});
+
+// 播放TTS音频
+function playTTS(audioUrl) {
+    const audio = document.getElementById('tts-audio');
+    audio.src = audioUrl;
+    audio.play().catch(error => {
+        console.error('Error playing audio:', error);
+    });
+} 

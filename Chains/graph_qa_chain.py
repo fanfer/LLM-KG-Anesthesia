@@ -7,7 +7,8 @@ from nano_graphrag import GraphRAG, QueryParam
 WORKING_DIR = "./dickens"
 
 ragllm = GraphRAG(
-    working_dir=WORKING_DIR,
+    working_dir=WORKING_DIR,    
+    best_model_id="gpt-4o",
 )
 
 system_prompt = """
@@ -52,7 +53,7 @@ graph_qa_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-def get_graph_qa_chain():
+def  get_graph_qa_chain():
     def query_knowledge_graph(inputs: dict):
         """使用GraphRAG查询知识图谱"""
         # 首先使用prompt模板格式化输入
@@ -65,7 +66,7 @@ def get_graph_qa_chain():
             prompt_text,
             param=QueryParam(
                 mode="global",
-                top_k=60,
+                top_k=10,
             )
         )
         

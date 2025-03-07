@@ -4,12 +4,18 @@ from datetime import datetime
 from Graph.router import CompleteOrEscalate
 from langchain_community.tools.tavily_search import TavilySearchResults
 import os
+from langchain_ollama import ChatOllama
 
 llm = ChatOpenAI(
-    model="gpt-4o", 
+    model="gpt-4o",
     temperature=0.6,
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
+# llm = ChatOllama(
+#     model="llama3.3:latest",
+#     temperature=0.6,
+#     base_url="http://222.20.98.120:11434"
+# )
 
 risk_system = '''
 你是一位专业的麻醉医生，正在进行麻醉风险评估和术前指导。主任医生已将这项重要工作委派给你。

@@ -1,6 +1,6 @@
 from typing import Set
 import uuid
-from langchain_core.messages import ToolMessage, HumanMessage
+from langchain_core.messages import ToolMessage, HumanMessage,AIMessage
 from Graph.graph import graph
 from IPython.display import Image, display
 import os
@@ -58,18 +58,20 @@ def main():
     draw_graph()
     # 初始化打印集合和配置
     _printed = set()
-    # config = {
-    #     "configurable": {
-    #         "thread_id": str(uuid.uuid4())
-    #     }
-    # }
     config = {
         "configurable": {
-            "thread_id": "20250304"
+            "thread_id": "1112312"
         }
     }
 
     print("请医生输入患者的姓名、年龄、性别、手术方式和麻醉类型。")
+    message = AIMessage(content="请医生输入患者的姓名、年龄、性别、手术方式和麻醉类型。")
+    graph.update_state(
+        config,
+        {
+            "dialog_state": "verify_information"
+        }
+    )
     
     while True:
         try:
@@ -77,25 +79,17 @@ def main():
             if question.lower() == 'q':
                 print("AI: 再见!")
                 break
-                
-            # 处理用户输入
-            events = graph.stream(
-                {"messages": ("user", question)}, 
-                config,
-                stream_mode="values"
-            )
-            
+
+            # 创建HumanMessage对象
+            message = HumanMessage(content=question)
+
             # 打印所有事件
-            for event in events:
+            for event in graph.stream(
+                {"messages": [message]}, 
+                config,
+                stream_mode="values"  # 使用messages模式支持流式输出
+            ):
                 _print_event(event, _printed)
-                
-            # 获取当前状态
-            snapshot = graph.get_state(config)
-            
-            # 处理中断
-            while snapshot.next:
-                # 直接继续执行,不需要用户确认
-                result = graph.invoke(None, config)
                 
         except Exception as e:
             print(f"处理对话时出错: {str(e)}")

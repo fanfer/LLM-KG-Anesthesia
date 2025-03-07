@@ -1,4 +1,5 @@
 from typing import List
+from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
@@ -61,9 +62,14 @@ prompt = ChatPromptTemplate.from_messages([
 
 def get_extract_info_chain():
     """创建信息提取链。"""
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=0.6
+    # llm = ChatOpenAI(
+    #     model="gpt-4o",
+    #     temperature=0.6
+    # )
+    llm = ChatOllama(
+        model="qwen2.5:14b",
+        temperature=0.6,
+        base_url="http://222.20.98.121:11434",
     )
     
     # 将格式说明注入到提示中

@@ -6,7 +6,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticToolsParser
 from langchain.schema import AIMessage
 from langchain.schema.runnable import RunnableSequence, RunnableLambda
-
+from langchain_ollama import ChatOllama
 
 llm = ChatOpenAI(
     model="gpt-4o", 
@@ -14,6 +14,11 @@ llm = ChatOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
+# llm = ChatOllama(
+#     model="llama3.3:latest ",
+#     temperature=0.6,
+#     base_url="http://222.20.98.120:11434"
+# )
 class ToInformationAgent(BaseModel):
     """将工作转交给专门的医生以核实患者的个人信息。"""
     name: str = Field(
@@ -105,7 +110,6 @@ class ToAnalgesiaAgent(BaseModel):
 system = '''你是一位主治医生，负责管理患者的诊疗流程。你的主要职责是根据患者的需求和情况，将具体任务分配给专门的Agent。注意你不直接与患者对话，而是通过函数调用来分配任务。
 
 你可以通过以下函数调用来分配任务:
-- ToInformationAgent: 用于确认和核实患者的基本信息
 - ToHistoryAgent: 用于收集患者的病史和既往史：
     - 有3个负责收集患者病史的医疗助手，1号医疗助手负责收集患者的基础病史，2号医疗助手负责收集患者的手术经历，3号医疗助手负责患者的现状评估。通过agent_id来确定医疗助手。
     - 一般应该按照顺序调用3个医疗助手，当一个医疗助手完成任务后，再调用下一个医疗助手。
@@ -115,7 +119,7 @@ system = '''你是一位主治医生，负责管理患者的诊疗流程。你�
 重要提示:
 1. 每次只能调用一个函数分配一项任务
 2. 不要向患者提及有不同的Agent和医疗助手
-3. 一般应该先核实基本信息，然后采集患者的病史和既往史，根据患者的病史和既往史，评估手术风险，然后告知患者麻醉风险。最后询问患者是否需要使用镇痛棒。
+3. 一般应该先采集患者的病史和既往史，根据患者的病史和既往史，评估手术风险，然后告知患者麻醉风险。最后询问患者是否需要使用镇痛棒。
 4. 你不能直接回答患者的问题，必须将任务分配给对应的Agent完成。
 
 当前患者信息:
@@ -133,7 +137,7 @@ prompt = ChatPromptTemplate.from_messages(
 )
 
 def get_primary_assistant_chain():
-    llm_with_tools = llm.bind_tools([ToInformationAgent, ToHistoryAgent, ToRiskAgent, ToAnalgesiaAgent])
+    llm_with_tools = llm.bind_tools([ToHistoryAgent, ToRiskAgent, ToAnalgesiaAgent])
     
     def process_response(result):
         """处理LLM响应，确保工具调用的正确处理"""

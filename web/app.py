@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_file
+from langchain_core.messages import AIMessage, HumanMessage
 from flask_session import Session
 from flask_cors import CORS
 import os
@@ -9,6 +10,8 @@ from datetime import datetime
 from openai import OpenAI
 import tempfile
 import base64
+import time
+from xunfei_tts import XunfeiTTS
 
 # 获取项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,7 +42,18 @@ app.config.update(
 # 确保session目录存在
 os.makedirs(os.path.join(ROOT_DIR, 'flask_session'), exist_ok=True)
 
+# 创建音频文件存储目录
+AUDIO_DIR = os.path.join(ROOT_DIR, 'web/static/audio')
+os.makedirs(AUDIO_DIR, exist_ok=True)
+
 Session(app)
+
+# 初始化科大讯飞TTS
+tts = XunfeiTTS(
+    appid='0fd3127e',
+    apikey='22c490aacbd823d6cb89dced0a711e09',
+    apisecret='YzM0Nzk3ZDgzOWYxYjBiZGRkYmZiMzc2'
+)
 
 # 用户凭证
 USERS = {
@@ -125,6 +139,20 @@ def send_message():
         return jsonify({'error': 'Invalid request'}), 400
 
     try:
+        # 检查是否是第一条消息
+        chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
+        is_first_message = not os.path.exists(chat_file)
+        
+        if is_first_message:
+            # 初始化系统消息
+            graph.update_state(
+                {"configurable": {"thread_id": chat_id}},
+                {
+                    "dialog_state": "verify_information",
+                    "user_information": message,
+                }
+            )
+        
         # 保存用户消息
         save_chat_message(chat_id, message, is_user=True)
         
@@ -149,8 +177,30 @@ def send_message():
         
         # 保存AI响应
         save_chat_message(chat_id, last_message, is_user=False)
+        
+        try:
+            # 生成语音文件
+            audio_filename = f"{chat_id}_{int(time.time())}.wav"
+            audio_path = os.path.join(AUDIO_DIR, audio_filename)
             
-        return jsonify({'response': last_message})
+            # 尝试进行语音合成
+            if tts.convert(last_message, audio_path):
+                audio_url = url_for('static', filename=f'audio/{audio_filename}')
+            else:
+                print("语音合成失败")
+                audio_url = None
+                
+            return jsonify({
+                'response': last_message,
+                'audio_url': audio_url
+            })
+        except Exception as e:
+            print(f"语音合成错误: {e}")
+            # 即使语音合成失败，也返回文本响应
+            return jsonify({
+                'response': last_message,
+                'audio_url': None
+            })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

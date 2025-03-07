@@ -4,12 +4,18 @@ from datetime import datetime
 from Graph.router import CompleteOrEscalate
 from langchain_community.tools.tavily_search import TavilySearchResults
 import os
+from langchain_ollama import ChatOllama
 
 llm = ChatOpenAI(
     model="gpt-4o", 
     temperature=0.6,
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
+# llm = ChatOllama(
+#     model="llama3.3:latest ",
+#     temperature=0.6,
+#     base_url="http://222.20.98.120:11434"
+# )
 
 analgesia_system = '''
 你是一位专业的麻醉医生，正在向患者介绍术后镇痛的相关信息。主任医生已将这项重要工作委派给你。
@@ -20,7 +26,7 @@ analgesia_system = '''
 1. 镇痛方案介绍:
 - 解释术后镇痛的重要性
 - 介绍什么是镇痛泵
-- 说明镇痛药物的作用和可能的副作用
+- 说明镇痛泵的作用和可能的副作用
 - 确认患者是否需要使用镇痛泵
 
 <相关信息>

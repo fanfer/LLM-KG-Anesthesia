@@ -27,12 +27,13 @@ class MedicalState(TypedDict):
 
     Attributes:
         messages: message list
-        patient: patient‘s name
+        patient: patient's name
         user_information: user information
         medical_history: the medical history of patient
         medicine_taking: what medicine the patient is taking 
         prompt: prompt template object
         prompt_with_context: prompt template with context from vector search
+        extract_info_result: result from extract info node
     """
     messages: Annotated[list[AnyMessage], add_messages]
     patient: str
@@ -42,6 +43,7 @@ class MedicalState(TypedDict):
     graph_qa_result: str
     prompt: object
     prompt_with_context: object
+    extract_info_result: dict
     dialog_state: Annotated[
         list[
             Literal[
@@ -55,6 +57,7 @@ class MedicalState(TypedDict):
         update_dialog_stack,
     ]
     agent_id: int
+    current_step: int 
 
 class InputState(TypedDict):
     messages: Annotated[list[AnyMessage],add_messages]

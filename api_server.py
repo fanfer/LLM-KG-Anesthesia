@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, stream_with_context
 import os
 import sys
+import json
 from dotenv import load_dotenv
 from datetime import datetime
 from openai import OpenAI
@@ -53,49 +54,128 @@ def check_environment():
         return False
     return True
 
+def format_sse(data: dict, event=None) -> str:
+    """格式化SSE消息"""
+    msg = f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
+    if event is not None:
+        msg = f"event: {event}\n{msg}"
+    return msg
+
+def process_chat(user_message: str, uid: str):
+    """处理聊天消息并返回事件流"""
+    # 检查是否是第一条消息
+    chat_file = os.path.join(CHAT_LOGS_DIR, f'{uid}.txt')
+    is_first_message = not os.path.exists(chat_file)
+    
+    # 如果是第一条消息，初始化状态
+    if is_first_message:
+        graph.update_state(
+            {"configurable": {"thread_id": uid}},
+            {
+                "dialog_state": "verify_information",
+                "user_information": user_message,
+            }
+        )
+    
+    # 保存用户消息
+    save_chat_message(uid, user_message, is_user=True)
+    
+    # 使用graph处理消息
+    return graph.stream(
+        {"messages": ("human", user_message)},
+        {"configurable": {"thread_id": uid}},
+        stream_mode="values"
+    )
+
 @app.route('/chat', methods=['POST'])
 @require_api_key
 def chat():
-    """处理对话请求"""
+    """处理对话请求 - 支持流式和普通响应"""
     data = request.json
     if not data or 'message' not in data or 'uid' not in data:
         return jsonify({'error': '缺少必要参数'}), 400
 
-    message = data['message']
+    user_message = data['message']
     uid = data['uid']
+    stream = data.get('stream', False)  # 默认为非流式响应
 
-    try:
-        # 保存用户消息
-        save_chat_message(uid, message, is_user=True)
-        
-        # 使用graph处理消息
-        events = graph.stream(
-            {"messages": ("human", message)},
-            {"configurable": {"thread_id": uid}},
-            stream_mode="values"
-        )
-        
-        # 获取最后一条AI响应
-        last_message = None
-        for event in events:
-            if 'messages' in event and event['messages']:
-                message = event['messages']
-                if isinstance(message, list):
-                    message = message[-1]
-                last_message = message.content
-        
-        if last_message is None:
-            return jsonify({'error': '未生成响应'}), 500
-        
-        # 保存AI响应
-        save_chat_message(uid, last_message, is_user=False)
+    if not stream:
+        try:
+            events = process_chat(user_message, uid)
             
-        return jsonify({
-            'uid': uid,
-            'response': last_message
-        })
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+            # 获取最后一条AI响应
+            last_message = None
+            for event in events:
+                if 'messages' in event and event['messages']:
+                    event_message = event['messages']
+                    if isinstance(event_message, list):
+                        event_message = event_message[-1]
+                    last_message = event_message.content
+            
+            if last_message is None:
+                return jsonify({'error': '未生成响应'}), 500
+            
+            # 保存AI响应
+            save_chat_message(uid, last_message, is_user=False)
+            
+            return jsonify({
+                'uid': uid,
+                'response': last_message
+            })
+        except Exception as e:
+            error_msg = str(e)
+            print(f"处理对话时出错: {error_msg}")
+            return jsonify({'error': error_msg}), 500
+
+    def generate():
+        try:
+            events = process_chat(user_message, uid)
+            current_response = []
+            
+            for event in events:
+                if 'messages' in event and event['messages']:
+                    event_message = event['messages']
+                    if isinstance(event_message, list):
+                        event_message = event_message[-1]
+                    
+                    response_content = event_message.content
+                    current_response.append(response_content)
+                    
+                    # 发送流式响应
+                    yield format_sse({
+                        'uid': uid,
+                        'response': response_content,
+                        'type': 'message'
+                    })
+            
+            # 保存完整的AI响应
+            if current_response:
+                complete_response = current_response[-1]
+                save_chat_message(uid, complete_response, is_user=False)
+            
+            # 发送完成信号
+            yield format_sse({
+                'uid': uid,
+                'type': 'done'
+            }, event='done')
+            
+        except Exception as e:
+            error_msg = str(e)
+            print(f"处理对话时出错: {error_msg}")
+            yield format_sse({
+                'error': error_msg,
+                'type': 'error'
+            }, event='error')
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no'  # 禁用Nginx缓冲
+        }
+    )
 
 @app.route('/history/<uid>', methods=['GET'])
 @require_api_key

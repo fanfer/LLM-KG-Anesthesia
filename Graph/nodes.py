@@ -23,18 +23,12 @@ def Primary_Assistant(state: MedicalState):
         # 确保返回完整的状态
         return {
             "messages": result,
-            "user_information": user_information,  # 保持状态
-            "medical_history": state.get('medical_history', []),  # 保持状态
-            "medicine_taking": state.get('medicine_taking', [])   # 保持状态
         }
     except Exception as e:
         print(f"主助手处理时出错: {str(e)}")
         # 返回默认状态
         return {
             "messages": [],
-            "user_information": "",
-            "medical_history": [],
-            "medicine_taking": []
         }
 
 
@@ -105,32 +99,48 @@ def Information_Agent(state: MedicalState):
         
         return {
             "messages": result,
-            "user_information": user_information,  # 保持状态
-            "medical_history": state.get('medical_history', []),
-            "medicine_taking": state.get('medicine_taking', [])
         }
     except Exception as e:
         print(f"信息确认助手处理时出错: {str(e)}")
         return {
             "messages": [],
-            "user_information": user_information,
-            "medical_history": [],
-            "medicine_taking": []
         }
-
 
 def Extract_Info_Agent(state: MedicalState):
     try:
         extract_info_chain = get_extract_info_chain()
-        human_messages = [msg for msg in state['messages'] if isinstance(msg, (HumanMessage))][-4:]
+        
+        # 获取所有消息
+        messages = state.get('messages', [])
+        
+        # 找到最后一条human message的位置
+        last_human_idx = None
+        for i, msg in enumerate(messages):
+            if isinstance(msg, HumanMessage):
+                last_human_idx = i
+        
+        if last_human_idx is None:
+            # 如果没有找到human message，返回空状态
+            return {
+                "messages": messages,
+                "user_information": "",
+                "medical_history": [],
+                "medicine_taking": [],
+            }
+        
+        # 获取最后一条human message和它的上一条消息（如果存在）
+        relevant_messages = []
+        if last_human_idx > 0:
+            relevant_messages.append(messages[last_human_idx - 1])
+        relevant_messages.append(messages[last_human_idx])
         
         # 获取当前状态，如果不存在则使用默认值
         user_information = state.get('user_information', '')
         
         # 消息转换为文本格式
-        messages_text = "\n".join([f"{msg.__class__.__name__}: {msg.content}" for msg in human_messages])
+        messages_text = "\n".join([f"{msg.__class__.__name__}: {msg.content}" for msg in relevant_messages])
         
-        result = extract_info_chain.invoke({
+        result =extract_info_chain.invoke({
             "user_input": messages_text,
             "user_information": user_information,
         })
@@ -146,7 +156,7 @@ def Extract_Info_Agent(state: MedicalState):
         
         # 返回完整状态
         return {
-            "messages": state.get('messages', []),  # 保持原有消息
+            "messages": messages,  
             "user_information": updated_user_information.strip(),
             "medical_history": list(result.medical_history) if result.medical_history else [],
             "medicine_taking": list(result.medicine_taking) if result.medicine_taking else [],
@@ -155,9 +165,6 @@ def Extract_Info_Agent(state: MedicalState):
         print(f"提取信息时出错: {str(e)}")
         return {
             "messages": state.get('messages', []),
-            "user_information": user_information if user_information else "",
-            "medical_history": [],
-            "medicine_taking": [],
         }
 
 # 创建Entry_History_Agent
@@ -183,17 +190,11 @@ def History_Agent(state: MedicalState):
         
         return {
             "messages": result,
-            "user_information": user_information,
-            "medical_history": medical_history,
-            "medicine_taking": medicine_taking,
         }
     except Exception as e:
         print(f"病史采集助手处理时出错: {str(e)}")
         return {
             "messages": [],
-            "user_information": user_information,
-            "medical_history": medical_history,
-            "medicine_taking": medicine_taking,
         }
 
 # 创建Entry_Risk_Agent
@@ -221,17 +222,11 @@ def Risk_Agent(state: MedicalState):
         
         return {
             "messages": result,
-            "user_information": user_information,
-            "medical_history": medical_history,
-            "medicine_taking": medicine_taking,
         }
     except Exception as e:
         print(f"风险评估助手处理时出错: {str(e)}")
         return {
             "messages": [],
-            "user_information": user_information,
-            "medical_history": medical_history,
-            "medicine_taking": medicine_taking,
         }
     
 def Analgesia_Agent(state: MedicalState):
@@ -296,9 +291,6 @@ def Graph_QA_Agent(state: MedicalState):
         # 返回更新后的状态
         return {
             "messages": messages + [ai_message],
-            "user_information": result.get('user_information', user_information),
-            "medical_history": result.get('medical_history', medical_history),
-            "medicine_taking": result.get('medicine_taking', medicine_taking),
             "graph_qa_result": risk_analysis
         }
         
@@ -307,9 +299,6 @@ def Graph_QA_Agent(state: MedicalState):
         # 发生错误时返回原始状态
         return {
             "messages": messages,
-            "user_information": user_information,
-            "medical_history": medical_history,
-            "medicine_taking": medicine_taking
         }
 
 # 创建Entry_Analgesia_Agent
@@ -317,6 +306,11 @@ Entry_Analgesia_Agent = create_entry_node(
     assistant_name="介绍镇痛方案的麻醉医生",
     new_dialog_state="analgesia"
 )
+
+def leave_history_agent(state: MedicalState):
+    return {
+        "extract_info_result": "leave_history_agent"
+    }
 
 
     

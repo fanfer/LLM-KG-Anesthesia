@@ -2,11 +2,20 @@
 <html>
 <head>
     <title>麻醉医生助手系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
+        <!-- 菜单按钮 -->
+        <button class="menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- 遮罩层 -->
+        <div class="sidebar-overlay"></div>
+        
         <!-- 侧边栏 -->
         <div class="sidebar">
             <div class="sidebar-header">
@@ -22,7 +31,13 @@
         <!-- 主聊天区域 -->
         <div class="chat-container">
             <div class="chat-header">
-                <h2>麻醉医生助手系统</h2>
+                <div class="header-left">
+                    <button class="sidebar-toggle-btn">
+                        <i class="fas fa-list-ul"></i>
+                        <span>历史记录</span>
+                    </button>
+                    <h2>麻醉助手</h2>
+                </div>
                 <div class="user-info">
                     欢迎, {{ username }}
                     <a href="{{ url_for('logout') }}" class="logout-btn">退出</a>
@@ -44,12 +59,58 @@
                 </button>
                 <textarea id="message-input" placeholder="请输入消息...&#13;&#10;按Enter发送，Shift+Enter换行" rows="3"></textarea>
                 <button onclick="sendMessage()">发送</button>
-                <button id="voice-output-btn" class="voice-btn">
-                    <i class="fas fa-volume-up"></i>
-                </button>
             </div>
         </div>
     </div>
+    
+    <!-- 音频播放器 (隐藏) -->
+    <audio id="tts-audio" style="display: none;"></audio>
+    
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script>
+        // 移动端侧边栏控制
+        document.querySelector('.menu-btn').addEventListener('click', toggleSidebar);
+        document.querySelector('.sidebar-toggle-btn').addEventListener('click', toggleSidebar);
+        
+        document.querySelector('.sidebar-overlay').addEventListener('click', closeSidebar);
+        
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+        
+        function closeSidebar() {
+            document.querySelector('.sidebar').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('active');
+        }
+        
+        // 在移动端,点击侧边栏的聊天记录后自动关闭侧边栏
+        document.querySelector('.chat-history').addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+        });
+        
+        // 调整textarea高度
+        const messageInput = document.getElementById('message-input');
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        // 处理移动端软键盘弹出时的视图调整
+        const viewport = document.querySelector('meta[name=viewport]');
+        if (navigator.userAgent.match(/Android/i)) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, height=' + window.innerHeight);
+        }
+        
+        window.addEventListener('resize', function() {
+            if (document.activeElement.tagName === 'TEXTAREA') {
+                window.setTimeout(function() {
+                    document.activeElement.scrollIntoView();
+                }, 0);
+            }
+        });
+    </script>
 </body>
 </html> 

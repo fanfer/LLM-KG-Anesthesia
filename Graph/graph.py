@@ -2,7 +2,6 @@ from typing import Literal
 from langgraph.graph import StateGraph, START, END
 from Graph.state import MedicalState
 from Graph.nodes import (
-    Primary_Assistant,
     Entry_Information_Agent,
     Information_Agent,
     Entry_History_Agent,
@@ -12,9 +11,11 @@ from Graph.nodes import (
     Extract_Info_Agent,
     Graph_QA_Agent,
     Analgesia_Agent,
-    Entry_Analgesia_Agent
+    Entry_Analgesia_Agent,
+    leave_history_agent
 )
-from langchain_core.messages import ToolMessage
+from Chains.sequence_primary_agent import Sequence_Primary_Assistant
+from langchain_core.messages import ToolMessage,HumanMessage
 from Graph.router import CompleteOrEscalate
 from langgraph.prebuilt import tools_condition
 from langgraph.checkpoint.memory import MemorySaver
@@ -30,17 +31,19 @@ def initialize_state(state: MedicalState) -> dict:
     """
     # 创建默认值字典
     defaults = {
-        "messages": [],
-        "user_information": "",
+        "user_information": "暂无",
         "medical_history": [],
         "medicine_taking": [],
+        "extract_info_result": {},
+        "current_step": 0
     }
     
     # 只在键不存在时才使用默认值
-    return {
+    return_dict = {
         key: state.get(key, default)
         for key, default in defaults.items()
     }
+    return return_dict
 
 # 定义路由函数
 def route_agent(state: MedicalState):
@@ -67,7 +70,6 @@ def route_agent(state: MedicalState):
     if did_cancel:
         return "leave_skill"  # 通过leave_skill返回主助手
     
-    return "extract_info"  # 继续提取信息
 
 # 主助手的路由函数
 def route_primary_assistant(state: MedicalState):
@@ -80,9 +82,7 @@ def route_primary_assistant(state: MedicalState):
     tool_calls = state["messages"][-1].tool_calls
     if tool_calls:
         tool_name = tool_calls[0]["name"]
-        if tool_name == 'ToInformationAgent':
-            return "enter_verify_information"
-        elif tool_name == 'ToHistoryAgent':
+        if tool_name == 'ToHistoryAgent':
             return "enter_history_taking"
         elif tool_name == 'ToRiskAgent':
             return "enter_risk_assessment"
@@ -119,16 +119,16 @@ def route_to_workflow(
     dialog_state = state.get("dialog_state")
     if not dialog_state:
         return "primary_assistant"
+    if dialog_state[-1] == "history_taking":
+        return ["history_taking","extract_info"]
     return dialog_state[-1]
 
 
 # 添加所有节点
 builder.add_node("initialize", initialize_state)
-builder.add_node("primary_assistant", Primary_Assistant)
+builder.add_node("primary_assistant", Sequence_Primary_Assistant)
 builder.add_node("extract_info", Extract_Info_Agent)
 builder.add_node("leave_skill", pop_dialog_state)
-
-
 
 # 信息确认相关节点
 builder.add_node("enter_verify_information", Entry_Information_Agent)
@@ -137,6 +137,7 @@ builder.add_node("verify_information", Information_Agent)
 # 病史采集相关节点
 builder.add_node("enter_history_taking", Entry_History_Agent)
 builder.add_node("history_taking", History_Agent)
+builder.add_node("leave_history_agent", leave_history_agent)
 
 # 风险评估相关节点
 builder.add_node("enter_risk_assessment", Entry_Risk_Agent)
@@ -147,20 +148,31 @@ builder.add_node("risk_assessment", Risk_Agent)
 builder.add_node("analgesia", Analgesia_Agent)
 builder.add_node("enter_analgesia", Entry_Analgesia_Agent)
 
-
 # 添加边
 # 1. 初始流程
 builder.add_edge(START, "initialize")
-builder.add_edge("initialize", "extract_info")
-builder.add_conditional_edges("extract_info", route_to_workflow, {
+
+# 2. 设置extract_info为并行节点
+builder.add_edge(
+    "enter_history_taking",
+    "extract_info"
+)
+
+builder.add_conditional_edges("initialize", route_to_workflow, {
     "primary_assistant": "primary_assistant",
     "verify_information": "verify_information",
     "history_taking": "history_taking",
     "risk_assessment": "risk_assessment",
-    "analgesia": "analgesia"
+    "analgesia": "analgesia",
+    "extract_info": "extract_info"
 })
 
-# 2. 主助手的条件边
+builder.add_edge(
+    "extract_info",
+    "leave_history_agent"
+)
+
+# 3. 主助手的条件边
 builder.add_conditional_edges(
     "primary_assistant",
     route_primary_assistant,
@@ -173,25 +185,25 @@ builder.add_conditional_edges(
     ],
 )
 
-# 3. 信息确认流程
+# 4. 信息确认流程
 builder.add_edge("enter_verify_information", "verify_information")
 builder.add_conditional_edges(
     "verify_information",
     route_agent,
     {
-        "extract_info": "extract_info",
+        "primary_assistant": "primary_assistant",
         "leave_skill": "leave_skill",
         END: END
     }
 )
 
-# 4. 病史采集流程
+# 5. 病史采集流程
 builder.add_edge("enter_history_taking", "history_taking")
 builder.add_conditional_edges(
     "history_taking",
     route_agent,
     {
-        "extract_info": "extract_info",
+        "primary_assistant": "primary_assistant",
         "leave_skill": "leave_skill",
         END: END
     }
@@ -203,26 +215,26 @@ builder.add_conditional_edges(
     "analgesia",
     route_agent,
     {
-        "extract_info": "extract_info",
+        "primary_assistant": "primary_assistant",
         "leave_skill": "leave_skill",
         END: END
     }
 )
 
-# 5. 风险评估流程
+# 6. 风险评估流程
 builder.add_edge("enter_risk_assessment", "graph_qa")
 builder.add_edge("graph_qa", "risk_assessment")
 builder.add_conditional_edges(
     "risk_assessment",
     route_agent,
     {
-        "extract_info": "extract_info",
+        "primary_assistant": "primary_assistant",
         "leave_skill": "leave_skill",
         END: END
     }
 )
 
-# 6. leave_skill返回主助手
+# 7. leave_skill返回主助手
 builder.add_edge("leave_skill", "primary_assistant")
 
 # 编译图

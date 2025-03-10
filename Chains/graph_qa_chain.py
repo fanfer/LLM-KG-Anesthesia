@@ -58,7 +58,6 @@ def  get_graph_qa_chain():
         """使用GraphRAG查询知识图谱"""
         # 首先使用prompt模板格式化输入
         prompt = graph_qa_prompt.format_messages(**inputs)
-        print(prompt)
         prompt_text = prompt[0].content if prompt else ""
         
         # 使用LightRAG进行查询

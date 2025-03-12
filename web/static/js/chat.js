@@ -128,15 +128,46 @@ function updateChatList() {
     const historyDiv = document.getElementById('chat-history');
     historyDiv.innerHTML = '';
     
-    chatHistory.forEach(chat => {
+    // 按ID倒序排列（假设ID包含时间戳，较新的在前面）
+    const sortedChats = [...chatHistory].sort((a, b) => {
+        // 从ID中提取时间戳部分（假设格式为chat_TIMESTAMP_randomstring）
+        const timeA = a.id.split('_')[1] || 0;
+        const timeB = b.id.split('_')[1] || 0;
+        return timeB - timeA;  // 倒序排列
+    });
+    
+    if (sortedChats.length === 0) {
+        historyDiv.innerHTML = '<div class="no-chats">没有聊天记录</div>';
+        return;
+    }
+    
+    sortedChats.forEach(chat => {
         const chatDiv = document.createElement('div');
         chatDiv.className = `chat-item ${chat.id === currentChatId ? 'active' : ''}`;
         chatDiv.onclick = () => loadChat(chat.id);
         
+        // 格式化日期（从ID中提取时间戳）
+        let dateStr = '';
+        try {
+            const timestamp = parseInt(chat.id.split('_')[1]);
+            if (!isNaN(timestamp)) {
+                const date = new Date(timestamp);
+                dateStr = `${date.getMonth()+1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            }
+        } catch (e) {
+            console.error('Error parsing date:', e);
+        }
+        
         chatDiv.innerHTML = `
             <i class="fas fa-comments"></i>
-            <div class="chat-title">${chat.title}</div>
-            <i class="fas fa-trash" onclick="deleteChat('${chat.id}')"></i>
+            <div class="chat-info">
+                <div class="chat-title">${chat.title || '新对话'}</div>
+                ${dateStr ? `<div class="chat-date">${dateStr}</div>` : ''}
+            </div>
+            <div class="chat-actions">
+                <i class="fas fa-download download-chat" onclick="event.stopPropagation(); downloadChat('${chat.id}')" title="下载对话"></i>
+                <i class="fas fa-trash delete-chat" onclick="event.stopPropagation(); deleteChat('${chat.id}')" title="删除对话"></i>
+            </div>
         `;
         
         historyDiv.appendChild(chatDiv);
@@ -145,28 +176,66 @@ function updateChatList() {
 
 // 加载聊天记录
 async function loadChat(chatId) {
-    const chat = chatHistory.find(c => c.id === chatId);
-    if (!chat) return;
-    
-    currentChatId = chatId;
-    
     try {
         // 从服务器加载完整对话历史
         const response = await fetch(`/load_chat_history/${chatId}`);
         const data = await response.json();
         
         if (response.ok && data.messages) {
+            // 更新当前聊天ID
+            currentChatId = chatId;
+            
             // 显示消息历史
             const messagesDiv = document.getElementById('chat-messages');
             messagesDiv.innerHTML = '';
             
-            data.messages.forEach(msg => {
-                addMessage(msg.content, msg.isUser, false);
-            });
+            // 如果没有消息，添加欢迎消息
+            if (data.messages.length === 0) {
+                messagesDiv.innerHTML = `
+                    <div class="message system">
+                        <div class="avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            请医生输入患者信息(姓名，年龄，性别，手术，麻醉方式等)
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 显示所有消息
+                data.messages.forEach(msg => {
+                    addMessage(msg.content, msg.isUser, false);
+                });
+            }
             
-            // 更新本地存储的消息
-            chat.messages = data.messages;
+            // 更新本地存储的聊天记录
+            const chatIndex = chatHistory.findIndex(c => c.id === chatId);
+            if (chatIndex >= 0) {
+                chatHistory[chatIndex].messages = data.messages;
+                
+                // 更新聊天标题（使用第一条用户消息）
+                const firstUserMsg = data.messages.find(msg => msg.isUser);
+                if (firstUserMsg) {
+                    const title = firstUserMsg.content.substring(0, 20) + (firstUserMsg.content.length > 20 ? '...' : '');
+                    chatHistory[chatIndex].title = title;
+                }
+            } else {
+                // 如果本地没有这个聊天记录，添加它
+                const title = data.messages.length > 0 && data.messages[0].isUser 
+                    ? data.messages[0].content.substring(0, 20) + '...' 
+                    : `对话 ${chatId.substring(5, 10)}...`;
+                    
+                chatHistory.push({
+                    id: chatId,
+                    title: title,
+                    messages: data.messages
+                });
+            }
+            
             saveChatHistory();
+            
+            // 滚动到底部
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
     } catch (error) {
         console.error('Error loading chat history:', error);
@@ -174,6 +243,39 @@ async function loadChat(chatId) {
     
     // 更新侧边栏选中状态
     updateChatList();
+}
+
+// 下载当前聊天记录
+function downloadCurrentChat() {
+    if (currentChatId) {
+        downloadChat(currentChatId);
+    } else {
+        alert('没有可下载的对话');
+    }
+}
+
+// 下载聊天记录
+function downloadChat(chatId) {
+    try {
+        // 显示下载中的提示
+        const downloadStatus = document.createElement('div');
+        downloadStatus.className = 'download-status';
+        downloadStatus.textContent = '正在准备下载...';
+        document.body.appendChild(downloadStatus);
+        
+        // 直接使用location.href下载
+        window.location.href = `/download_chat/${chatId}`;
+        
+        // 设置超时，移除状态提示
+        setTimeout(() => {
+            if (document.body.contains(downloadStatus)) {
+                document.body.removeChild(downloadStatus);
+            }
+        }, 3000);
+    } catch (error) {
+        console.error('Error downloading chat:', error);
+        alert('下载聊天记录失败，请重试');
+    }
 }
 
 // 删除聊天记录
@@ -207,18 +309,56 @@ function saveChatHistory() {
     localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
 }
 
+// 从服务器获取所有可用的聊天记录
+async function fetchAllChats() {
+    try {
+        // 获取聊天记录目录中的所有文件
+        const response = await fetch('/api/list_chats');
+        const data = await response.json();
+        
+        if (response.ok && data.chats) {
+            // 更新本地聊天历史
+            const existingIds = chatHistory.map(chat => chat.id);
+            
+            // 添加新的聊天记录
+            data.chats.forEach(chatId => {
+                if (!existingIds.includes(chatId)) {
+                    chatHistory.push({
+                        id: chatId,
+                        title: `对话 ${chatId.substring(5, 10)}...`,
+                        messages: []
+                    });
+                }
+            });
+            
+            saveChatHistory();
+            updateChatList();
+            
+            // 如果有聊天记录但没有当前选中的聊天，选择第一个
+            if (chatHistory.length > 0 && (!currentChatId || !chatHistory.find(c => c.id === currentChatId))) {
+                loadChat(chatHistory[0].id);
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching chat list:', error);
+    }
+}
+
 // 页面加载时初始化
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     // 加载保存的聊天记录
     const saved = localStorage.getItem('chatHistory');
     if (saved) {
         chatHistory = JSON.parse(saved);
-        if (chatHistory.length > 0) {
-            loadChat(chatHistory[0].id);
-        } else {
-            newChat();
-        }
     } else {
+        chatHistory = [];
+    }
+    
+    // 从服务器获取所有可用的聊天记录
+    await fetchAllChats();
+    
+    // 如果没有聊天记录，创建新的聊天
+    if (chatHistory.length === 0) {
         newChat();
     }
 });

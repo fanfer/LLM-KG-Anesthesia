@@ -59,6 +59,7 @@ class MedicalState(TypedDict):
     agent_id: int
     current_step: int 
     graph_is_qa: bool
+    session_id: str
 
 class InputState(TypedDict):
     messages: Annotated[list[AnyMessage],add_messages]

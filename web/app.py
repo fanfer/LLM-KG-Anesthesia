@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_file
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_file, make_response
 from langchain_core.messages import AIMessage, HumanMessage
 from flask_session import Session
 from flask_cors import CORS
@@ -75,6 +75,7 @@ graph_qa_results = {}
 graph_qa_locks = {}
 graph_qa_thread_started = {}
 graph_qa_thread_completed = {}
+graph_qa_events = {}  # 新增：存储每个会话的事件对象
 
 def save_chat_message(chat_id, message, is_user=True):
     """保存对话消息到文件"""
@@ -161,26 +162,44 @@ def run_graph_qa_in_background(graph, config, current_state, session_id):
         # 获取最新状态
         latest_state = graph.get_state(config).values
         
-        # 如果状态已经变为risk_assessment，更新图状态
-        if latest_state["dialog_state"][-1] == "risk_assessment":
-            graph.update_state(
-                config,
-                {
-                    "graph_qa_result": result,
-                    "graph_is_qa": True
-                }
-            )
-            print(f"会话 {session_id}: 状态已更新为risk_assessment，已应用查询结果")
+        # 更新图状态
+        graph.update_state(
+            config,
+            {
+                "graph_qa_result": result.get("risk_analysis", ""),
+                "graph_is_qa": True
+            }
+        )
+        print(f"会话 {session_id}: 已更新图状态，设置graph_is_qa为True")
+        
+        # 设置事件，通知等待的Risk_Agent
+        if session_id in graph_qa_events:
+            graph_qa_events[session_id].set()
+            print(f"会话 {session_id}: 已设置事件通知")
             
     except Exception as e:
         print(f"会话 {session_id}: 后台图谱查询出错: {str(e)}")
-        # 即使出错也标记为完成
+        # 即使出错也标记为完成并设置事件
         with graph_qa_locks[session_id]:
             graph_qa_thread_completed[session_id] = True
+            
+        # 更新图状态，即使出错也设置graph_is_qa为True
+        graph.update_state(
+            config,
+            {
+                "graph_qa_result": "知识图谱查询出错，使用有限信息进行评估",
+                "graph_is_qa": True
+            }
+        )
+        
+        # 设置事件，通知等待的Risk_Agent
+        if session_id in graph_qa_events:
+            graph_qa_events[session_id].set()
+            print(f"会话 {session_id}: 错误情况下已设置事件通知")
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
-    global graph_qa_threads, graph_qa_results, graph_qa_locks, graph_qa_thread_started, graph_qa_thread_completed
+    global graph_qa_threads, graph_qa_results, graph_qa_locks, graph_qa_thread_started, graph_qa_thread_completed, graph_qa_events
     
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -203,6 +222,7 @@ def send_message():
             graph_qa_thread_started[session_id] = False
             graph_qa_thread_completed[session_id] = False
             graph_qa_results[session_id] = None
+            graph_qa_events[session_id] = threading.Event()  # 新增：为每个会话创建事件对象
         
         # 检查是否是第一条消息
         chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
@@ -215,6 +235,7 @@ def send_message():
                 {
                     "dialog_state": "verify_information",
                     "user_information": message,
+                    "session_id": session_id,  # 添加session_id到状态中
                 }
             )
         
@@ -255,7 +276,7 @@ def send_message():
                     print(f"会话 {session_id}: 已启动知识图谱查询后台线程")
                 
                 # 如果状态为risk_assessment且查询已完成，更新状态
-                elif current_dialog_state == "risk_assessment" and graph_qa_thread_completed[session_id]:
+                elif graph_qa_thread_completed[session_id]:
                     with graph_qa_locks[session_id]:
                         if graph_qa_results[session_id] is not None:
                             graph.update_state(
@@ -342,6 +363,65 @@ def delete_chat(chat_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/list_chats')
+def list_chats():
+    """列出所有可用的聊天记录"""
+    if 'username' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+        
+    try:
+        # 获取聊天记录目录中的所有文件
+        chat_files = [f.replace('.txt', '') for f in os.listdir(CHAT_LOGS_DIR) 
+                     if f.endswith('.txt')]
+        return jsonify({'chats': chat_files})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/download_chat/<chat_id>')
+def download_chat(chat_id):
+    """下载聊天记录"""
+    if 'username' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+        
+    try:
+        chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
+        if not os.path.exists(chat_file):
+            return jsonify({'error': 'Chat not found'}), 404
+            
+        # 读取聊天记录并格式化为更易读的格式
+        formatted_content = ["=== Medical Assistant System - Consultation Record ===\n\n"]
+        with open(chat_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                if '] User: ' in line:
+                    timestamp, content = line.split('] User: ', 1)
+                    timestamp = timestamp.strip('[')
+                    formatted_content.append(f"Time: {timestamp}\nDoctor: {content}")
+                elif '] Assistant: ' in line:
+                    timestamp, content = line.split('] Assistant: ', 1)
+                    timestamp = timestamp.strip('[')
+                    formatted_content.append(f"Time: {timestamp}\nAssistant: {content}\n")
+        
+        # 添加导出信息
+        export_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        formatted_content.append(f"\n=== Export Time: {export_time} ===\n")
+        
+        # 将格式化后的内容合并为字符串
+        chat_content = ''.join(formatted_content)
+            
+        # 创建响应
+        response = make_response(chat_content)
+        
+        # 获取当前日期时间作为文件名的一部分
+        current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+        
+        # 设置文件名和内容类型 (使用纯ASCII字符)
+        response.headers['Content-Disposition'] = f'attachment; filename=chat_record_{current_time}.txt'
+        response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+        
+        return response
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 client = OpenAI()
 
 @app.route('/speech-to-text', methods=['POST'])
@@ -409,6 +489,8 @@ def clean_expired_sessions(max_age=3600):  # 默认1小时过期
                 del graph_qa_locks[session_id]
             if session_id in session_last_access:
                 del session_last_access[session_id]
+            if session_id in graph_qa_events:
+                del graph_qa_events[session_id]  # 清理事件对象
 
 # 跟踪会话最后访问时间
 session_last_access = {}

@@ -244,33 +244,116 @@ button {
     padding: 1rem;
 }
 
+/* 聊天历史项样式 */
 .chat-item {
-    padding: 0.8rem;
-    margin-bottom: 0.5rem;
-    border-radius: 4px;
-    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    padding: 10px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .chat-item:hover {
-    background: #e9ecef;
+    background-color: #f5f5f5;
 }
 
 .chat-item.active {
-    background: #e3f2fd;
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196F3;
 }
 
-.chat-item i {
-    color: #6c757d;
+.chat-item i.fa-comments {
+    color: #757575;
+    margin-right: 10px;
+    font-size: 1.2em;
 }
 
-.chat-item .chat-title {
+.chat-info {
     flex: 1;
     overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+.chat-title {
+    font-weight: 500;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.chat-date {
+    font-size: 0.8em;
+    color: #757575;
+}
+
+.chat-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.download-chat {
+    color: #4caf50;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.download-chat:hover {
+    opacity: 1;
+}
+
+.delete-chat {
+    color: #e57373;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.delete-chat:hover {
+    opacity: 1;
+}
+
+/* 头部下载按钮样式 */
+.download-btn {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: auto !important;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.download-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* 下载状态提示 */
+.download-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.no-chats {
+    padding: 20px;
+    text-align: center;
+    color: #757575;
+    font-style: italic;
 }
 
 .voice-btn {

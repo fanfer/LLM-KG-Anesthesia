@@ -64,6 +64,7 @@ def Sequence_Primary_Assistant(state: Dict[str, Any]) -> Dict[str, Any]:
                     "request": "请告知患者手术风险。",
                 }
             },
+
         ]
         
         # 如果已经完成所有步骤，返回空消息

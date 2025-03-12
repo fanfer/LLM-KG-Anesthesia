@@ -39,6 +39,9 @@
                     <h2>麻醉助手</h2>
                 </div>
                 <div class="user-info">
+                    <button id="download-chat-btn" class="download-btn" onclick="downloadCurrentChat()" title="下载当前对话">
+                        <i class="fas fa-download"></i>
+                    </button>
                     欢迎, {{ username }}
                     <a href="{{ url_for('logout') }}" class="logout-btn">退出</a>
                 </div>

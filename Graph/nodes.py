@@ -211,13 +211,34 @@ def Risk_Agent(state: MedicalState):
         user_information = state.get('user_information', '')
         medical_history = state.get('medical_history', [])
         medicine_taking = state.get('medicine_taking', [])
+        
+        # 获取会话ID
+        session_id = state.get('session_id', '')
+        
+        # 导入全局事件字典
+        from web.app import graph_qa_events
+        
+        # 等待知识图谱查询完成
+        if session_id and session_id in graph_qa_events:
+            print(f"会话 {session_id}: Risk_Agent等待知识图谱查询完成...")
+            # 等待事件，最多等待30秒
+            wait_success = graph_qa_events[session_id].wait(timeout=30)
+            
+            if not wait_success:
+                print(f"会话 {session_id}: 等待知识图谱查询超时")
+        else:
+            print(f"会话 {session_id}: 未找到对应的事件对象，将直接使用当前状态")
+            # 等待一小段时间，以防状态尚未更新
+        
+        # 获取最新的图谱查询结果
         graph_qa_result = state.get('graph_qa_result', '')
         graph_is_qa = state.get('graph_is_qa', False)
-        while not graph_is_qa:
-            time.sleep(0.5)
-            print(f"正在等待知识图谱查询完成...{graph_is_qa}")
-            graph_is_qa = state.get('graph_is_qa', False)
-            graph_qa_result = state.get('graph_qa_result', '')
+        
+        if not graph_is_qa:
+            print(f"会话 {session_id}: 知识图谱查询未完成，使用有限信息进行评估")
+            graph_qa_result = "知识图谱查询未完成，使用有限信息进行评估"
+        
+        # 调用风险评估链
         result = risk_chain.invoke({
                 "messages": messages,
                 "user_information": user_information,

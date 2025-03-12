@@ -47,3 +47,4 @@ output/
 *.log 
 chat_logs/
 dickens/
+*.wav

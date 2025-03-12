@@ -5,9 +5,7 @@ from Graph.router import CompleteOrEscalate
 from langchain_community.tools.tavily_search import TavilySearchResults
 import os
 from langchain_ollama import ChatOllama
-from Chains.stream_llm import get_streaming_llm
 
-# 默认非流式LLM
 llm = ChatOpenAI(
     model="gpt-4o",
     temperature=0.6,
@@ -83,28 +81,8 @@ risk_assessment_prompt = ChatPromptTemplate.from_messages(
     ]
 ).partial(time=datetime.now)
 
-def get_risk_chain(stream_handler=None):
-    """获取风险评估chain
-    
-    Args:
-        stream_handler: 流式处理器，用于处理流式输出和语音转换
-        
-    Returns:
-        风险评估chain
-    """
+def get_risk_chain():
     risk_tools = [TavilySearchResults(max_results=2)]
-    
-    # 如果指定了流式处理器，则使用流式LLM
-    if stream_handler:
-        streaming_llm = get_streaming_llm(
-            callbacks=[stream_handler],
-            model="gpt-4o",
-            temperature=0.6
-        )
-        llm_with_tools = streaming_llm.bind_tools(risk_tools + [CompleteOrEscalate])
-    else:
-        # 否则使用默认LLM
-        llm_with_tools = llm.bind_tools(risk_tools + [CompleteOrEscalate])
-    
+    llm_with_tools = llm.bind_tools(risk_tools + [CompleteOrEscalate])
     risk_chain = risk_assessment_prompt | llm_with_tools
     return risk_chain 

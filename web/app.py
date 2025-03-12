@@ -454,6 +454,10 @@ def thread_status(chat_id):
     
     return jsonify(status)
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_file(os.path.join(app.root_path, 'static', 'favicon.ico'))
+
 if __name__ == '__main__':
     if not check_environment():
         print("请检查.env文件配置")

@@ -47,4 +47,5 @@ output/
 *.log 
 chat_logs/
 dickens/
+flask_session/
 *.wav

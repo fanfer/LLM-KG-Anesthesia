@@ -12,6 +12,9 @@ import tempfile
 import base64
 import time
 from xunfei_tts import XunfeiTTS
+import threading
+from threading import Lock
+import traceback
 
 # 获取项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,6 +23,7 @@ load_dotenv(os.path.join(ROOT_DIR, '.env'))
 
 sys.path.append(ROOT_DIR)
 from Graph.graph import graph
+from Chains.graph_qa_chain import get_graph_qa_chain
 
 # 验证环境变量是否加载
 print("OpenAI API Key:", os.getenv('OPENAI_API_KEY', 'Not found'))
@@ -63,6 +67,13 @@ USERS = {
 # 在文件开头添加对话记录目录配置
 CHAT_LOGS_DIR = os.path.join(ROOT_DIR, 'chat_logs')
 os.makedirs(CHAT_LOGS_DIR, exist_ok=True)
+
+# 全局变量
+graph_qa_threads = {}
+graph_qa_results = {}
+graph_qa_locks = {}
+graph_qa_thread_started = {}
+graph_qa_thread_completed = {}
 
 def save_chat_message(chat_id, message, is_user=True):
     """保存对话消息到文件"""
@@ -126,8 +137,50 @@ def chat():
         return redirect(url_for('login'))
     return render_template('chat.html', username=session['username'])
 
+def run_graph_qa_in_background(graph, config, current_state, session_id):
+    """在后台线程中运行graph_qa_chain，每个会话只运行一次"""
+    try:
+        print(f"会话 {session_id}: 开始在后台执行知识图谱查询...")
+        graph_qa_chain = get_graph_qa_chain()
+        # 执行图谱查询
+        result = graph_qa_chain.invoke({
+            "messages": current_state["messages"],
+            "user_information": current_state["user_information"],
+            "medical_history": current_state["medical_history"],
+            "medicine_taking": current_state["medicine_taking"]
+        })
+        
+        # 使用锁保护共享数据的更新
+        with graph_qa_locks[session_id]:
+            graph_qa_results[session_id] = result
+            graph_qa_thread_completed[session_id] = True
+            
+        print(f"会话 {session_id}: 知识图谱查询完成，结果已保存")
+        
+        # 获取最新状态
+        latest_state = graph.get_state(config).values
+        
+        # 如果状态已经变为risk_assessment，更新图状态
+        if latest_state["dialog_state"][-1] == "risk_assessment":
+            graph.update_state(
+                config,
+                {
+                    "graph_qa_result": result,
+                    "graph_is_qa": True
+                }
+            )
+            print(f"会话 {session_id}: 状态已更新为risk_assessment，已应用查询结果")
+            
+    except Exception as e:
+        print(f"会话 {session_id}: 后台图谱查询出错: {str(e)}")
+        # 即使出错也标记为完成
+        with graph_qa_locks[session_id]:
+            graph_qa_thread_completed[session_id] = True
+
 @app.route('/send_message', methods=['POST'])
 def send_message():
+    global graph_qa_threads, graph_qa_results, graph_qa_locks, graph_qa_thread_started, graph_qa_thread_completed
+    
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
@@ -139,6 +192,17 @@ def send_message():
         return jsonify({'error': 'Invalid request'}), 400
 
     try:
+        # 创建会话ID
+        username = session['username']
+        session_id = chat_id  # 使用chat_id作为会话ID
+        
+        # 初始化会话相关的线程状态（如果不存在）
+        if session_id not in graph_qa_locks:
+            graph_qa_locks[session_id] = Lock()
+            graph_qa_thread_started[session_id] = False
+            graph_qa_thread_completed[session_id] = False
+            graph_qa_results[session_id] = None
+        
         # 检查是否是第一条消息
         chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
         is_first_message = not os.path.exists(chat_file)
@@ -146,7 +210,7 @@ def send_message():
         if is_first_message:
             # 初始化系统消息
             graph.update_state(
-                {"configurable": {"thread_id": chat_id}},
+                {"configurable": {"thread_id": session_id}},
                 {
                     "dialog_state": "verify_information",
                     "user_information": message,
@@ -157,15 +221,54 @@ def send_message():
         save_chat_message(chat_id, message, is_user=True)
         
         # 使用graph处理消息
+        config = {"configurable": {"thread_id": session_id}}
         events = graph.stream(
             {"messages": ("human", message)},
-            {"configurable": {"thread_id": chat_id}},
+            config,
             stream_mode="values"
         )
         
         # 获取最后一条需要显示的AI消息
         last_message = None
         for event in events:
+            # 在事件流中检查状态并处理多线程
+            if 'dialog_state' in event:
+                current_dialog_state = event['dialog_state'][-1] if event['dialog_state'] else None
+                
+                # 如果状态为analgesia且线程尚未启动，则启动线程
+                if current_dialog_state == "analgesia" and not graph_qa_thread_started[session_id]:
+                    with graph_qa_locks[session_id]:
+                        graph_qa_thread_started[session_id] = True
+                    
+                    # 获取当前状态用于后台查询
+                    current_state = graph.get_state(config).values
+                    
+                    # 创建并启动后台线程
+                    bg_thread = threading.Thread(
+                        target=run_graph_qa_in_background,
+                        args=(graph, config, current_state, session_id),
+                        daemon=True
+                    )
+                    bg_thread.start()
+                    graph_qa_threads[session_id] = bg_thread
+                    print(f"会话 {session_id}: 已启动知识图谱查询后台线程")
+                
+                # 如果状态为risk_assessment且查询已完成，更新状态
+                elif current_dialog_state == "risk_assessment" and graph_qa_thread_completed[session_id]:
+                    with graph_qa_locks[session_id]:
+                        if graph_qa_results[session_id] is not None:
+                            graph.update_state(
+                                config,
+                                {
+                                    "graph_qa_result": graph_qa_results[session_id],
+                                    "graph_is_qa": True
+                                }
+                            )
+                            print(f"会话 {session_id}: 已将知识图谱查询结果应用到risk_assessment状态")
+                            # 清除结果，避免重复使用
+                            graph_qa_results[session_id] = None
+            
+            # 处理消息
             if 'messages' in event and event['messages']:
                 message = event['messages']
                 if isinstance(message, list):
@@ -291,6 +394,65 @@ def text_to_speech():
         return jsonify({'audio': f'data:audio/mp3;base64,{audio_base64}'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# 清理过期的会话数据
+def clean_expired_sessions(max_age=3600):  # 默认1小时过期
+    current_time = time.time()
+    expired_sessions = []
+    
+    # 查找过期的会话
+    for session_id in list(graph_qa_thread_started.keys()):
+        if session_id in session_last_access and current_time - session_last_access[session_id] > max_age:
+            expired_sessions.append(session_id)
+    
+    # 清理过期的会话数据
+    for session_id in expired_sessions:
+        with graph_qa_locks.get(session_id, Lock()):
+            if session_id in graph_qa_threads:
+                del graph_qa_threads[session_id]
+            if session_id in graph_qa_results:
+                del graph_qa_results[session_id]
+            if session_id in graph_qa_thread_started:
+                del graph_qa_thread_started[session_id]
+            if session_id in graph_qa_thread_completed:
+                del graph_qa_thread_completed[session_id]
+            if session_id in graph_qa_locks:
+                del graph_qa_locks[session_id]
+            if session_id in session_last_access:
+                del session_last_access[session_id]
+
+# 跟踪会话最后访问时间
+session_last_access = {}
+
+# 在每次请求开始时更新会话访问时间
+@app.before_request
+def update_session_access_time():
+    if 'user_id' in session and request.path != '/static/':
+        user_id = session['user_id']
+        chat_id = request.args.get('chat_id') or request.form.get('chat_id') or ''
+        if chat_id:
+            session_id = f"{user_id}_{chat_id}"
+            session_last_access[session_id] = time.time()
+
+@app.route('/thread_status/<chat_id>', methods=['GET'])
+def thread_status(chat_id):
+    """查询指定聊天的线程状态"""
+    session_id = chat_id  # 使用chat_id作为会话ID
+    
+    status = {
+        "thread_exists": session_id in graph_qa_threads,
+        "thread_started": graph_qa_thread_started.get(session_id, False),
+        "thread_completed": graph_qa_thread_completed.get(session_id, False),
+        "has_results": graph_qa_results.get(session_id) is not None,
+        "is_alive": False
+    }
+    
+    # 检查线程是否仍在运行
+    if session_id in graph_qa_threads:
+        thread = graph_qa_threads[session_id]
+        status["is_alive"] = thread.is_alive()
+    
+    return jsonify(status)
 
 if __name__ == '__main__':
     if not check_environment():

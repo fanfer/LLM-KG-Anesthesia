@@ -1,3 +1,4 @@
+import time
 from typing import Callable
 from Chains.graph_qa_chain import get_graph_qa_chain
 from Graph.state import MedicalState, InputState
@@ -211,15 +212,17 @@ def Risk_Agent(state: MedicalState):
         medical_history = state.get('medical_history', [])
         medicine_taking = state.get('medicine_taking', [])
         graph_qa_result = state.get('graph_qa_result', '')
-        
+        graph_is_qa = state.get('graph_is_qa', False)
+        while not graph_is_qa:
+            time.sleep(0.5)
+            print("正在等待知识图谱查询完成...")
+            graph_is_qa = state.get('graph_is_qa', False)
         result = risk_chain.invoke({
-            "messages": messages,
-            "user_information": user_information,
-            "medical_history": medical_history,
-            "medicine_taking": medicine_taking,
-            "graph_qa_result": graph_qa_result,
+                "messages": messages,
+                "user_information": user_information,
+                "medical_history": medical_history,
+                "medicine_taking": medicine_taking,
         })
-        
         return {
             "messages": result,
         }

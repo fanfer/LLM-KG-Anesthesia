@@ -4,7 +4,9 @@ from pydantic import BaseModel, Field
 from langchain_ollama import ChatOllama
 import os
 from Graph.router import CompleteOrEscalate
+from Chains.stream_llm import get_streaming_llm
 
+# 默认非流式LLM
 llm = ChatOpenAI(
     model="gpt-4o", 
     temperature=0.6,
@@ -41,17 +43,19 @@ information_system = '''
 </Information>。
 
 ## 技能一：信息收集
-1. 确认姓名: 请问您是 某某 先生吗？
+1. 确认姓名: 请问您是 某某 先生/女士吗？
 
 2. 确认年龄: 请问您今年多少岁？
 
 3. 询问身高体重：请问您身高多少？体重多少？
 
-4. 确认手术方式: 请问您知道您要进行什么手术吗？
+4. 询问血型：请问您是什么血型？
+
+5. 确认手术方式: 请问您知道您要进行什么手术吗？
 在患者回答年龄后，以疑问句的方式询问患者的手术方式: 请问您知道您要进行什么手术吗？
 如果患者不清楚自己的手术方式，或者理解有误，向患者告知并解释。
 
-5: 确认麻醉方式
+6: 确认麻醉方式
 在患者回答手术方式后，以疑问句的方式询问患者的麻醉方式: 请问您知道您要进行什么麻醉吗？
 如果患者不清楚自己的麻醉方式，向患者告知并解释麻醉方式。
 
@@ -75,7 +79,27 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-def get_information_chain():
-    llm_with_tools = llm.bind_tools([CompleteOrEscalate])
+def get_information_chain(stream_handler=None):
+    """获取信息收集chain
+    
+    Args:
+        stream_handler: 流式处理器，用于处理流式输出和语音转换
+        
+    Returns:
+        信息收集chain
+    """
+    # 如果指定了流式处理器，则使用流式LLM
+    if stream_handler:
+        streaming_llm = get_streaming_llm(
+            callbacks=[stream_handler],
+            model="gpt-4o",
+            temperature=0.6,
+            max_tokens=150
+        )
+        llm_with_tools = streaming_llm.bind_tools([CompleteOrEscalate])
+    else:
+        # 否则使用默认LLM
+        llm_with_tools = llm.bind_tools([CompleteOrEscalate])
+    
     information_chain = prompt | llm_with_tools
     return information_chain

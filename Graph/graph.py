@@ -141,7 +141,7 @@ builder.add_node("leave_history_agent", leave_history_agent)
 
 # 风险评估相关节点
 builder.add_node("enter_risk_assessment", Entry_Risk_Agent)
-builder.add_node("graph_qa", Graph_QA_Agent)
+#builder.add_node("graph_qa", Graph_QA_Agent)
 builder.add_node("risk_assessment", Risk_Agent)
 
 # 添加镇痛分支
@@ -222,8 +222,8 @@ builder.add_conditional_edges(
 )
 
 # 6. 风险评估流程
-builder.add_edge("enter_risk_assessment", "graph_qa")
-builder.add_edge("graph_qa", "risk_assessment")
+builder.add_edge("enter_risk_assessment", "risk_assessment")
+#builder.add_edge("graph_qa", "risk_assessment")
 builder.add_conditional_edges(
     "risk_assessment",
     route_agent,

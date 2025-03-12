@@ -5,7 +5,9 @@ from Graph.router import CompleteOrEscalate
 from langchain_community.tools.tavily_search import TavilySearchResults
 import os
 from langchain_ollama import ChatOllama
+from Chains.stream_llm import get_streaming_llm
 
+# 默认非流式LLM
 llm = ChatOpenAI(
     model="gpt-4o", 
     temperature=0.6,
@@ -44,7 +46,7 @@ history_prompt = [
 2.单次只提1个封闭式问题（如：您以前做过什么手术吗？）
     -时间锚定：手术史需明确到年月（如：2020年胆囊手术）
 
-3. 不要重复患者的回答。不要使用序号、小标题等，符合口语交流的习惯。
+3. 不需要肯定患者的回答，只需要询问患者是否存在相关病史。
 ''',
 '''
 【病史收集】：询问病人疾病史，对于了解到的病史，询问其具体疾病及治疗情况。
@@ -60,8 +62,8 @@ history_prompt = [
 【提问策略】
 1. 漏斗式提问：从开放问题到具体症状
   例：先问"有没有高血压？" → 再追问"有没有吃药" → 再追问"吃药控制的情况怎么样"
-  例：先问“有没有过敏” → 再追问“过敏原是什么”  
-  当患者存在模糊性回答，如“还可以”，“差不多”等，需要进一步引导患者思考，给出更加清晰的回答。
+  例：先问"有没有过敏" → 再追问"过敏原是什么"  
+  当患者存在模糊性回答，如"还可以"，"差不多"等，需要进一步引导患者思考，给出更加清晰的回答。
 
 2. 交叉验证机制：   
   例：当患者回答"都没有"时，应核对：
@@ -97,7 +99,7 @@ history_prompt = [
   例：先问"吸不吸烟" → 再追问"每天吸多少" → 再追问"吸了多久"
 
 2. 交叉验证机制：   
-  例：当患者回答“没有吃药”时，应核对：
+  例：当患者回答"没有吃药"时，应核对：
   -是否在服用保健品
   -是否在服用中药
 
@@ -134,7 +136,16 @@ history_system = '''
 '''
 
 
-def get_history_chain(agent_id):
+def get_history_chain(agent_id, stream_handler=None):
+    """获取病史收集chain
+    
+    Args:
+        agent_id: 代理ID，用于选择不同的提示词
+        stream_handler: 流式处理器，用于处理流式输出和语音转换
+        
+    Returns:
+        病史收集chain
+    """
     current_prompt = history_prompt[agent_id - 1]
     medical_history_taking_prompt = ChatPromptTemplate.from_messages(
     [
@@ -142,7 +153,20 @@ def get_history_chain(agent_id):
         ("placeholder", "{messages}"),
     ]
     ).partial(current_prompt=current_prompt,time=datetime.now)
+    
     history_tools = [TavilySearchResults(max_results=2)]
-    llm_with_tools = llm.bind_tools(history_tools + [CompleteOrEscalate])
+    
+    # 如果指定了流式处理器，则使用流式LLM
+    if stream_handler:
+        streaming_llm = get_streaming_llm(
+            callbacks=[stream_handler],
+            model="gpt-4o",
+            temperature=0.6
+        )
+        llm_with_tools = streaming_llm.bind_tools(history_tools + [CompleteOrEscalate])
+    else:
+        # 否则使用默认LLM
+        llm_with_tools = llm.bind_tools(history_tools + [CompleteOrEscalate])
+    
     history_chain = medical_history_taking_prompt | llm_with_tools
     return history_chain 

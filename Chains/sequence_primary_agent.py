@@ -50,18 +50,18 @@ def Sequence_Primary_Assistant(state: Dict[str, Any]) -> Dict[str, Any]:
                 }
             },
             {
+                "name": "ToAnalgesiaAgent",
+                "args": {
+                    "name": "患者",
+                    "information": user_information,
+                }
+            },
+            {
                 "name": "ToRiskAgent",
                 "args": {
                     "name": "患者",
                     "information": user_information,
                     "request": "请告知患者手术风险。",
-                }
-            },
-            {
-                "name": "ToAnalgesiaAgent",
-                "args": {
-                    "name": "患者",
-                    "information": user_information,
                 }
             },
         ]

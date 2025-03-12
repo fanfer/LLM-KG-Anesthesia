@@ -18,23 +18,27 @@ from urllib.parse import urlencode
 import _thread as thread
 import io
 from typing import Any
+import os
+import wave
 
 class TTSStreamHandler(StreamingStdOutCallbackHandler):
-    def __init__(self, app_id="0fd3127e", api_key="22c490aacbd823d6cb89dced0a711e09", api_secret="YzM0Nzk3ZDgzOWYxYjBiZGRkYmZiMzc2"):
+    def __init__(self, app_id="0fd3127e", api_key="22c490aacbd823d6cb89dced0a711e09", api_secret="YzM0Nzk3ZDgzOWYxYjBiZGRkYmZiMzc2", session_id=None):
         super().__init__()
         self.buffer = ""
         self.sentence_end = re.compile(r'[。！？，：；\n]')
-        self.audio_queue = Queue()
-        self.sample_rate = 16000
         self.app_id = app_id
         self.api_key = api_key
         self.api_secret = api_secret
-        # 启动音频播放线程
-        self.player_thread = Thread(target=self._audio_player, daemon=True)
-        self.player_thread.start()
+        self.session_id = session_id
+        self.audio_segments = []  # 存储音频片段信息
+        self.segment_counter = 0
+        
+        # 创建会话音频目录
+        self.audio_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'web', 'static', 'audio', str(self.session_id))
+        os.makedirs(self.audio_dir, exist_ok=True)
     
     def _text_to_speech(self, text):
-        """使用讯飞WebSocket API进行文本转语音"""
+        """使用讯飞WebSocket API进行文本转语音并保存为文件"""
         # 创建WebSocket参数
         ws_param = self._create_ws_param(self.app_id, self.api_key, self.api_secret, text)
         ws_url = ws_param["url"]
@@ -115,7 +119,31 @@ class TTSStreamHandler(StreamingStdOutCallbackHandler):
         if audio_received and audio_buffer.getbuffer().nbytes > 0:
             audio_buffer.seek(0)
             audio_data = np.frombuffer(audio_buffer.read(), dtype=np.int16)
-            return audio_data
+            
+            # 保存音频片段到文件
+            segment_id = self.segment_counter
+            self.segment_counter += 1
+            
+            segment_filename = f"segment_{segment_id}.wav"
+            segment_path = os.path.join(self.audio_dir, segment_filename)
+            
+            # 保存为WAV文件
+            with wave.open(segment_path, 'wb') as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)
+                wf.setframerate(16000)
+                wf.writeframes(audio_data.tobytes())
+            
+            # 添加到音频片段列表
+            self.audio_segments.append({
+                'id': segment_id,
+                'filename': segment_filename,
+                'path': segment_path,
+                'url': f'/static/audio/{self.session_id}/{segment_filename}',
+                'text': text
+            })
+            
+            return segment_path
         else:
             if not audio_received:
                 print(f"\n未收到音频数据: {text[:20]}...")
@@ -184,20 +212,6 @@ class TTSStreamHandler(StreamingStdOutCallbackHandler):
         
         return {"url": url, "data": ws_data}
 
-    def _audio_player(self):
-        while True:
-            try:
-                audio_data = self.audio_queue.get()
-                if audio_data is not None:
-                    print(f"\n开始播放音频片段，长度: {len(audio_data)} 采样点")
-                    sd.play(audio_data, self.sample_rate)
-                    sd.wait()  # 等待音频播放完成
-                    # print(f"音频片段播放完成")
-                self.audio_queue.task_done()  # 标记任务完成
-            except Exception as e:
-                print(f"Error playing audio: {e}")
-                continue
-
     def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
         print(f"{token}", end="", flush=True)
         self.buffer += token
@@ -205,9 +219,8 @@ class TTSStreamHandler(StreamingStdOutCallbackHandler):
         if self.sentence_end.search(self.buffer):
             if len(self.buffer.strip()) > 0:
                 try:
-                    audio_data = self._text_to_speech(self.buffer)
-                    if audio_data is not None:
-                        self.audio_queue.put(audio_data)
+                    segment_path = self._text_to_speech(self.buffer)
+                    # 不再直接播放音频
                 except Exception as e:
                     print(f"\nError in TTS processing: {e}")
             self.buffer = ""
@@ -215,23 +228,20 @@ class TTSStreamHandler(StreamingStdOutCallbackHandler):
     def on_llm_end(self, *args, **kwargs) -> None:
         if len(self.buffer.strip()) > 0:
             try:
-                audio_data = self._text_to_speech(self.buffer)
-                if audio_data is not None:
-                    self.audio_queue.put(audio_data)
+                segment_path = self._text_to_speech(self.buffer)
+                # 不再直接播放音频
             except Exception as e:
                 print(f"\nError in final TTS processing: {e}")
             self.buffer = ""
     
-    def wait_for_audio_completion(self, timeout=30):
-        """等待所有音频播放完毕"""
-        print("\n等待音频播放完成...")
-        try:
-            # 使用Queue.join()等待所有任务完成
-            self.audio_queue.join()
-            print("所有音频任务已处理完成")
-        except Exception as e:
-            print(f"等待音频播放时发生错误: {e}")
-        print("音频播放完成") 
+    def get_audio_segments(self):
+        """返回所有音频片段信息"""
+        return self.audio_segments
+    
+    def clear_audio_segments(self):
+        """清除音频片段"""
+        self.audio_segments = []
+        self.segment_counter = 0
 
 # 创建TTSStreamHandler实例
 tts_handler = TTSStreamHandler()

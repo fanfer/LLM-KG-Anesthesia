@@ -89,7 +89,7 @@ class XunfeiTTS(object):
         print("### error:", error)
 
     def on_close(self, ws, status_code=None, close_msg=None, *args):
-        print("### closed ###")
+        pass
 
     def on_open(self, ws):
         def run(*args):
@@ -98,7 +98,6 @@ class XunfeiTTS(object):
                 "business": self.BusinessArgs,
                 "data": self.Data,
             }
-            print("------>开始发送文本数据")
             ws.send(json.dumps(data))
 
         thread.start_new_thread(run, ())

@@ -72,9 +72,10 @@ def Sequence_Primary_Assistant(state: Dict[str, Any]) -> Dict[str, Any]:
             message = AIMessage(
                 content="谢谢您的配合，术前谈话已完成。请你在术前谈话记录表中签字确认。",
             )
+            
             return {
                 "messages": message,
-                "current_step": current_step
+                "current_step": 100
             }
         
         # 获取当前步骤

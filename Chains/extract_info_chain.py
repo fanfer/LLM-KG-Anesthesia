@@ -62,15 +62,15 @@ prompt = ChatPromptTemplate.from_messages([
 
 def get_extract_info_chain():
     """创建信息提取链。"""
-    llm = ChatOpenAI(
-        model="gpt-4o-mini",
-        temperature=0.6
-    )
-    # llm = ChatOllama(
-    #     model="qwen2.5:14b",
-    #     temperature=0.6,
-    #     base_url="http://chat.fanfer.top",
+    # llm = ChatOpenAI(
+    #     model="gpt-4o-mini",
+    #     temperature=0.6
     # )
+    llm = ChatOllama(
+        model="qwen2.5:14b",
+        temperature=0.6,
+        base_url="http://222.20.98.121:11434",
+    )
     
     # 将格式说明注入到提示中
     prompt_with_format = prompt.partial(

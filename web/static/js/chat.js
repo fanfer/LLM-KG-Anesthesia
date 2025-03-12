@@ -37,6 +37,69 @@ function addMessage(content, isUser = false, save = true) {
     }
 }
 
+// 音频播放器管理
+class AudioStreamPlayer {
+    constructor() {
+        this.audioQueue = [];
+        this.isPlaying = false;
+        this.lastSegmentId = -1;
+    }
+    
+    // 添加新的音频片段到队列
+    addSegments(segments) {
+        if (!segments || segments.length === 0) return;
+        
+        // 过滤出新的片段
+        const newSegments = segments.filter(segment => segment.id > this.lastSegmentId);
+        if (newSegments.length === 0) return;
+        
+        // 更新最后一个片段ID
+        this.lastSegmentId = Math.max(...newSegments.map(segment => segment.id));
+        
+        // 添加到队列
+        this.audioQueue.push(...newSegments);
+        
+        // 如果当前没有播放，开始播放
+        if (!this.isPlaying) {
+            this.playNext();
+        }
+    }
+    
+    // 播放下一个音频片段
+    playNext() {
+        if (this.audioQueue.length === 0) {
+            this.isPlaying = false;
+            return;
+        }
+        
+        this.isPlaying = true;
+        const segment = this.audioQueue.shift();
+        
+        const audio = new Audio(segment.url);
+        audio.onended = () => {
+            this.playNext();
+        };
+        audio.onerror = (error) => {
+            console.error('音频播放错误:', error);
+            this.playNext();
+        };
+        audio.play().catch(error => {
+            console.error('音频播放失败:', error);
+            this.playNext();
+        });
+    }
+    
+    // 清空队列
+    clear() {
+        this.audioQueue = [];
+        this.isPlaying = false;
+        this.lastSegmentId = -1;
+    }
+}
+
+// 创建音频播放器实例
+const audioPlayer = new AudioStreamPlayer();
+
 async function sendMessage() {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
@@ -66,9 +129,9 @@ async function sendMessage() {
             // 添加AI回复到界面
             addMessage(data.response, false);
             
-            // 播放语音回复
-            if (data.audio_url) {
-                playTTS(data.audio_url);
+            // 处理音频片段
+            if (data.audio_segments && data.audio_segments.length > 0) {
+                audioPlayer.addSegments(data.audio_segments);
             }
         } else {
             console.error('Error:', data.error);
@@ -363,90 +426,21 @@ window.addEventListener('load', async () => {
     }
 });
 
-// 语音输入
-let mediaRecorder;
-let audioChunks = [];
-
-document.getElementById('voice-input-btn').addEventListener('click', async function() {
-    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-        // 检查浏览器兼容性
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert('您的浏览器不支持录音功能。请使用现代浏览器如Chrome、Firefox或Safari的最新版本。');
-            return;
+// 轮询获取新的音频片段
+function pollAudioSegments() {
+    if (!currentChatId) return;
+    
+    fetch(`/api/audio_segments/${currentChatId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.audio_segments && data.audio_segments.length > 0) {
+            audioPlayer.addSegments(data.audio_segments);
         }
-
-        try {
-            // 开始录音
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                const reader = new FileReader();
-                reader.readAsDataURL(audioBlob);
-                reader.onloadend = async () => {
-                    try {
-                        const response = await fetch('/speech-to-text', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ audio: reader.result })
-                        });
-                        const data = await response.json();
-                        if (data.text) {
-                            document.getElementById('message-input').value = data.text;
-                        }
-                    } catch (error) {
-                        console.error('语音转文字失败:', error);
-                        alert('语音转文字失败，请重试');
-                    }
-                };
-                audioChunks = [];
-            };
-            mediaRecorder.start();
-            this.classList.add('recording');
-        } catch (error) {
-            console.error('获取麦克风权限失败:', error);
-            if (error.name === 'NotAllowedError') {
-                alert('请允许浏览器访问麦克风以使用录音功能');
-            } else {
-                alert('录音功能初始化失败，请确保麦克风可用并重试');
-            }
-        }
-    } else {
-        // 停止录音
-        mediaRecorder.stop();
-        this.classList.remove('recording');
-    }
-});
-
-// 语音输出
-document.getElementById('voice-output-btn').addEventListener('click', async function() {
-    const lastMessage = document.querySelector('.message.system:last-child .message-content');
-    if (lastMessage) {
-        try {
-            const response = await fetch('/text-to-speech', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: lastMessage.textContent })
-            });
-            const data = await response.json();
-            if (data.audio) {
-                const audio = new Audio(data.audio);
-                audio.play();
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-});
-
-// 播放TTS音频
-function playTTS(audioUrl) {
-    const audio = document.getElementById('tts-audio');
-    audio.src = audioUrl;
-    audio.play().catch(error => {
-        console.error('Error playing audio:', error);
+    })
+    .catch(error => {
+        console.error('Error polling audio segments:', error);
     });
-} 
+}
+
+// 每秒轮询一次
+setInterval(pollAudioSegments, 1000); 

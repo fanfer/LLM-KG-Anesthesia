@@ -4,6 +4,7 @@ from flask_session import Session
 from flask_cors import CORS
 import os
 import sys
+import logging
 from dotenv import load_dotenv
 import json
 from datetime import datetime
@@ -15,6 +16,20 @@ from xunfei_tts import XunfeiTTS
 import threading
 from threading import Lock
 import traceback
+from xunfei_iat import XunfeiIAT
+import sounddevice as sd
+import soundfile as sf
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'app.log'))
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # 获取项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,11 +39,10 @@ load_dotenv(os.path.join(ROOT_DIR, '.env'))
 sys.path.append(ROOT_DIR)
 from Graph.graph import graph
 from Chains.graph_qa_chain import get_graph_qa_chain
-from Chains.information_chain import wait_for_audio_completion
-
+from Chains.tts_stream_handler import tts_handler
 # 验证环境变量是否加载
-print("OpenAI API Key:", os.getenv('OPENAI_API_KEY', 'Not found'))
-print("OpenAI API Base:", os.getenv('OPENAI_API_BASE', 'Not found'))
+logger.info("OpenAI API Key: %s", os.getenv('OPENAI_API_KEY', 'Not found'))
+logger.info("OpenAI API Base: %s", os.getenv('OPENAI_API_BASE', 'Not found'))
 
 app = Flask(__name__)
 CORS(app)  # 启用CORS
@@ -55,6 +69,13 @@ Session(app)
 
 # 初始化科大讯飞TTS
 tts = XunfeiTTS(
+    appid='0fd3127e',
+    apikey='22c490aacbd823d6cb89dced0a711e09',
+    apisecret='YzM0Nzk3ZDgzOWYxYjBiZGRkYmZiMzc2'
+)
+
+# 初始化科大讯飞IAT（语音识别）
+iat = XunfeiIAT(
     appid='0fd3127e',
     apikey='22c490aacbd823d6cb89dced0a711e09',
     apisecret='YzM0Nzk3ZDgzOWYxYjBiZGRkYmZiMzc2'
@@ -95,9 +116,9 @@ def check_environment():
             missing_vars.append(var)
     
     if missing_vars:
-        print("错误: 以下环境变量未设置:")
+        logger.error("错误: 以下环境变量未设置:")
         for var in missing_vars:
-            print(f"- {var}")
+            logger.error("- %s", var)
         return False
     return True
 
@@ -110,17 +131,17 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # 添加调试信息
-    print("Login request:", request.method)
+    logger.info("Login request: %s", request.method)
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        print(f"Login attempt - username: {username}")
+        logger.info("Login attempt - username: %s", username)
         
         if username in USERS and USERS[username] == password:
             session['username'] = username
-            print("Login successful, redirecting to chat")
+            logger.info("Login successful, redirecting to chat")
             return redirect(url_for('chat'))
-        print("Invalid credentials")
+        logger.warning("Invalid credentials")
         return render_template('login.html', error='Invalid credentials')
     return render_template('login.html')
 
@@ -132,17 +153,17 @@ def logout():
 @app.route('/chat')
 def chat():
     # 添加调试信息
-    print("Chat route accessed")
-    print("Session:", session)
+    logger.info("Chat route accessed")
+    logger.debug("Session: %s", session)
     if 'username' not in session:
-        print("No username in session, redirecting to login")
+        logger.info("No username in session, redirecting to login")
         return redirect(url_for('login'))
     return render_template('chat.html', username=session['username'])
 
 def run_graph_qa_in_background(graph, config, current_state, session_id):
     """在后台线程中运行graph_qa_chain，每个会话只运行一次"""
     try:
-        print(f"会话 {session_id}: 开始在后台执行知识图谱查询...")
+        logger.info("会话 %s: 开始在后台执行知识图谱查询...", session_id)
         graph_qa_chain = get_graph_qa_chain()
         # 执行图谱查询
         result = graph_qa_chain.invoke({
@@ -157,7 +178,7 @@ def run_graph_qa_in_background(graph, config, current_state, session_id):
             graph_qa_results[session_id] = result
             graph_qa_thread_completed[session_id] = True
             
-        print(f"会话 {session_id}: 知识图谱查询完成，结果已保存")
+        logger.info("会话 %s: 知识图谱查询完成，结果已保存", session_id)
         
         # 获取最新状态
         latest_state = graph.get_state(config).values
@@ -170,15 +191,15 @@ def run_graph_qa_in_background(graph, config, current_state, session_id):
                 "graph_is_qa": True
             }
         )
-        print(f"会话 {session_id}: 已更新图状态，设置graph_is_qa为True")
+        logger.info("会话 %s: 已更新图状态，设置graph_is_qa为True", session_id)
         
         # 设置事件，通知等待的Risk_Agent
         if session_id in graph_qa_events:
             graph_qa_events[session_id].set()
-            print(f"会话 {session_id}: 已设置事件通知")
+            logger.info("会话 %s: 已设置事件通知", session_id)
             
     except Exception as e:
-        print(f"会话 {session_id}: 后台图谱查询出错: {str(e)}")
+        logger.error("会话 %s: 后台图谱查询出错: %s", session_id, str(e))
         # 即使出错也标记为完成并设置事件
         with graph_qa_locks[session_id]:
             graph_qa_thread_completed[session_id] = True
@@ -195,11 +216,11 @@ def run_graph_qa_in_background(graph, config, current_state, session_id):
         # 设置事件，通知等待的Risk_Agent
         if session_id in graph_qa_events:
             graph_qa_events[session_id].set()
-            print(f"会话 {session_id}: 错误情况下已设置事件通知")
+            logger.info("会话 %s: 错误情况下已设置事件通知", session_id)
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
-    global graph_qa_threads, graph_qa_results, graph_qa_locks, graph_qa_thread_started, graph_qa_thread_completed, graph_qa_events
+    global graph_qa_threads, graph_qa_results, graph_qa_locks, graph_qa_thread_started, graph_qa_thread_completed
     
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -222,7 +243,6 @@ def send_message():
             graph_qa_thread_started[session_id] = False
             graph_qa_thread_completed[session_id] = False
             graph_qa_results[session_id] = None
-            graph_qa_events[session_id] = threading.Event()  # 新增：为每个会话创建事件对象
         
         # 检查是否是第一条消息
         chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
@@ -252,7 +272,27 @@ def send_message():
         
         # 获取最后一条需要显示的AI消息
         last_message = None
+        current_dialog_state = None
+        
         for event in events:
+            if "current_step" in event:
+                current_step = event["current_step"]
+                if current_step == 100:
+                    # 播放完成音频
+                    audio_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'web', 'static', 'audio', 'output.wav')
+                    if os.path.exists(audio_file):
+                        data, fs = sf.read(audio_file)
+                        sd.play(data, fs)
+                        sd.wait()  # 等待音频播放完成
+                        logger.info("音频播放完成")
+                        current_step = 5
+                        # 更新状态
+                        graph.update_state(
+                            config,
+                            {"current_step": current_step}
+                        )
+                    else:
+                        logger.warning(f"音频文件不存在: {audio_file}")
             # 在事件流中检查状态并处理多线程
             if 'dialog_state' in event:
                 current_dialog_state = event['dialog_state'][-1] if event['dialog_state'] else None
@@ -273,7 +313,7 @@ def send_message():
                     )
                     bg_thread.start()
                     graph_qa_threads[session_id] = bg_thread
-                    print(f"会话 {session_id}: 已启动知识图谱查询后台线程")
+                    logger.info("会话 %s: 已启动知识图谱查询后台线程", session_id)
                 
                 # 如果状态为risk_assessment且查询已完成，更新状态
                 elif graph_qa_thread_completed[session_id]:
@@ -286,7 +326,7 @@ def send_message():
                                     "graph_is_qa": True
                                 }
                             )
-                            print(f"会话 {session_id}: 已将知识图谱查询结果应用到risk_assessment状态")
+                            logger.info("会话 %s: 已将知识图谱查询结果应用到risk_assessment状态", session_id)
                             # 清除结果，避免重复使用
                             graph_qa_results[session_id] = None
             
@@ -302,16 +342,12 @@ def send_message():
         
         # 保存AI响应
         save_chat_message(chat_id, last_message, is_user=False)
-        
-        # 等待所有音频播放完成
-        # 注意：由于我们现在使用的是流式TTS，音频已经在生成过程中播放
-        # 但我们仍然需要等待所有音频播放完成
-        wait_for_audio_completion()
+        audio_segments = tts_handler.get_audio_segments()
         
         # 返回响应，但不需要生成音频文件，因为音频已经在流式过程中播放
         return jsonify({
             'response': last_message,
-            'audio_url': None  # 不再需要音频URL
+            'audio_segments': audio_segments
         })
     except Exception as e:
         traceback.print_exc()
@@ -341,7 +377,7 @@ def load_chat_history(chat_id):
 
 @app.errorhandler(Exception)
 def handle_error(error):
-    print(f"Error occurred: {error}")
+    logger.error("Error occurred: %s", error)
     return str(error), 500
 
 # 添加测试路由
@@ -427,24 +463,38 @@ client = OpenAI()
 @app.route('/speech-to-text', methods=['POST'])
 def speech_to_text():
     try:
+        logger.info("收到语音转文本请求")
+        
+        if not request.json:
+            logger.error("请求中没有JSON数据")
+            return jsonify({'error': '无效的请求格式'}), 400
+            
         audio_data = request.json.get('audio')
+        if not audio_data:
+            logger.error("请求中没有音频数据")
+            return jsonify({'error': '请求中没有音频数据'}), 400
+            
+        logger.info("开始调用科大讯飞语音识别")
+        start_time = time.time()
         
-        # 将base64音频数据转换为临时文件
-        with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as temp_file:
-            temp_file.write(base64.b64decode(audio_data.split(',')[1]))
-            temp_file_path = temp_file.name
+        # 使用科大讯飞IAT进行语音识别
+        text = iat.recognize_audio(audio_data)
         
-        # 使用OpenAI API转换语音为文本
-        with open(temp_file_path, 'rb') as audio_file:
-            transcript = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file
-            )
+        end_time = time.time()
+        logger.info(f"语音识别完成，耗时: {end_time - start_time:.2f}秒")
         
-        os.unlink(temp_file_path)  # 删除临时文件
-        return jsonify({'text': transcript.text})
+        if text and not text.startswith("语音识别出错") and not text.startswith("未能识别"):
+            logger.info(f"识别成功，文本长度: {len(text)}")
+            return jsonify({'text': text})
+        else:
+            logger.warning(f"识别结果不理想: {text}")
+            return jsonify({'error': text}), 500
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        error_msg = f"语音识别过程中出现异常: {str(e)}"
+        logger.error(error_msg)
+        logger.error(traceback.format_exc())
+        return jsonify({'error': error_msg}), 500
 
 @app.route('/text-to-speech', methods=['POST'])
 def text_to_speech():
@@ -529,9 +579,26 @@ def thread_status(chat_id):
 def favicon():
     return send_file(os.path.join(app.root_path, 'static', 'favicon.ico'))
 
+@app.route('/api/audio_segments/<chat_id>', methods=['GET'])
+def get_audio_segments(chat_id):
+    """获取指定会话的音频片段"""
+    try:
+        session_id = chat_id
+        
+        # 获取当前对话状态
+        config = {"configurable": {"thread_id": session_id}}
+        state = graph.get_state(config).values
+        current_dialog_state = state.get('dialog_state', ['verify_information'])[-1]
+        
+        audio_segments = tts_handler.get_audio_segments()
+        
+        return jsonify({'audio_segments': audio_segments})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     if not check_environment():
-        print("请检查.env文件配置")
+        logger.error("请检查.env文件配置")
         sys.exit(1)
         
     app.run(

@@ -215,13 +215,15 @@ def Risk_Agent(state: MedicalState):
         graph_is_qa = state.get('graph_is_qa', False)
         while not graph_is_qa:
             time.sleep(0.5)
-            print("正在等待知识图谱查询完成...")
+            print(f"正在等待知识图谱查询完成...{graph_is_qa}")
             graph_is_qa = state.get('graph_is_qa', False)
+            graph_qa_result = state.get('graph_qa_result', '')
         result = risk_chain.invoke({
                 "messages": messages,
                 "user_information": user_information,
                 "medical_history": medical_history,
                 "medicine_taking": medicine_taking,
+                "graph_qa_result": graph_qa_result
         })
         return {
             "messages": result,

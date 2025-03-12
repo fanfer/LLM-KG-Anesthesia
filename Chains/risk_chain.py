@@ -5,11 +5,14 @@ from Graph.router import CompleteOrEscalate
 from langchain_community.tools.tavily_search import TavilySearchResults
 import os
 from langchain_ollama import ChatOllama
+from .tts_stream_handler import tts_handler
 
 llm = ChatOpenAI(
     model="gpt-4o",
     temperature=0.6,
     api_key=os.environ.get("OPENAI_API_KEY"),
+    streaming=True,  # 启用流式输出
+    callbacks=[tts_handler],  # 添加TTSStreamHandler作为回调
 )
 # llm = ChatOllama(
 #     model="llama3.3:latest",

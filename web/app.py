@@ -24,6 +24,7 @@ load_dotenv(os.path.join(ROOT_DIR, '.env'))
 sys.path.append(ROOT_DIR)
 from Graph.graph import graph
 from Chains.graph_qa_chain import get_graph_qa_chain
+from Chains.information_chain import wait_for_audio_completion
 
 # 验证环境变量是否加载
 print("OpenAI API Key:", os.getenv('OPENAI_API_KEY', 'Not found'))
@@ -260,7 +261,7 @@ def send_message():
                             graph.update_state(
                                 config,
                                 {
-                                    "graph_qa_result": graph_qa_results[session_id],
+                                    "graph_qa_result": graph_qa_results[session_id]["risk_analysis"],
                                     "graph_is_qa": True
                                 }
                             )
@@ -281,30 +282,18 @@ def send_message():
         # 保存AI响应
         save_chat_message(chat_id, last_message, is_user=False)
         
-        try:
-            # 生成语音文件
-            audio_filename = f"{chat_id}_{int(time.time())}.wav"
-            audio_path = os.path.join(AUDIO_DIR, audio_filename)
-            
-            # 尝试进行语音合成
-            if tts.convert(last_message, audio_path):
-                audio_url = url_for('static', filename=f'audio/{audio_filename}')
-            else:
-                print("语音合成失败")
-                audio_url = None
-                
-            return jsonify({
-                'response': last_message,
-                'audio_url': audio_url
-            })
-        except Exception as e:
-            print(f"语音合成错误: {e}")
-            # 即使语音合成失败，也返回文本响应
-            return jsonify({
-                'response': last_message,
-                'audio_url': None
-            })
+        # 等待所有音频播放完成
+        # 注意：由于我们现在使用的是流式TTS，音频已经在生成过程中播放
+        # 但我们仍然需要等待所有音频播放完成
+        wait_for_audio_completion()
+        
+        # 返回响应，但不需要生成音频文件，因为音频已经在流式过程中播放
+        return jsonify({
+            'response': last_message,
+            'audio_url': None  # 不再需要音频URL
+        })
     except Exception as e:
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/load_chat_history/<chat_id>')

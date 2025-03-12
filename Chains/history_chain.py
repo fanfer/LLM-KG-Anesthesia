@@ -5,11 +5,14 @@ from Graph.router import CompleteOrEscalate
 from langchain_community.tools.tavily_search import TavilySearchResults
 import os
 from langchain_ollama import ChatOllama
+from .tts_stream_handler import tts_handler
 
 llm = ChatOpenAI(
     model="gpt-4o", 
     temperature=0.6,
     api_key=os.environ.get("OPENAI_API_KEY"),
+    streaming=True,  # 启用流式输出
+    callbacks=[tts_handler],  # 添加TTSStreamHandler作为回调
 )
 # llm = ChatOllama(
 #     model="llama3.3:latest ",
@@ -60,8 +63,8 @@ history_prompt = [
 【提问策略】
 1. 漏斗式提问：从开放问题到具体症状
   例：先问"有没有高血压？" → 再追问"有没有吃药" → 再追问"吃药控制的情况怎么样"
-  例：先问“有没有过敏” → 再追问“过敏原是什么”  
-  当患者存在模糊性回答，如“还可以”，“差不多”等，需要进一步引导患者思考，给出更加清晰的回答。
+  例：先问"有没有过敏" → 再追问"过敏原是什么"  
+  当患者存在模糊性回答，如"还可以"，"差不多"等，需要进一步引导患者思考，给出更加清晰的回答。
 
 2. 交叉验证机制：   
   例：当患者回答"都没有"时，应核对：
@@ -97,7 +100,7 @@ history_prompt = [
   例：先问"吸不吸烟" → 再追问"每天吸多少" → 再追问"吸了多久"
 
 2. 交叉验证机制：   
-  例：当患者回答“没有吃药”时，应核对：
+  例：当患者回答"没有吃药"时，应核对：
   -是否在服用保健品
   -是否在服用中药
 

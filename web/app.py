@@ -596,6 +596,62 @@ def get_audio_segments(chat_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/delete_played_segments', methods=['POST'])
+def delete_played_segments():
+    """删除已播放的音频片段"""
+    try:
+        data = request.json
+        chat_id = data.get('chatId')
+        segment_ids = data.get('segmentIds', [])
+        
+        if not chat_id or not segment_ids:
+            return jsonify({'error': '无效的请求参数'}), 400
+        
+        # 获取当前对话状态
+        config = {"configurable": {"thread_id": chat_id}}
+        
+        # 删除已播放的音频片段
+        deleted_count = tts_handler.delete_segments(segment_ids)
+        
+        return jsonify({
+            'success': True,
+            'deleted_count': deleted_count
+        })
+    except Exception as e:
+        logger.error(f"删除音频片段出错: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# 在app.py中添加
+def cleanup_audio_files():
+    """定期清理过期的音频文件"""
+    while True:
+        try:
+            # 每小时清理一次
+            time.sleep(3600)
+            deleted = tts_handler.cleanup_old_segments()
+            if deleted > 0:
+                logger.info(f"定期清理: 已删除 {deleted} 个过期音频文件")
+        except Exception as e:
+            logger.error(f"定期清理音频文件出错: {str(e)}")
+
+# 启动清理线程
+cleanup_thread = threading.Thread(target=cleanup_audio_files, daemon=True)
+cleanup_thread.start()
+
+@app.route('/end_session/<chat_id>', methods=['POST'])
+def end_session(chat_id):
+    """结束会话，清理相关资源"""
+    try:
+        # 删除所有相关的音频文件
+        deleted_count = tts_handler.delete_segments([-1])  # -1表示删除所有片段
+        
+        return jsonify({
+            'success': True,
+            'deleted_count': deleted_count
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     if not check_environment():
         logger.error("请检查.env文件配置")

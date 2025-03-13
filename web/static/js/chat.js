@@ -43,6 +43,7 @@ class AudioStreamPlayer {
         this.audioQueue = [];
         this.isPlaying = false;
         this.lastSegmentId = -1;
+        this.playedSegments = []; // 存储已播放的片段ID
     }
     
     // 添加新的音频片段到队列
@@ -77,16 +78,52 @@ class AudioStreamPlayer {
         
         const audio = new Audio(segment.url);
         audio.onended = () => {
+            // 通知服务器该片段已播放完成
+            this.notifySegmentPlayed(segment.id);
             this.playNext();
         };
         audio.onerror = (error) => {
             console.error('音频播放错误:', error);
+            this.notifySegmentPlayed(segment.id); // 即使出错也标记为已播放
             this.playNext();
         };
         audio.play().catch(error => {
             console.error('音频播放失败:', error);
+            this.notifySegmentPlayed(segment.id); // 即使出错也标记为已播放
             this.playNext();
         });
+    }
+    
+    // 通知服务器片段已播放完成
+    notifySegmentPlayed(segmentId) {
+        // 避免重复通知
+        if (this.playedSegments.includes(segmentId)) return;
+        
+        this.playedSegments.push(segmentId);
+        
+        // 每10个已播放片段清理一次，避免数组过大
+        if (this.playedSegments.length > 10) {
+            // 发送批量删除请求
+            fetch('/api/delete_played_segments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chatId: currentChatId,
+                    segmentIds: this.playedSegments
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('已通知服务器删除播放完成的音频片段');
+                    this.playedSegments = []; // 清空已通知的片段列表
+                }
+            })
+            .catch(error => {
+                console.error('通知服务器删除音频片段失败:', error);
+            });
+        }
     }
     
     // 清空队列
@@ -94,6 +131,11 @@ class AudioStreamPlayer {
         this.audioQueue = [];
         this.isPlaying = false;
         this.lastSegmentId = -1;
+        
+        // 通知服务器删除所有已播放的片段
+        if (this.playedSegments.length > 0) {
+            this.notifySegmentPlayed(-1); // 触发清理
+        }
     }
 }
 
@@ -240,6 +282,15 @@ function updateChatList() {
 // 加载聊天记录
 async function loadChat(chatId) {
     try {
+        // 如果有当前聊天，先结束它
+        if (currentChatId && currentChatId !== chatId) {
+            fetch(`/end_session/${currentChatId}`, { method: 'POST' })
+            .catch(error => console.error('结束会话出错:', error));
+            
+            // 清空音频播放器
+            audioPlayer.clear();
+        }
+        
         // 从服务器加载完整对话历史
         const response = await fetch(`/load_chat_history/${chatId}`);
         const data = await response.json();
@@ -443,4 +494,21 @@ function pollAudioSegments() {
 }
 
 // 每秒轮询一次
-setInterval(pollAudioSegments, 1000); 
+setInterval(pollAudioSegments, 1000);
+
+// 在用户离开页面或切换聊天时调用
+window.addEventListener('beforeunload', () => {
+    if (currentChatId) {
+        // 使用同步请求确保在页面关闭前发送
+        navigator.sendBeacon(`/end_session/${currentChatId}`);
+    }
+});
+
+// 在切换聊天时也清理
+function loadChat(chatId) {
+    // 如果有当前聊天，先结束它
+    if (currentChatId && currentChatId !== chatId) {
+        fetch(`/end_session/${currentChatId}`, { method: 'POST' })
+        .catch(error => console.error('结束会话出错:', error));
+    }
+} 

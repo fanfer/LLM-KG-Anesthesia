@@ -243,5 +243,77 @@ class TTSStreamHandler(StreamingStdOutCallbackHandler):
         self.audio_segments = []
         self.segment_counter = 0
 
+    def delete_segments(self, segment_ids):
+        """删除指定的音频片段文件"""
+        if not segment_ids:
+            return 0
+        
+        deleted_count = 0
+        
+        # 如果segment_ids包含-1，表示删除所有片段
+        if -1 in segment_ids:
+            # 删除所有音频片段
+            for segment in self.audio_segments:
+                try:
+                    if os.path.exists(segment['path']):
+                        os.remove(segment['path'])
+                        deleted_count += 1
+                except Exception as e:
+                    print(f"删除音频文件失败: {e}")
+            
+            # 清空音频片段列表
+            self.audio_segments = []
+            return deleted_count
+        
+        # 删除指定的音频片段
+        segments_to_keep = []
+        for segment in self.audio_segments:
+            if segment['id'] in segment_ids:
+                try:
+                    if os.path.exists(segment['path']):
+                        os.remove(segment['path'])
+                        deleted_count += 1
+                except Exception as e:
+                    print(f"删除音频文件失败: {e}")
+            else:
+                segments_to_keep.append(segment)
+        
+        # 更新音频片段列表
+        self.audio_segments = segments_to_keep
+        
+        return deleted_count
+
+    def cleanup_old_segments(self, max_age_seconds=3600):
+        """清理超过指定时间的音频片段"""
+        if not self.audio_segments:
+            return 0
+        
+        current_time = time.time()
+        deleted_count = 0
+        segments_to_keep = []
+        
+        for segment in self.audio_segments:
+            # 获取文件的修改时间
+            try:
+                if os.path.exists(segment['path']):
+                    file_mtime = os.path.getmtime(segment['path'])
+                    if current_time - file_mtime > max_age_seconds:
+                        # 文件超过最大保留时间，删除它
+                        os.remove(segment['path'])
+                        deleted_count += 1
+                    else:
+                        segments_to_keep.append(segment)
+                else:
+                    # 文件不存在，不需要保留其信息
+                    deleted_count += 1
+            except Exception as e:
+                print(f"清理音频文件失败: {e}")
+                segments_to_keep.append(segment)
+        
+        # 更新音频片段列表
+        self.audio_segments = segments_to_keep
+        
+        return deleted_count
+
 # 创建TTSStreamHandler实例
 tts_handler = TTSStreamHandler()

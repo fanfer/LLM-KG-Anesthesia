@@ -135,13 +135,16 @@ class TTSStreamHandler(StreamingStdOutCallbackHandler):
                 wf.writeframes(audio_data.tobytes())
             
             # 添加到音频片段列表
-            self.audio_segments.append({
+            segment = {
                 'id': segment_id,
                 'filename': segment_filename,
                 'path': segment_path,
                 'url': f'/static/audio/{self.session_id}/{segment_filename}',
                 'text': text
-            })
+            }
+            self.audio_segments.append(segment)
+            
+            # 通知有新的音频片段（这里不需要实际实现，因为SSE端点会定期检查）
             
             return segment_path
         else:

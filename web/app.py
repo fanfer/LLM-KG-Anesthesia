@@ -652,6 +652,48 @@ def end_session(chat_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/audio_stream/<chat_id>')
+def audio_stream(chat_id):
+    """使用SSE向客户端推送新的音频片段"""
+    def generate():
+        # 发送初始消息
+        yield "data: {\"type\": \"connected\", \"message\": \"Connected to audio stream\"}\n\n"
+        
+        # 记录已发送的最后一个片段ID
+        last_sent_id = -1
+        
+        while True:
+            try:
+                # 获取音频片段
+                audio_segments = tts_handler.get_audio_segments()
+                
+                # 过滤出新的片段
+                new_segments = [s for s in audio_segments if s['id'] > last_sent_id]
+                
+                if new_segments:
+                    # 更新最后发送的ID
+                    last_sent_id = max(s['id'] for s in new_segments)
+                    
+                    # 发送新片段
+                    yield f"data: {json.dumps({'type': 'audio_segments', 'segments': new_segments})}\n\n"
+                
+                # 短暂休眠，避免CPU占用过高
+                time.sleep(0.2)
+            except Exception as e:
+                logger.error(f"音频流发送错误: {str(e)}")
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+                break
+    
+    # 设置响应头
+    response = app.response_class(
+        response=generate(),
+        status=200,
+        mimetype='text/event-stream'
+    )
+    response.headers['Cache-Control'] = 'no-cache'
+    response.headers['X-Accel-Buffering'] = 'no'  # 禁用Nginx缓冲
+    return response
+
 if __name__ == '__main__':
     if not check_environment():
         logger.error("请检查.env文件配置")

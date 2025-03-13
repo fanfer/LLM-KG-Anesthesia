@@ -142,6 +142,61 @@ class AudioStreamPlayer {
 // 创建音频播放器实例
 const audioPlayer = new AudioStreamPlayer();
 
+// 音频流连接管理
+let audioEventSource = null;
+
+// 连接到音频流
+function connectToAudioStream(chatId) {
+    // 如果已经有连接，先关闭
+    if (audioEventSource) {
+        audioEventSource.close();
+        audioEventSource = null;
+    }
+    
+    // 创建新的EventSource连接
+    audioEventSource = new EventSource(`/api/audio_stream/${chatId}`);
+    
+    // 连接建立时的处理
+    audioEventSource.onopen = function() {
+        console.log('已连接到音频流');
+    };
+    
+    // 接收消息的处理
+    audioEventSource.onmessage = function(event) {
+        try {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'audio_segments' && data.segments && data.segments.length > 0) {
+                // 处理新的音频片段
+                audioPlayer.addSegments(data.segments);
+            }
+        } catch (error) {
+            console.error('处理音频流消息出错:', error);
+        }
+    };
+    
+    // 错误处理
+    audioEventSource.onerror = function(error) {
+        console.error('音频流连接错误:', error);
+        // 尝试重新连接
+        setTimeout(() => {
+            if (audioEventSource) {
+                audioEventSource.close();
+                audioEventSource = null;
+                connectToAudioStream(chatId);
+            }
+        }, 3000);
+    };
+}
+
+// 关闭音频流连接
+function closeAudioStream() {
+    if (audioEventSource) {
+        audioEventSource.close();
+        audioEventSource = null;
+    }
+}
+
 async function sendMessage() {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
@@ -171,7 +226,8 @@ async function sendMessage() {
             // 添加AI回复到界面
             addMessage(data.response, false);
             
-            // 处理音频片段
+            // 不再需要处理音频片段，因为会通过SSE推送
+            // 如果初始响应中包含音频片段，仍然可以处理
             if (data.audio_segments && data.audio_segments.length > 0) {
                 audioPlayer.addSegments(data.audio_segments);
             }
@@ -209,6 +265,18 @@ let currentChatId = generateChatId();
 
 // 创建新聊天
 function newChat() {
+    // 如果有当前聊天，先结束它
+    if (currentChatId) {
+        fetch(`/end_session/${currentChatId}`, { method: 'POST' })
+        .catch(error => console.error('结束会话出错:', error));
+        
+        // 关闭当前音频流
+        closeAudioStream();
+        
+        // 清空音频播放器
+        audioPlayer.clear();
+    }
+    
     currentChatId = generateChatId();
     document.getElementById('chat-messages').innerHTML = `
         <div class="message system">
@@ -220,6 +288,9 @@ function newChat() {
             </div>
         </div>
     `;
+    
+    // 连接到新的音频流
+    connectToAudioStream(currentChatId);
     
     // 更新侧边栏
     updateChatList();
@@ -287,6 +358,9 @@ async function loadChat(chatId) {
             fetch(`/end_session/${currentChatId}`, { method: 'POST' })
             .catch(error => console.error('结束会话出错:', error));
             
+            // 关闭当前音频流
+            closeAudioStream();
+            
             // 清空音频播放器
             audioPlayer.clear();
         }
@@ -350,6 +424,9 @@ async function loadChat(chatId) {
             
             // 滚动到底部
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // 连接到新的音频流
+            connectToAudioStream(chatId);
         }
     } catch (error) {
         console.error('Error loading chat history:', error);
@@ -475,40 +552,19 @@ window.addEventListener('load', async () => {
     if (chatHistory.length === 0) {
         newChat();
     }
+    
+    // 如果有当前聊天ID，连接到音频流
+    if (currentChatId) {
+        connectToAudioStream(currentChatId);
+    }
 });
 
-// 轮询获取新的音频片段
-function pollAudioSegments() {
-    if (!currentChatId) return;
-    
-    fetch(`/api/audio_segments/${currentChatId}`)
-    .then(response => response.json())
-    .then(data => {
-        if (data.audio_segments && data.audio_segments.length > 0) {
-            audioPlayer.addSegments(data.audio_segments);
-        }
-    })
-    .catch(error => {
-        console.error('Error polling audio segments:', error);
-    });
-}
-
-// 每秒轮询一次
-setInterval(pollAudioSegments, 1000);
-
-// 在用户离开页面或切换聊天时调用
+// 在页面关闭时关闭音频流
 window.addEventListener('beforeunload', () => {
+    closeAudioStream();
+    
     if (currentChatId) {
         // 使用同步请求确保在页面关闭前发送
         navigator.sendBeacon(`/end_session/${currentChatId}`);
     }
-});
-
-// 在切换聊天时也清理
-function loadChat(chatId) {
-    // 如果有当前聊天，先结束它
-    if (currentChatId && currentChatId !== chatId) {
-        fetch(`/end_session/${currentChatId}`, { method: 'POST' })
-        .catch(error => console.error('结束会话出错:', error));
-    }
-} 
+}); 

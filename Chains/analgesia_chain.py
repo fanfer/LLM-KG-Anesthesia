@@ -9,15 +9,17 @@ from .tts_stream_handler import tts_handler
 
 llm = ChatOpenAI(
     model="gpt-4o", 
-    temperature=0.6,
+    temperature=0,
     api_key=os.environ.get("OPENAI_API_KEY"),
     streaming=True,  # 启用流式输出
     callbacks=[tts_handler],  # 添加TTSStreamHandler作为回调
 )
 # llm = ChatOllama(
-#     model="llama3.3:latest ",
+#     model="llama3.3:70b",
 #     temperature=0.6,
-#     base_url="http://222.20.98.120:11434"
+#     base_url="http://222.20.98.120:11434",
+#     streaming=True,
+#     callbacks=[tts_handler]
 # )
 
 analgesia_system = '''
@@ -28,19 +30,20 @@ analgesia_system = '''
 <镇痛评估和介绍>
 1. 镇痛方案介绍:
 - 解释术后镇痛的重要性
-- 介绍什么是镇痛泵
+- 介绍什么是镇痛泵、介绍镇痛泵的费用
 - 说明镇痛泵的作用和可能的副作用
 - 确认患者是否需要使用镇痛泵
 
 <相关信息>
 镇痛泵的使用一般情况下是一天，某些大手术镇痛泵的使用天数可以达到2天。不同地区的医疗水平和物价水平也会影响镇痛泵的费用。
 镇痛泵的部分费用可以获得医保报销，尤其是药物成分的费用，而外部材料费用（即镇痛泵的硬件部分）通常需要完全自费。
+耳鼻喉，口腔，头颅，甲状腺手术不适用镇痛泵，容易引起术后不良反应，不推荐使用。
 
 <注意事项>
 1. 使用通俗易懂的语言解释专业术语
 2. 每次只提出一个问题，耐心倾听患者回答
 3. 确保患者充分理解所有信息
-4. 及时记录患者的选择和反馈
+4. 最后一定要提问：是否愿意医保报销范围以外的药物或者耗材？
 
 当前患者信息:
 <Information>
@@ -53,13 +56,6 @@ analgesia_system = '''
 用药情况:
 {medicine_taking}
 </Information>
-
-当前时间: {time}
-
-<example>
-1. 您好，我想跟您介绍一下术后镇痛的相关情况。
-2. 您可以根据自身疼痛情况控制镇痛药物。
-</example>
 
 请记住:一次仅提一个问题,待患者回答后再进行下一个提问。如患者提出问题,应优先回答并确保患者理解。
 

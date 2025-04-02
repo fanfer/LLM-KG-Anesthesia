@@ -187,8 +187,7 @@ def History_Agent(state: MedicalState):
             "user_information": user_information,
             "medical_history": medical_history,
             "medicine_taking": medicine_taking,
-        })
-        
+        })     
         return {
             "messages": result,
         }
@@ -206,14 +205,20 @@ Entry_Risk_Agent = create_entry_node(
 
 def Risk_Agent(state: MedicalState):
     try:
-        risk_chain = get_risk_chain()
+        risk_count = state.get('risk_count', 0)
+        risk_chain = get_risk_chain(risk_count)
         messages = state.get('messages', [])
         user_information = state.get('user_information', '')
         medical_history = state.get('medical_history', [])
         medicine_taking = state.get('medicine_taking', [])
+        if risk_count > 0:
+            # 计算要删除的消息的位置（从末尾数起的第几条）
+            target_index = -(risk_count * 2)
+            # 保留目标消息之前和之后的所有消息，只删除目标位置的消息
+            messages = messages[:target_index] + messages[target_index + 1:]
         
         # 获取会话ID
-        session_id = state.get('session_id', '')
+        session_id = state.get('session_id', 'default')
         
         # 导入全局事件字典
         from web.app import graph_qa_events
@@ -226,9 +231,6 @@ def Risk_Agent(state: MedicalState):
             
             if not wait_success:
                 print(f"会话 {session_id}: 等待知识图谱查询超时")
-        else:
-            print(f"会话 {session_id}: 未找到对应的事件对象，将直接使用当前状态")
-            # 等待一小段时间，以防状态尚未更新
         
         # 获取最新的图谱查询结果
         graph_qa_result = state.get('graph_qa_result', '')
@@ -244,10 +246,12 @@ def Risk_Agent(state: MedicalState):
                 "user_information": user_information,
                 "medical_history": medical_history,
                 "medicine_taking": medicine_taking,
-                "graph_qa_result": graph_qa_result
+                "graph_qa_result": graph_qa_result,
+                "risk_count": risk_count
         })
         return {
             "messages": result,
+            "risk_count": risk_count+1
         }
     except Exception as e:
         print(f"风险评估助手处理时出错: {str(e)}")
@@ -257,26 +261,32 @@ def Risk_Agent(state: MedicalState):
     
 def Analgesia_Agent(state: MedicalState):
     """处理镇痛相关的对话"""
-    # 获取chain
-    analgesia_chain = get_analgesia_chain()
-    
-    # 获取当前消息
-    messages = state.get('messages', [])
-    
-    # 准备上下文信息
-    context = {
-        "messages": messages,  # 只获取最新消息
-        "user_information": state.get("user_information", ""),
-        "medical_history": state.get("medical_history", ""),
-        "medicine_taking": state.get("medicine_taking", "")
-    }
-    
-    # 调用chain处理消息
-    response = analgesia_chain.invoke(context)
+    try:
+        # 获取chain
+        analgesia_chain = get_analgesia_chain()
+        
+        # 获取当前消息
+        messages = state.get('messages', [])
+        
+        # 准备上下文信息
+        context = {
+            "messages": messages,  # 只获取最新消息
+            "user_information": state.get("user_information", ""),
+            "medical_history": state.get("medical_history", ""),
+            "medicine_taking": state.get("medicine_taking", "")
+        }
+        
+        # 调用chain处理消息
+        response = analgesia_chain.invoke(context)
 
-    return {
-        "messages":response
-    }
+        return {
+            "messages":response
+        }
+    except Exception as e:
+        print(f"镇痛助手处理时出错: {str(e)}")
+        return {
+            "messages": [],
+        }
 
 def Graph_QA_Agent(state: MedicalState):
     """

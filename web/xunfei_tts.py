@@ -57,7 +57,7 @@ class XunfeiTTS(object):
         # 公共参数(common)
         self.CommonArgs = {"app_id": self.APPID}
         # 业务参数(business) # 3.21以后过期
-        self.BusinessArgs = {"aue": "raw", "auf": "audio/L16;rate=16000", "vcn": "x4_lingfeizhe_zl", "tte": "utf8"}
+        self.BusinessArgs = {"aue": "raw", "auf": "audio/L16;rate=16000", "vcn": "x4_lingfeizhe_zl", "tte": "utf8","speed":70}
         self.Data = {"status": 2, "text": str(base64.b64encode(self.Text.encode('utf-8')), "UTF8")}
         
         # 确保输出目录存在

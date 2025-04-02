@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>登录 - 麻醉医生助手系统</title>
+    <title>登录 - 术问</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="login-container">
         <div class="login-box">
-            <h2 style="text-align: center; margin-bottom: 1.5rem;">麻醉医生助手系统</h2>
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">术问</h2>
             <form method="POST" action="{{ url_for('login') }}">
                 {% if error %}
                 <div class="error" style="color: #dc3545; margin-bottom: 1rem; text-align: center;">{{ error }}</div>

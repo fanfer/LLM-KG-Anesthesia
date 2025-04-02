@@ -19,20 +19,24 @@ import traceback
 from xunfei_iat import XunfeiIAT
 import sounddevice as sd
 import soundfile as sf
+import io
 
-# 配置日志
+# 获取项目根目录
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# 使用最基础的日志配置
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'app.log'))
+        logging.FileHandler(os.path.join(ROOT_DIR, 'app.log'), encoding='utf-8'),
+        logging.StreamHandler()
     ]
 )
+
+# 创建应用程序日志记录器
 logger = logging.getLogger(__name__)
 
-# 获取项目根目录
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 加载环境变量
 load_dotenv(os.path.join(ROOT_DIR, '.env'))
 
@@ -40,9 +44,6 @@ sys.path.append(ROOT_DIR)
 from Graph.graph import graph
 from Chains.graph_qa_chain import get_graph_qa_chain
 from Chains.tts_stream_handler import tts_handler
-# 验证环境变量是否加载
-logger.info("OpenAI API Key: %s", os.getenv('OPENAI_API_KEY', 'Not found'))
-logger.info("OpenAI API Base: %s", os.getenv('OPENAI_API_BASE', 'Not found'))
 
 app = Flask(__name__)
 CORS(app)  # 启用CORS
@@ -83,7 +84,14 @@ iat = XunfeiIAT(
 
 # 用户凭证
 USERS = {
-    'admin': 'imds1234'
+    'admin': 'imds1234',
+    'user': 'user1234'
+}
+
+# 用户角色配置
+USER_ROLES = {
+    'admin': 'admin',
+    'user': 'user'
 }
 
 # 在文件开头添加对话记录目录配置
@@ -139,6 +147,7 @@ def login():
         
         if username in USERS and USERS[username] == password:
             session['username'] = username
+            session['role'] = USER_ROLES[username]  # 保存用户角色到session
             logger.info("Login successful, redirecting to chat")
             return redirect(url_for('chat'))
         logger.warning("Invalid credentials")
@@ -163,6 +172,8 @@ def chat():
 def run_graph_qa_in_background(graph, config, current_state, session_id):
     """在后台线程中运行graph_qa_chain，每个会话只运行一次"""
     try:
+        # 设置当前线程的会话ID
+        
         logger.info("会话 %s: 开始在后台执行知识图谱查询...", session_id)
         graph_qa_chain = get_graph_qa_chain()
         # 执行图谱查询
@@ -196,7 +207,6 @@ def run_graph_qa_in_background(graph, config, current_state, session_id):
         # 设置事件，通知等待的Risk_Agent
         if session_id in graph_qa_events:
             graph_qa_events[session_id].set()
-            logger.info("会话 %s: 已设置事件通知", session_id)
             
     except Exception as e:
         logger.error("会话 %s: 后台图谱查询出错: %s", session_id, str(e))
@@ -216,7 +226,6 @@ def run_graph_qa_in_background(graph, config, current_state, session_id):
         # 设置事件，通知等待的Risk_Agent
         if session_id in graph_qa_events:
             graph_qa_events[session_id].set()
-            logger.info("会话 %s: 错误情况下已设置事件通知", session_id)
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
@@ -236,6 +245,9 @@ def send_message():
         # 创建会话ID
         username = session['username']
         session_id = chat_id  # 使用chat_id作为会话ID
+        
+        # 设置当前会话ID给tts_handler
+        tts_handler.set_current_session_id(session_id)
         
         # 初始化会话相关的线程状态（如果不存在）
         if session_id not in graph_qa_locks:
@@ -264,6 +276,10 @@ def send_message():
         
         # 使用graph处理消息
         config = {"configurable": {"thread_id": session_id}}
+        
+        # 确保在处理事件流之前设置会话ID
+        tts_handler.set_current_session_id(chat_id)
+        
         events = graph.stream(
             {"messages": ("human", message)},
             config,
@@ -275,17 +291,19 @@ def send_message():
         current_dialog_state = None
         
         for event in events:
+            # 确保每个事件处理都使用正确的会话ID
+            tts_handler.set_current_session_id(chat_id)
+            
             if "current_step" in event:
                 current_step = event["current_step"]
                 if current_step == 100:
                     # 播放完成音频
-                    audio_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'web', 'static', 'audio', 'output.wav')
+                    audio_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'web', 'static','output.wav')
                     if os.path.exists(audio_file):
                         data, fs = sf.read(audio_file)
                         sd.play(data, fs)
                         sd.wait()  # 等待音频播放完成
-                        logger.info("音频播放完成")
-                        current_step = 5
+                        current_step = 100
                         # 更新状态
                         graph.update_state(
                             config,
@@ -342,12 +360,13 @@ def send_message():
         
         # 保存AI响应
         save_chat_message(chat_id, last_message, is_user=False)
-        audio_segments = tts_handler.get_audio_segments()
+        audio_segments = tts_handler.get_audio_segments(session_id=session_id)
         
         # 返回响应，但不需要生成音频文件，因为音频已经在流式过程中播放
         return jsonify({
             'response': last_message,
-            'audio_segments': audio_segments
+            'audio_segments': audio_segments,
+            'current_step': current_step if 'current_step' in locals() else None
         })
     except Exception as e:
         traceback.print_exc()
@@ -357,6 +376,10 @@ def send_message():
 def load_chat_history(chat_id):
     """加载完整的对话历史"""
     try:
+        # 检查用户角色
+        if session.get('role') == 'user':
+            return jsonify({'messages': []})  # user用户返回空历史记录
+            
         chat_file = os.path.join(CHAT_LOGS_DIR, f'{chat_id}.txt')
         if not os.path.exists(chat_file):
             return jsonify({'messages': []})
@@ -406,6 +429,10 @@ def list_chats():
         return jsonify({'error': 'Not authenticated'}), 401
         
     try:
+        # 检查用户角色
+        if session.get('role') == 'user':
+            return jsonify({'chats': []})  # user用户返回空列表
+            
         # 获取聊天记录目录中的所有文件
         chat_files = [f.replace('.txt', '') for f in os.listdir(CHAT_LOGS_DIR) 
                      if f.endswith('.txt')]
@@ -463,8 +490,6 @@ client = OpenAI()
 @app.route('/speech-to-text', methods=['POST'])
 def speech_to_text():
     try:
-        logger.info("收到语音转文本请求")
-        
         if not request.json:
             logger.error("请求中没有JSON数据")
             return jsonify({'error': '无效的请求格式'}), 400
@@ -474,17 +499,14 @@ def speech_to_text():
             logger.error("请求中没有音频数据")
             return jsonify({'error': '请求中没有音频数据'}), 400
             
-        logger.info("开始调用科大讯飞语音识别")
         start_time = time.time()
         
         # 使用科大讯飞IAT进行语音识别
         text = iat.recognize_audio(audio_data)
         
         end_time = time.time()
-        logger.info(f"语音识别完成，耗时: {end_time - start_time:.2f}秒")
         
         if text and not text.startswith("语音识别出错") and not text.startswith("未能识别"):
-            logger.info(f"识别成功，文本长度: {len(text)}")
             return jsonify({'text': text})
         else:
             logger.warning(f"识别结果不理想: {text}")
@@ -583,18 +605,22 @@ def favicon():
 def get_audio_segments(chat_id):
     """获取指定会话的音频片段"""
     try:
-        session_id = chat_id
+        # 获取指定会话的音频片段
+        audio_segments = tts_handler.get_audio_segments(session_id=chat_id)
         
-        # 获取当前对话状态
-        config = {"configurable": {"thread_id": session_id}}
-        state = graph.get_state(config).values
-        current_dialog_state = state.get('dialog_state', ['verify_information'])[-1]
+        # 验证音频片段的有效性
+        valid_segments = []
+        for segment in audio_segments:
+            # 检查文件是否存在
+            if os.path.exists(segment['path']):
+                valid_segments.append(segment)
+            else:
+                logger.warning(f"音频文件不存在: {segment['path']}")
         
-        audio_segments = tts_handler.get_audio_segments()
-        
-        return jsonify({'audio_segments': audio_segments})
+        return jsonify({'audio_segments': valid_segments})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"获取音频片段出错: {str(e)}")
+        return jsonify({'error': str(e), 'audio_segments': []}), 500
 
 @app.route('/api/delete_played_segments', methods=['POST'])
 def delete_played_segments():
@@ -607,11 +633,8 @@ def delete_played_segments():
         if not chat_id or not segment_ids:
             return jsonify({'error': '无效的请求参数'}), 400
         
-        # 获取当前对话状态
-        config = {"configurable": {"thread_id": chat_id}}
-        
-        # 删除已播放的音频片段
-        deleted_count = tts_handler.delete_segments(segment_ids)
+        # 删除指定会话的已播放音频片段
+        deleted_count = tts_handler.delete_segments(segment_ids, session_id=chat_id)
         
         return jsonify({
             'success': True,
@@ -642,8 +665,8 @@ cleanup_thread.start()
 def end_session(chat_id):
     """结束会话，清理相关资源"""
     try:
-        # 删除所有相关的音频文件
-        deleted_count = tts_handler.delete_segments([-1])  # -1表示删除所有片段
+        # 删除指定会话的所有音频片段
+        deleted_count = tts_handler.delete_segments([-1], session_id=chat_id)
         
         return jsonify({
             'success': True,
@@ -662,27 +685,65 @@ def audio_stream(chat_id):
         # 记录已发送的最后一个片段ID
         last_sent_id = -1
         
-        while True:
+        # 连接保持时间（秒）
+        max_connection_time = 3600  # 1小时
+        start_time = time.time()
+        
+        # 记录错误片段，避免重复报告
+        reported_error_segments = set()
+        
+        while time.time() - start_time < max_connection_time:
             try:
-                # 获取音频片段
-                audio_segments = tts_handler.get_audio_segments()
+                # 获取指定会话的音频片段
+                audio_segments = tts_handler.get_audio_segments(session_id=chat_id)
                 
-                # 过滤出新的片段
-                new_segments = [s for s in audio_segments if s['id'] > last_sent_id]
+                # 验证音频片段的有效性
+                valid_segments = []
+                error_segments = []
                 
-                if new_segments:
+                for segment in audio_segments:
+                    if segment['id'] > last_sent_id:
+                        # 检查文件是否存在
+                        if os.path.exists(segment['path']):
+                            valid_segments.append(segment)
+                        else:
+                            # 记录错误片段
+                            if segment['id'] not in reported_error_segments:
+                                logger.warning(f"音频文件不存在: {segment['path']}")
+                                error_segments.append({
+                                    'id': segment['id'],
+                                    'error': '音频文件不存在',
+                                    'text': segment.get('text', '未知文本')
+                                })
+                                reported_error_segments.add(segment['id'])
+                
+                # 发送有效片段
+                if valid_segments:
                     # 更新最后发送的ID
-                    last_sent_id = max(s['id'] for s in new_segments)
+                    last_sent_id = max(s['id'] for s in valid_segments)
                     
                     # 发送新片段
-                    yield f"data: {json.dumps({'type': 'audio_segments', 'segments': new_segments})}\n\n"
+                    yield f"data: {json.dumps({'type': 'audio_segments', 'segments': valid_segments})}\n\n"
+                
+                # 发送错误片段信息
+                if error_segments:
+                    yield f"data: {json.dumps({'type': 'audio_errors', 'errors': error_segments})}\n\n"
+                    
+                    # 尝试删除错误片段
+                    error_ids = [segment['id'] for segment in error_segments]
+                    try:
+                        tts_handler.delete_segments(error_ids, session_id=chat_id)
+                    except Exception as e:
+                        logger.error(f"删除错误音频片段失败: {str(e)}")
                 
                 # 短暂休眠，避免CPU占用过高
-                time.sleep(0.2)
+                time.sleep(0.1)
             except Exception as e:
                 logger.error(f"音频流发送错误: {str(e)}")
                 yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
-                break
+                time.sleep(1)  # 出错后等待1秒再继续
+        # 连接超时，发送关闭消息
+        yield f"data: {json.dumps({'type': 'timeout', 'message': 'Connection timeout after 1 hour'})}\n\n"
     
     # 设置响应头
     response = app.response_class(
@@ -694,11 +755,51 @@ def audio_stream(chat_id):
     response.headers['X-Accel-Buffering'] = 'no'  # 禁用Nginx缓冲
     return response
 
+@app.route('/api/tts', methods=['POST'])
+def api_tts():
+    """将文本转换为语音并返回音频文件URL"""
+    try:
+        data = request.json
+        text = data.get('text')
+        chat_id = data.get('chatId')
+        
+        if not text or not chat_id:
+            return jsonify({'error': '无效的请求参数'}), 400
+        
+        # 设置当前会话ID
+        tts_handler.set_current_session_id(chat_id)
+        # 确保音频目录存在
+        chat_audio_dir = os.path.join(AUDIO_DIR, str(chat_id))
+        os.makedirs(chat_audio_dir, exist_ok=True)
+        
+        # 生成唯一的文件名
+        timestamp = int(time.time() * 1000)
+        audio_filename = f"tts_{timestamp}.wav"
+        audio_path = os.path.join(chat_audio_dir, audio_filename)
+        
+        # 调用科大讯飞TTS服务生成音频
+        success = tts.convert(text, audio_path)
+        
+        if success and os.path.exists(audio_path):
+            # 返回音频文件URL
+            audio_url = f'/static/audio/{chat_id}/{audio_filename}'
+            return jsonify({
+                'success': True,
+                'audio_url': audio_url
+            })
+        else:
+            return jsonify({'error': '生成音频失败'}), 500
+    except Exception as e:
+        logger.error(f"TTS处理出错: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     if not check_environment():
         logger.error("请检查.env文件配置")
         sys.exit(1)
-        
+    
+    logger.info("启动Flask应用服务器...")
+    
     app.run(
         host='0.0.0.0',
         port=8080,

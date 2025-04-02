@@ -44,6 +44,7 @@ class AudioStreamPlayer {
         this.isPlaying = false;
         this.lastSegmentId = -1;
         this.playedSegments = []; // 存储已播放的片段ID
+        this.retryMap = new Map(); // 存储重试次数的映射
     }
     
     // 添加新的音频片段到队列
@@ -76,34 +77,204 @@ class AudioStreamPlayer {
         this.isPlaying = true;
         const segment = this.audioQueue.shift();
         
+        // 检查URL是否有效
+        if (!segment || !segment.url) {
+            console.error('无效的音频片段:', segment);
+            // 显示错误提示
+            this._showErrorToast('音频片段无效，已跳过');
+            this.notifySegmentPlayed(segment ? segment.id : -1); // 标记为已播放
+            this.playNext(); // 继续播放下一个
+            return;
+        }
+        
+        // 获取当前片段的重试次数
+        const segmentId = segment.id;
+        const retryCount = this.retryMap.get(segmentId) || 0;
+        
+        console.log('开始播放音频片段:', segmentId, segment.url, '重试次数:', retryCount);
+        
         const audio = new Audio(segment.url);
+        
+        // 设置超时，防止音频加载过久
+        const loadTimeout = setTimeout(() => {
+            console.warn('音频加载超时:', segment.url);
+            
+            // 检查是否可以重试
+            if (retryCount < 1) {
+                console.log('音频加载超时，尝试重试:', segmentId);
+                this._showErrorToast('音频加载超时，正在重试...');
+                
+                // 更新重试次数
+                this.retryMap.set(segmentId, retryCount + 1);
+                
+                // 将片段重新添加到队列前面
+                this.audioQueue.unshift(segment);
+                
+                // 清除超时并继续下一个
+                clearTimeout(loadTimeout);
+                this.playNext();
+            } else {
+                // 已达到最大重试次数
+                this._showErrorToast('音频加载超时，已跳过');
+                this.retryMap.delete(segmentId); // 清除重试记录
+                audio.onerror(new Error('音频加载超时'));
+            }
+        }, 5000);
+        
+        // 音频加载完成时清除超时
+        audio.onloadeddata = () => {
+            clearTimeout(loadTimeout);
+        };
+        
         audio.onended = () => {
+            console.log('音频片段播放完成:', segmentId);
+            // 清除重试记录
+            this.retryMap.delete(segmentId);
             // 通知服务器该片段已播放完成
-            this.notifySegmentPlayed(segment.id);
+            this.notifySegmentPlayed(segmentId);
             this.playNext();
         };
+        
         audio.onerror = (error) => {
-            console.error('音频播放错误:', error);
-            this.notifySegmentPlayed(segment.id); // 即使出错也标记为已播放
-            this.playNext();
+            clearTimeout(loadTimeout);
+            console.error('音频播放错误:', error, segment.url);
+            
+            // 检查是否可以重试
+            if (retryCount < 1) {
+                console.log('音频播放错误，尝试重试:', segmentId);
+                this._showErrorToast('音频播放失败，正在重试...');
+                
+                // 更新重试次数
+                this.retryMap.set(segmentId, retryCount + 1);
+                
+                // 将片段重新添加到队列前面
+                this.audioQueue.unshift(segment);
+                
+                // 继续下一个
+                this.playNext();
+            } else {
+                // 已达到最大重试次数
+                this._showErrorToast('音频播放失败，已跳过');
+                this.retryMap.delete(segmentId); // 清除重试记录
+                this.notifySegmentPlayed(segmentId); // 即使出错也标记为已播放
+                this.playNext();
+            }
         };
+        
+        // 添加加载事件处理
+        audio.onloadstart = () => console.log('音频开始加载:', segmentId);
+        audio.oncanplay = () => console.log('音频可以播放:', segmentId);
+        
+        // 尝试播放音频
         audio.play().catch(error => {
-            console.error('音频播放失败:', error);
-            this.notifySegmentPlayed(segment.id); // 即使出错也标记为已播放
-            this.playNext();
+            console.error('音频播放失败:', error, segment.url);
+            
+            // 检查是否可以重试
+            if (retryCount < 1) {
+                console.log('音频播放失败，尝试重试:', segmentId);
+                this._showErrorToast('音频播放失败，正在重试...');
+                
+                // 更新重试次数
+                this.retryMap.set(segmentId, retryCount + 1);
+                
+                // 将片段重新添加到队列前面
+                this.audioQueue.unshift(segment);
+                
+                // 继续下一个
+                this.playNext();
+            } else {
+                // 已达到最大重试次数
+                this._showErrorToast('音频播放失败，已跳过');
+                this.retryMap.delete(segmentId); // 清除重试记录
+                this.notifySegmentPlayed(segmentId); // 即使出错也标记为已播放
+                this.playNext();
+            }
         });
+    }
+    
+    // 显示错误提示
+    _showErrorToast(message) {
+        // 创建或获取toast容器
+        let toastContainer = document.getElementById('audio-toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'audio-toast-container';
+            toastContainer.style.position = 'fixed';
+            toastContainer.style.bottom = '20px';
+            toastContainer.style.right = '20px';
+            toastContainer.style.zIndex = '9999';
+            document.body.appendChild(toastContainer);
+        }
+        
+        // 创建toast元素
+        const toast = document.createElement('div');
+        toast.className = 'audio-error-toast';
+        toast.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+        toast.style.color = 'white';
+        toast.style.padding = '10px 15px';
+        toast.style.borderRadius = '4px';
+        toast.style.marginTop = '10px';
+        toast.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.transition = 'opacity 0.5s';
+        
+        // 添加图标
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-exclamation-circle';
+        icon.style.marginRight = '10px';
+        toast.appendChild(icon);
+        
+        // 添加消息
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = message;
+        toast.appendChild(messageSpan);
+        
+        // 添加到容器
+        toastContainer.appendChild(toast);
+        
+        // 3秒后自动消失
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 500);
+        }, 3000);
     }
     
     // 通知服务器片段已播放完成
     notifySegmentPlayed(segmentId) {
         // 避免重复通知
-        if (this.playedSegments.includes(segmentId)) return;
+        if (this.playedSegments.includes(segmentId) && segmentId !== -1) return;
         
-        this.playedSegments.push(segmentId);
-        
-        // 每10个已播放片段清理一次，避免数组过大
-        if (this.playedSegments.length > 10) {
-            // 发送批量删除请求
+        // 如果是-1（删除所有片段）或者是普通片段ID
+        if (segmentId === -1) {
+            // 立即发送删除所有片段的请求
+            fetch('/api/delete_played_segments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chatId: currentChatId,
+                    segmentIds: [-1]
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('已通知服务器删除所有音频片段');
+                    this.playedSegments = []; // 清空已通知的片段列表
+                }
+            })
+            .catch(error => {
+                console.error('通知服务器删除音频片段失败:', error);
+            });
+        } else {
+            this.playedSegments.push(segmentId);
+            
+            // 立即发送删除请求，不等待积累
             fetch('/api/delete_played_segments', {
                 method: 'POST',
                 headers: {
@@ -131,11 +302,10 @@ class AudioStreamPlayer {
         this.audioQueue = [];
         this.isPlaying = false;
         this.lastSegmentId = -1;
+        this.retryMap.clear(); // 清空重试记录
         
-        // 通知服务器删除所有已播放的片段
-        if (this.playedSegments.length > 0) {
-            this.notifySegmentPlayed(-1); // 触发清理
-        }
+        // 立即通知服务器删除所有片段
+        this.notifySegmentPlayed(-1);
     }
 }
 
@@ -169,6 +339,29 @@ function connectToAudioStream(chatId) {
             if (data.type === 'audio_segments' && data.segments && data.segments.length > 0) {
                 // 处理新的音频片段
                 audioPlayer.addSegments(data.segments);
+            } else if (data.type === 'audio_errors' && data.errors && data.errors.length > 0) {
+                // 处理音频错误信息
+                console.warn('收到音频错误信息:', data.errors);
+                
+                // 显示错误提示
+                for (const error of data.errors) {
+                    const errorMessage = `音频片段 #${error.id} 播放失败: ${error.error}`;
+                    audioPlayer._showErrorToast(errorMessage);
+                }
+            } else if (data.type === 'error') {
+                // 处理服务器错误
+                console.error('服务器错误:', data.message);
+                audioPlayer._showErrorToast(`服务器错误: ${data.message}`);
+            } else if (data.type === 'timeout') {
+                // 处理连接超时
+                console.warn('音频流连接超时:', data.message);
+                audioPlayer._showErrorToast('音频流连接超时，请刷新页面');
+                
+                // 关闭连接
+                if (audioEventSource) {
+                    audioEventSource.close();
+                    audioEventSource = null;
+                }
             }
         } catch (error) {
             console.error('处理音频流消息出错:', error);
@@ -178,6 +371,8 @@ function connectToAudioStream(chatId) {
     // 错误处理
     audioEventSource.onerror = function(error) {
         console.error('音频流连接错误:', error);
+        audioPlayer._showErrorToast('音频流连接错误，尝试重新连接中...');
+        
         // 尝试重新连接
         setTimeout(() => {
             if (audioEventSource) {
@@ -197,11 +392,47 @@ function closeAudioStream() {
     }
 }
 
+// 添加标记变量
+let hasPlayedCompletionAudio = false;
+
+// 播放完成音频
+function playCompletionAudio() {
+    if (hasPlayedCompletionAudio) {
+        return; // 如果已经播放过,直接返回
+    }
+    const audio = document.getElementById('tts-audio');
+    audio.src = '/static/output.wav';
+    audio.play().catch(error => {
+        console.error('播放完成音频失败:', error);
+    });
+    hasPlayedCompletionAudio = true; // 标记为已播放
+}
+
 async function sendMessage() {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
     
     if (!message) return;
+    
+    // 清空音频队列并删除所有相关的音频文件
+    audioPlayer.clear();
+    
+    // 在发送新消息前，确保删除当前会话的所有音频文件
+    try {
+        await fetch('/api/delete_played_segments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chatId: currentChatId,
+                segmentIds: [-1]  // -1表示删除所有片段
+            })
+        });
+        console.log('已删除当前会话的所有音频文件');
+    } catch (error) {
+        console.error('删除音频文件失败:', error);
+    }
     
     // 添加用户消息到界面
     addMessage(message, true);
@@ -225,6 +456,11 @@ async function sendMessage() {
         if (response.ok) {
             // 添加AI回复到界面
             addMessage(data.response, false);
+            
+            // 检查是否需要播放完成音频
+            if (data.current_step === 100 && !hasPlayedCompletionAudio) {
+                playCompletionAudio();
+            }
             
             // 不再需要处理音频片段，因为会通过SSE推送
             // 如果初始响应中包含音频片段，仍然可以处理
@@ -264,39 +500,74 @@ function generateChatId() {
 let currentChatId = generateChatId();
 
 // 创建新聊天
-function newChat() {
-    // 如果有当前聊天，先结束它
-    if (currentChatId) {
-        fetch(`/end_session/${currentChatId}`, { method: 'POST' })
-        .catch(error => console.error('结束会话出错:', error));
+async function newChat() {
+    try {
+        // 重置完成音频播放标记
+        hasPlayedCompletionAudio = false;
         
-        // 关闭当前音频流
-        closeAudioStream();
+        // 如果有当前聊天，先结束它
+        if (currentChatId) {
+            // 删除当前会话的所有音频文件
+            try {
+                await fetch('/api/delete_played_segments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chatId: currentChatId,
+                        segmentIds: [-1]  // -1表示删除所有片段
+                    })
+                });
+                console.log('已删除当前会话的所有音频文件');
+            } catch (error) {
+                console.error('删除音频文件失败:', error);
+            }
+            
+            fetch(`/end_session/${currentChatId}`, { method: 'POST' })
+            .catch(error => console.error('结束会话出错:', error));
+            
+            // 关闭当前音频流
+            closeAudioStream();
+            
+            // 清空音频播放器
+            audioPlayer.clear();
+        }
         
-        // 清空音频播放器
-        audioPlayer.clear();
+        currentChatId = generateChatId();
+        document.getElementById('chat-messages').innerHTML = `
+            <div class="message system">
+                <div class="avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    请医生输入患者信息(姓名，年龄，性别，手术，麻醉方式等)
+                </div>
+            </div>
+        `;
+        
+        // 连接到新的音频流
+        connectToAudioStream(currentChatId);
+        
+        // 更新侧边栏
+        updateChatList();
+        
+        // 保存到本地存储
+        saveChatHistory();
+        
+        // 滚动到底部
+        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+        
+        // 如果是移动端，自动隐藏侧边栏
+        if (window.innerWidth <= 768) {
+            closeSidebar();
+        }
+        
+        // 更新聊天历史列表
+        updateChatList();
+    } catch (error) {
+        console.error('创建新聊天出错:', error);
     }
-    
-    currentChatId = generateChatId();
-    document.getElementById('chat-messages').innerHTML = `
-        <div class="message system">
-            <div class="avatar">
-                <i class="fas fa-robot"></i>
-            </div>
-            <div class="message-content">
-                请医生输入患者信息(姓名，年龄，性别，手术，麻醉方式等)
-            </div>
-        </div>
-    `;
-    
-    // 连接到新的音频流
-    connectToAudioStream(currentChatId);
-    
-    // 更新侧边栏
-    updateChatList();
-    
-    // 保存到本地存储
-    saveChatHistory();
 }
 
 // 更新聊天列表
@@ -355,6 +626,23 @@ async function loadChat(chatId) {
     try {
         // 如果有当前聊天，先结束它
         if (currentChatId && currentChatId !== chatId) {
+            // 删除当前会话的所有音频文件
+            try {
+                await fetch('/api/delete_played_segments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chatId: currentChatId,
+                        segmentIds: [-1]  // -1表示删除所有片段
+                    })
+                });
+                console.log('已删除当前会话的所有音频文件');
+            } catch (error) {
+                console.error('删除音频文件失败:', error);
+            }
+            
             fetch(`/end_session/${currentChatId}`, { method: 'POST' })
             .catch(error => console.error('结束会话出错:', error));
             
@@ -425,8 +713,30 @@ async function loadChat(chatId) {
             // 滚动到底部
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             
+            // 如果是移动端，自动隐藏侧边栏
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+            
             // 连接到新的音频流
             connectToAudioStream(chatId);
+            
+            // 确保新会话开始时没有旧的音频文件
+            try {
+                await fetch('/api/delete_played_segments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chatId: chatId,
+                        segmentIds: [-1]  // -1表示删除所有片段
+                    })
+                });
+                console.log('已清理新会话的旧音频文件');
+            } catch (error) {
+                console.error('清理音频文件失败:', error);
+            }
         }
     } catch (error) {
         console.error('Error loading chat history:', error);
@@ -567,4 +877,382 @@ window.addEventListener('beforeunload', () => {
         // 使用同步请求确保在页面关闭前发送
         navigator.sendBeacon(`/end_session/${currentChatId}`);
     }
-}); 
+});
+
+// 检测是否为移动设备
+function isMobileDevice() {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+
+// 移动端音频播放辅助函数
+function playAudioOnMobile(audioElement, onSuccess, onError) {
+    console.log('使用移动端音频播放辅助函数');
+    
+    // 确保音频元素已经准备好
+    if (audioElement.readyState === 0) {
+        audioElement.load();
+    }
+    
+    // 添加一次性点击事件处理器来触发播放
+    const playHandler = function() {
+        console.log('用户交互触发音频播放');
+        
+        // 移除事件监听器
+        document.removeEventListener('click', playHandler);
+        
+        // 尝试播放
+        const playPromise = audioElement.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('移动端音频播放成功');
+                if (onSuccess) onSuccess();
+            }).catch(error => {
+                console.error('移动端音频播放失败:', error);
+                if (onError) onError(error);
+            });
+        }
+    };
+    
+    // 如果已经有用户交互，直接尝试播放
+    const playPromise = audioElement.play();
+    
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log('直接播放成功');
+            if (onSuccess) onSuccess();
+        }).catch(error => {
+            console.error('直接播放失败，等待用户交互:', error);
+            // 需要用户交互，添加点击事件
+            document.addEventListener('click', playHandler);
+            
+            // 提示用户需要交互
+            alert('请点击屏幕任意位置开始播放音频');
+        });
+    }
+}
+
+// 播放最后一条AI消息
+async function playLastMessage() {
+    try {
+        // 获取所有消息元素
+        const messages = document.querySelectorAll('.message');
+        if (messages.length === 0) return;
+        
+        // 找到最后一条AI消息
+        let lastAIMessage = null;
+        for (let i = messages.length - 1; i >= 0; i--) {
+            if (!messages[i].classList.contains('user')) {
+                lastAIMessage = messages[i];
+                break;
+            }
+        }
+        
+        if (!lastAIMessage) {
+            console.log('没有找到AI消息');
+            audioPlayer._showErrorToast('没有找到可播放的消息');
+            return;
+        }
+        
+        // 获取消息内容
+        const messageContent = lastAIMessage.querySelector('.message-content').textContent.trim();
+        if (!messageContent) {
+            console.log('消息内容为空');
+            audioPlayer._showErrorToast('消息内容为空，无法播放');
+            return;
+        }
+        
+        // 显示加载状态
+        const ttsBtn = document.getElementById('tts-btn');
+        const originalContent = ttsBtn.innerHTML;
+        ttsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+        ttsBtn.disabled = true;
+        
+        // 清空当前音频队列并删除所有相关的音频文件
+        audioPlayer.clear();
+        
+        // 在播放新音频前，确保删除当前会话的所有音频文件
+        try {
+            await fetch('/api/delete_played_segments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chatId: currentChatId,
+                    segmentIds: [-1]  // -1表示删除所有片段
+                })
+            });
+            console.log('已删除当前会话的所有音频文件');
+        } catch (error) {
+            console.error('删除音频文件失败:', error);
+            // 继续执行，不阻止播放尝试
+        }
+        
+        // 设置全局超时，确保按钮状态最终会恢复
+        const globalTimeout = setTimeout(() => {
+            console.warn('TTS操作超时，恢复按钮状态');
+            ttsBtn.innerHTML = originalContent;
+            ttsBtn.disabled = false;
+            audioPlayer._showErrorToast('语音生成超时，请重试');
+        }, 15000); // 15秒超时
+        
+        // 尝试播放函数，支持重试
+        const tryPlayAudio = async (retryCount = 0) => {
+            try {
+                // 调用TTS API
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: messageContent,
+                        chatId: currentChatId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // 获取或创建音频元素
+                    let audio;
+                    if (isMobileDevice()) {
+                        // 在移动设备上使用已有的audio元素
+                        audio = document.getElementById('tts-audio');
+                    } else {
+                        // 在桌面设备上创建新的音频元素
+                        audio = new Audio();
+                    }
+                    
+                    // 设置加载超时
+                    const loadTimeout = setTimeout(() => {
+                        console.warn('音频加载超时');
+                        
+                        if (retryCount < 1) {
+                            // 尝试重试
+                            console.log('音频加载超时，尝试重试');
+                            audioPlayer._showErrorToast('音频加载超时，正在重试...');
+                            clearTimeout(loadTimeout);
+                            
+                            // 重试
+                            tryPlayAudio(retryCount + 1);
+                        } else {
+                            // 已达到最大重试次数
+                            clearTimeout(globalTimeout);
+                            ttsBtn.innerHTML = originalContent;
+                            ttsBtn.disabled = false;
+                            
+                            // 显示错误提示
+                            audioPlayer._showErrorToast('音频加载超时，已跳过');
+                            
+                            // 尝试删除音频文件
+                            fetch('/api/delete_played_segments', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    chatId: currentChatId,
+                                    segmentIds: [-1]
+                                })
+                            }).catch(e => console.error('删除音频文件失败:', e));
+                        }
+                    }, 8000); // 8秒加载超时
+                    
+                    // 显示播放状态
+                    ttsBtn.innerHTML = '<i class="fas fa-play"></i> 播放中...';
+                    
+                    // 添加所有可能的事件处理
+                    audio.onloadeddata = () => {
+                        console.log('音频数据已加载');
+                        clearTimeout(loadTimeout);
+                        
+                        if (isMobileDevice()) {
+                            // 使用移动端辅助函数播放
+                            playAudioOnMobile(audio, 
+                                // 成功回调
+                                () => {
+                                    console.log('移动端音频播放成功');
+                                },
+                                // 失败回调
+                                (error) => {
+                                    console.error('移动端音频播放失败:', error);
+                                    
+                                    if (retryCount < 1) {
+                                        // 尝试重试
+                                        console.log('移动端音频播放失败，尝试重试');
+                                        audioPlayer._showErrorToast('音频播放失败，正在重试...');
+                                        
+                                        // 重试
+                                        tryPlayAudio(retryCount + 1);
+                                    } else {
+                                        // 已达到最大重试次数
+                                        clearTimeout(globalTimeout);
+                                        ttsBtn.innerHTML = originalContent;
+                                        ttsBtn.disabled = false;
+                                        audioPlayer._showErrorToast('移动端音频播放失败，已跳过');
+                                    }
+                                }
+                            );
+                        } else {
+                            // 桌面端直接播放
+                            const playPromise = audio.play();
+                            
+                            if (playPromise !== undefined) {
+                                playPromise.then(() => {
+                                    console.log('音频开始播放');
+                                }).catch(error => {
+                                    console.error('播放音频失败:', error);
+                                    
+                                    if (retryCount < 1) {
+                                        // 尝试重试
+                                        console.log('音频播放失败，尝试重试');
+                                        audioPlayer._showErrorToast('音频播放失败，正在重试...');
+                                        
+                                        // 重试
+                                        tryPlayAudio(retryCount + 1);
+                                    } else {
+                                        // 已达到最大重试次数
+                                        clearTimeout(globalTimeout);
+                                        ttsBtn.innerHTML = originalContent;
+                                        ttsBtn.disabled = false;
+                                        audioPlayer._showErrorToast('播放音频失败，已跳过');
+                                    }
+                                });
+                            }
+                        }
+                    };
+                    
+                    audio.oncanplay = () => {
+                        console.log('音频可以播放');
+                    };
+                    
+                    audio.onplay = () => {
+                        console.log('音频播放开始');
+                        ttsBtn.innerHTML = '<i class="fas fa-volume-up"></i> 播放中...';
+                    };
+                    
+                    audio.onended = () => {
+                        console.log('音频播放完成');
+                        // 播放结束后恢复按钮状态
+                        clearTimeout(globalTimeout);
+                        ttsBtn.innerHTML = originalContent;
+                        ttsBtn.disabled = false;
+                        
+                        // 播放结束后删除音频文件
+                        fetch('/api/delete_played_segments', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                chatId: currentChatId,
+                                segmentIds: [-1]  // -1表示删除所有片段
+                            })
+                        }).catch(error => {
+                            console.error('删除音频文件失败:', error);
+                        });
+                    };
+                    
+                    audio.onerror = (error) => {
+                        console.error('音频加载错误:', error);
+                        clearTimeout(loadTimeout);
+                        
+                        if (retryCount < 1) {
+                            // 尝试重试
+                            console.log('音频加载错误，尝试重试');
+                            audioPlayer._showErrorToast('音频加载失败，正在重试...');
+                            
+                            // 重试
+                            tryPlayAudio(retryCount + 1);
+                        } else {
+                            // 已达到最大重试次数
+                            clearTimeout(globalTimeout);
+                            ttsBtn.innerHTML = originalContent;
+                            ttsBtn.disabled = false;
+                            
+                            // 显示错误提示
+                            audioPlayer._showErrorToast('音频加载失败，已跳过');
+                        }
+                    };
+                    
+                    audio.onabort = () => {
+                        console.log('音频播放被中止');
+                        clearTimeout(loadTimeout);
+                        clearTimeout(globalTimeout);
+                        ttsBtn.innerHTML = originalContent;
+                        ttsBtn.disabled = false;
+                        audioPlayer._showErrorToast('音频播放被中止');
+                    };
+                    
+                    audio.onstalled = () => {
+                        console.log('音频播放停滞');
+                        audioPlayer._showErrorToast('音频播放停滞，尝试恢复中...');
+                    };
+                    
+                    // 添加时间更新事件，确认音频正在播放
+                    let playbackStarted = false;
+                    audio.ontimeupdate = () => {
+                        if (!playbackStarted) {
+                            console.log('音频播放进行中:', audio.currentTime);
+                            playbackStarted = true;
+                        }
+                    };
+                    
+                    // 设置音频源并添加时间戳防止缓存
+                    audio.src = data.audio_url + '?t=' + new Date().getTime();
+                    
+                    // 预加载音频
+                    audio.load();
+                } else {
+                    console.error('TTS API错误:', data.error);
+                    
+                    if (retryCount < 1) {
+                        // 尝试重试
+                        console.log('TTS API错误，尝试重试');
+                        audioPlayer._showErrorToast('生成语音失败，正在重试...');
+                        
+                        // 重试
+                        tryPlayAudio(retryCount + 1);
+                    } else {
+                        // 已达到最大重试次数
+                        clearTimeout(globalTimeout);
+                        audioPlayer._showErrorToast('生成语音失败，已跳过');
+                        ttsBtn.innerHTML = originalContent;
+                        ttsBtn.disabled = false;
+                    }
+                }
+            } catch (error) {
+                console.error('播放音频出错:', error);
+                
+                if (retryCount < 1) {
+                    // 尝试重试
+                    console.log('播放音频出错，尝试重试');
+                    audioPlayer._showErrorToast('播放失败，正在重试...');
+                    
+                    // 重试
+                    tryPlayAudio(retryCount + 1);
+                } else {
+                    // 已达到最大重试次数
+                    clearTimeout(globalTimeout);
+                    audioPlayer._showErrorToast('播放失败，已跳过');
+                    ttsBtn.innerHTML = originalContent;
+                    ttsBtn.disabled = false;
+                }
+            }
+        };
+        
+        // 开始第一次尝试
+        await tryPlayAudio(0);
+        
+    } catch (error) {
+        console.error('播放最后一条消息出错:', error);
+        audioPlayer._showErrorToast('播放失败，请重试');
+        
+        // 恢复按钮状态
+        const ttsBtn = document.getElementById('tts-btn');
+        ttsBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        ttsBtn.disabled = false;
+    }
+} 

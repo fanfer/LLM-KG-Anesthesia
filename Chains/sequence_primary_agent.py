@@ -2,6 +2,8 @@ from typing import List, Dict, Any
 from langchain_core.messages import AIMessage, ToolMessage
 import json
 
+from Chains.conclusion_chain import get_conclusion_chain
+
 def create_tool_call(name: str, args: Dict[str, Any]) -> Dict[str, Any]:
     """创建工具调用对象"""
     return {
@@ -68,15 +70,28 @@ def Sequence_Primary_Assistant(state: Dict[str, Any]) -> Dict[str, Any]:
         ]
         
         # 如果已经完成所有步骤，返回空消息
-        if current_step >= len(steps):
-            message = AIMessage(
-                content="谢谢您的配合，术前谈话已完成。请你在术前谈话记录表中签字确认。",
-            )
-            
+        if current_step == 100:
+            print("开始总结")
+            conclusion_chain = get_conclusion_chain()
+            graph_qa_result = state.get('graph_qa_result', '')
+            message = conclusion_chain.invoke({
+                "user_information": user_information,
+                "risk_analysis": graph_qa_result
+            })
             return {
                 "messages": message,
                 "current_step": 100
             }
+        if current_step >= len(steps):
+            print("对话结束")
+            message = AIMessage(
+                content="谢谢您的配合，术前谈话已完成。请你在麻醉知情同意书中签字确认。",
+            )
+            return {
+                "messages": message,
+                "current_step": 100
+            }
+        
         
         # 获取当前步骤
         current_action = steps[current_step]

@@ -9,16 +9,17 @@ from .tts_stream_handler import tts_handler
 
 llm = ChatOpenAI(
     model="gpt-4o", 
-    temperature=0.6,
-    max_tokens=150,  # 限制输出约100字
+    temperature=0,
     api_key=os.environ.get("OPENAI_API_KEY"),
     streaming=True,  # 启用流式输出
     callbacks=[tts_handler],  # 添加TTSStreamHandler作为回调
 )
 # llm = ChatOllama(
-#     model="llama3.3:latest",
+#     model="qwen2.5:14b",
 #     temperature=0.6,
-#     base_url="http://222.20.98.120:11434"
+#     base_url="http://222.20.98.121:11434",
+#     streaming=True,
+#     callbacks=[tts_handler]
 # )
 
 class info_with_conclusion(BaseModel):
@@ -86,7 +87,3 @@ def get_information_chain():
     llm_with_tools = llm.bind_tools([CompleteOrEscalate])
     information_chain = prompt | llm_with_tools
     return information_chain
-
-# 提供一个函数来等待所有音频播放完成
-def wait_for_audio_completion():
-    tts_handler.wait_for_audio_completion()

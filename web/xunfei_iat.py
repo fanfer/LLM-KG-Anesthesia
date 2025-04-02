@@ -18,8 +18,7 @@ import wave
 import io
 import logging
 
-# 配置日志
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# 简单获取日志记录器
 logger = logging.getLogger(__name__)
 
 STATUS_FIRST_FRAME = 0  # 第一帧的标识

@@ -60,6 +60,7 @@ class MedicalState(TypedDict):
     current_step: int 
     graph_is_qa: bool
     session_id: str
+    risk_count: int = 0
 
 class InputState(TypedDict):
     messages: Annotated[list[AnyMessage],add_messages]

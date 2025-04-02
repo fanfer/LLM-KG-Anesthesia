@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>麻醉医生助手系统</title>
+    <title>术问1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -36,15 +36,15 @@
                         <i class="fas fa-list-ul"></i>
                         <span>历史记录</span>
                     </button>
-                    <h2>麻醉助手</h2>
+                    <h2>术问</h2>
                 </div>
-                <div class="user-info">
+                <!-- <div class="user-info">
                     <button id="download-chat-btn" class="download-btn" onclick="downloadCurrentChat()" title="下载当前对话">
                         <i class="fas fa-download"></i>
                     </button>
                     欢迎, {{ username }}
                     <a href="{{ url_for('logout') }}" class="logout-btn">退出</a>
-                </div>
+                </div> -->
             </div>
             <div class="chat-messages" id="chat-messages">
                 <div class="message system">
@@ -61,13 +61,18 @@
                     <i class="fas fa-microphone"></i>
                 </button>
                 <textarea id="message-input" placeholder="请输入消息...&#13;&#10;按Enter发送，Shift+Enter换行" rows="3"></textarea>
-                <button onclick="sendMessage()">发送</button>
+                <div class="input-buttons">
+                    <button id="tts-btn" class="tts-btn" onclick="playLastMessage()" title="播放最后一条消息">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <button onclick="sendMessage()">发送</button>
+                </div>
             </div>
         </div>
     </div>
     
     <!-- 音频播放器 (隐藏) -->
-    <audio id="tts-audio" style="display: none;"></audio>
+    <audio id="tts-audio" style="display: none;" preload="auto" playsinline webkit-playsinline></audio>
     
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
     <script>
@@ -88,8 +93,13 @@
         }
         
         // 在移动端,点击侧边栏的聊天记录后自动关闭侧边栏
-        document.querySelector('.chat-history').addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
+        document.querySelector('.chat-history').addEventListener('click', function(event) {
+            // 获取被点击的元素
+            const target = event.target;
+            // 检查点击的元素是否是聊天项或者其子元素
+            const chatItem = target.closest('.chat-item');
+            
+            if (chatItem && window.innerWidth <= 768) {
                 closeSidebar();
             }
         });

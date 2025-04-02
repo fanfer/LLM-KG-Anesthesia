@@ -8,7 +8,6 @@ WORKING_DIR = "./dickens"
 
 ragllm = GraphRAG(
     working_dir=WORKING_DIR,    
-    best_model_id="gpt-4o",
 )
 
 system_prompt = """
